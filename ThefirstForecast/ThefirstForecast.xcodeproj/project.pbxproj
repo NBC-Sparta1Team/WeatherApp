@@ -62,7 +62,7 @@
 		F88C53462B70C8B0000624A2 /* ThefirstForecast */ = {
 			isa = PBXGroup;
 			children = (
-				F88C53682B70CD70000624A2 /* NewWork */,
+				F88C53692B70CF61000624A2 /* APIService */,
 				F88C53532B70C8B1000624A2 /* Assets.xcassets */,
 				F88C53552B70C8B1000624A2 /* LaunchScreen.storyboard */,
 				F88C53582B70C8B1000624A2 /* Info.plist */,
@@ -109,11 +109,11 @@
 			path = App;
 			sourceTree = "<group>";
 		};
-		F88C53682B70CD70000624A2 /* NewWork */ = {
+		F88C53692B70CF61000624A2 /* APIService */ = {
 			isa = PBXGroup;
 			children = (
 			);
-			path = NewWork;
+			path = APIService;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
