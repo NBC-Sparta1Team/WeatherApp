@@ -6,3 +6,7 @@
 //
 
 import Foundation
+class WeatherMapAPIManger{
+    static let shared = WeatherMapAPIManger()
+    let APIKey = Bundle.init().infoDictionary?["OpenWeatherMap_KEY"] as! String
+}
