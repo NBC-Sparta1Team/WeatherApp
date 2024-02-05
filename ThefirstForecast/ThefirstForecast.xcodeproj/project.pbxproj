@@ -16,6 +16,7 @@
 		F88C535F2B70C9CB000624A2 /* MainVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C535E2B70C9CB000624A2 /* MainVC.swift */; };
 		F88C53612B70C9E4000624A2 /* WeeklyForecastVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C53602B70C9E4000624A2 /* WeeklyForecastVC.swift */; };
 		F88C53632B70C9FF000624A2 /* ForecastInfoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C53622B70C9FF000624A2 /* ForecastInfoVC.swift */; };
+		F88C536C2B70D006000624A2 /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C536B2B70D006000624A2 /* APIService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		F88C535E2B70C9CB000624A2 /* MainVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainVC.swift; sourceTree = "<group>"; };
 		F88C53602B70C9E4000624A2 /* WeeklyForecastVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyForecastVC.swift; sourceTree = "<group>"; };
 		F88C53622B70C9FF000624A2 /* ForecastInfoVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastInfoVC.swift; sourceTree = "<group>"; };
+		F88C536B2B70D006000624A2 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,7 +64,7 @@
 		F88C53462B70C8B0000624A2 /* ThefirstForecast */ = {
 			isa = PBXGroup;
 			children = (
-				F88C53692B70CF61000624A2 /* APIService */,
+				F88C536A2B70CFF9000624A2 /* APIService */,
 				F88C53532B70C8B1000624A2 /* Assets.xcassets */,
 				F88C53552B70C8B1000624A2 /* LaunchScreen.storyboard */,
 				F88C53582B70C8B1000624A2 /* Info.plist */,
@@ -109,9 +111,10 @@
 			path = App;
 			sourceTree = "<group>";
 		};
-		F88C53692B70CF61000624A2 /* APIService */ = {
+		F88C536A2B70CFF9000624A2 /* APIService */ = {
 			isa = PBXGroup;
 			children = (
+				F88C536B2B70D006000624A2 /* APIService.swift */,
 			);
 			path = APIService;
 			sourceTree = "<group>";
@@ -192,6 +195,7 @@
 				F88C53632B70C9FF000624A2 /* ForecastInfoVC.swift in Sources */,
 				F88C53522B70C8B0000624A2 /* ThefirstForecast.xcdatamodeld in Sources */,
 				F88C53482B70C8B0000624A2 /* AppDelegate.swift in Sources */,
+				F88C536C2B70D006000624A2 /* APIService.swift in Sources */,
 				F88C534A2B70C8B0000624A2 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
