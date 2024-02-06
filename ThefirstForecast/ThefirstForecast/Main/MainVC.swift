@@ -13,6 +13,9 @@ class MainVC: UIViewController {
         super.viewDidLoad()
 
         self.view.backgroundColor = .white
+        WeatherMapAPIManger.shared.getCoordinate(from: "서울") { coodinateData in
+            print(coodinateData)
+        }
     }
     
 

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3F16334A2B70D43500603161 /* DailyWeatherCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1633492B70D43500603161 /* DailyWeatherCollectionViewCell.swift */; };
 		F87859CC2B71DD9600D8E0B0 /* APIKey.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F87859CB2B71DD9600D8E0B0 /* APIKey.xcconfig */; };
+		F87859D02B71DF6100D8E0B0 /* CityCoordinateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87859CF2B71DF6100D8E0B0 /* CityCoordinateModel.swift */; };
 		F88C53482B70C8B0000624A2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C53472B70C8B0000624A2 /* AppDelegate.swift */; };
 		F88C534A2B70C8B0000624A2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C53492B70C8B0000624A2 /* SceneDelegate.swift */; };
 		F88C534C2B70C8B0000624A2 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C534B2B70C8B0000624A2 /* TabBarController.swift */; };
@@ -24,6 +25,7 @@
 /* Begin PBXFileReference section */
 		3F1633492B70D43500603161 /* DailyWeatherCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyWeatherCollectionViewCell.swift; sourceTree = "<group>"; };
 		F87859CB2B71DD9600D8E0B0 /* APIKey.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = APIKey.xcconfig; sourceTree = "<group>"; };
+		F87859CF2B71DF6100D8E0B0 /* CityCoordinateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityCoordinateModel.swift; sourceTree = SOURCE_ROOT; };
 		F88C53442B70C8B0000624A2 /* ThefirstForecast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ThefirstForecast.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F88C53472B70C8B0000624A2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F88C53492B70C8B0000624A2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -49,6 +51,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F87859CE2B71DF3B00D8E0B0 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F87859CF2B71DF6100D8E0B0 /* CityCoordinateModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		F88C533B2B70C8B0000624A2 = {
 			isa = PBXGroup;
 			children = (
@@ -69,6 +79,7 @@
 		F88C53462B70C8B0000624A2 /* ThefirstForecast */ = {
 			isa = PBXGroup;
 			children = (
+				F87859CE2B71DF3B00D8E0B0 /* Model */,
 				F88C536A2B70CFF9000624A2 /* APIService */,
 				F88C53532B70C8B1000624A2 /* Assets.xcassets */,
 				F88C53552B70C8B1000624A2 /* LaunchScreen.storyboard */,
@@ -204,6 +215,7 @@
 				F88C53522B70C8B0000624A2 /* ThefirstForecast.xcdatamodeld in Sources */,
 				F88C53482B70C8B0000624A2 /* AppDelegate.swift in Sources */,
 				F88C536C2B70D006000624A2 /* APIService.swift in Sources */,
+				F87859D02B71DF6100D8E0B0 /* CityCoordinateModel.swift in Sources */,
 				F88C534A2B70C8B0000624A2 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -224,6 +236,7 @@
 /* Begin XCBuildConfiguration section */
 		F88C53592B70C8B1000624A2 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F87859CB2B71DD9600D8E0B0 /* APIKey.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -287,6 +300,7 @@
 		};
 		F88C535A2B70C8B1000624A2 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F87859CB2B71DD9600D8E0B0 /* APIKey.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
