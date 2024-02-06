@@ -125,7 +125,7 @@ class ForecastAPIManger{
             return
         }
         var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)
-        components?.queryItems = [URLQueryItem(name: "lat", value: "\(coordinate.lat)"),URLQueryItem(name: "lon", value: "\(coordinate.lon)"),URLQueryItem(name: "appid", value: APIKey),URLQueryItem(name: "lang", value: "kr")]
+        components?.queryItems = [URLQueryItem(name: "lat", value: "\(coordinate.lat)"),URLQueryItem(name: "lon", value: "\(coordinate.lon)"),URLQueryItem(name: "appid", value: APIKey),URLQueryItem(name: "lang", value: "kr"),URLQueryItem(name: "units", value: "metric")]
         guard let requestURL = components?.url else { return}
         var request = URLRequest(url: requestURL)
         request.httpMethod = "GET"

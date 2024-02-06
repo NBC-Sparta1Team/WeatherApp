@@ -8,11 +8,13 @@
 import UIKit
 
 class WeeklyForecastVC: UIViewController {
-
+    
+    var averageOneDayForecastList = [OneDayAverageData]()
     override func viewDidLoad() {
         super.viewDidLoad()
-
         self.view.backgroundColor = .white
+
+        
     }
     
 
