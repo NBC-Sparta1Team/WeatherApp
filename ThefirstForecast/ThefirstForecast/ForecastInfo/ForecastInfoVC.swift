@@ -185,7 +185,7 @@ extension ForecastInfoVC : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = dailyWeatherCollectionView.dequeueReusableCell(withReuseIdentifier: DailyWeatherCollectionViewCell.reuseIdentifier, for: indexPath) as? DailyWeatherCollectionViewCell
         let time = time[indexPath.item]
-        let index = temperature[indexPath.item]
+//        let index = temperature[indexPath.item]
         cell?.setCollectionViewCell(time: time, wind: "\(temperature[indexPath.item])", temperature: "\(temperature[indexPath.item])°")
         return cell ?? UICollectionViewCell()
     }
