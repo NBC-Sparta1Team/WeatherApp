@@ -13,7 +13,9 @@ class WeeklyForecastVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .white
-
+        WeeklyDataProcessing.shred.getWeeklyData(from: "서울") { OneDayAverageDataList in
+            print(OneDayAverageDataList)
+        }
         
     }
     
