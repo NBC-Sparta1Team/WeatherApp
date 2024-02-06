@@ -34,7 +34,6 @@
 		F88C53602B70C9E4000624A2 /* WeeklyForecastVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyForecastVC.swift; sourceTree = "<group>"; };
 		F88C53622B70C9FF000624A2 /* ForecastInfoVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastInfoVC.swift; sourceTree = "<group>"; };
 		F88C536B2B70D006000624A2 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
-		F88C53922B70F278000624A2 /* APIKey.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = APIKey.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,7 +50,6 @@
 		F88C533B2B70C8B0000624A2 = {
 			isa = PBXGroup;
 			children = (
-				F88C53922B70F278000624A2 /* APIKey.xcconfig */,
 				F88C53462B70C8B0000624A2 /* ThefirstForecast */,
 				F88C53452B70C8B0000624A2 /* Products */,
 			);
@@ -222,7 +220,6 @@
 /* Begin XCBuildConfiguration section */
 		F88C53592B70C8B1000624A2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F88C53922B70F278000624A2 /* APIKey.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -286,7 +283,6 @@
 		};
 		F88C535A2B70C8B1000624A2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F88C53922B70F278000624A2 /* APIKey.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -348,7 +344,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4G47XHXXQX;
+				DEVELOPMENT_TEAM = 76R226FG59;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ThefirstForecast/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -376,7 +372,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4G47XHXXQX;
+				DEVELOPMENT_TEAM = 76R226FG59;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ThefirstForecast/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
