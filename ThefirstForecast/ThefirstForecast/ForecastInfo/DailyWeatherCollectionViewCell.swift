@@ -16,10 +16,10 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    private let windLabel : UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .regular)
-        return label
+    private let weatherImage : UIImageView = {
+        let image = UIImageView()
+        image.contentMode = .center
+        return image
     }()
     
     private let hourlyTemperatureLabel : UILabel = {
@@ -32,31 +32,34 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
         addSubViews()
         autoLayout()
         timeLabel.text = time
-        windLabel.text = wind
+        weatherImage.image = UIImage(systemName: "cloud.sun.rain")
         hourlyTemperatureLabel.text = temperature
+        self.contentView.backgroundColor = UIColor(
+            red: drand48(), green: drand48(), blue: drand48(), alpha: drand48()
+        )
     }
     
     private func addSubViews() {
         self.contentView.addSubViews([
         timeLabel,
-        windLabel,
+        weatherImage,
         hourlyTemperatureLabel
         ])
     }
     
     private func autoLayout() {
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
-        windLabel.translatesAutoresizingMaskIntoConstraints = false
+        weatherImage.translatesAutoresizingMaskIntoConstraints = false
         hourlyTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             timeLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            timeLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            timeLabel.centerYAnchor.constraint(equalTo: contentView.topAnchor, constant: contentView.bounds.height / 6),
             
-            windLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            windLabel.topAnchor.constraint(equalTo: timeLabel.bottomAnchor, constant: 10),
+            weatherImage.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            weatherImage.centerYAnchor.constraint(equalTo: contentView.centerYAnchor, constant: 0),
             
             hourlyTemperatureLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor, constant: 3),
-            hourlyTemperatureLabel.topAnchor.constraint(equalTo: windLabel.bottomAnchor, constant: 10)
+            hourlyTemperatureLabel.centerYAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -(contentView.bounds.height / 6)),
         ])
     }
 }

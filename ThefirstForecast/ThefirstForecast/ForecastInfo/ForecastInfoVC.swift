@@ -7,6 +7,12 @@
 
 import UIKit
 
+enum WeatherSection {
+    case dailyWeather([Int])
+    case dailyForecastInfo([String])
+    case wind([String])
+}
+
 class ForecastInfoVC: UIViewController {
     
     let time = ["오전 0시", "오전 3시", "오전 6시", "오전 9시", "오전 12시", "오전 15시", "오전 18시", "오전 21시", "오전 24시"]
@@ -85,6 +91,7 @@ class ForecastInfoVC: UIViewController {
         setLabels()
         dailyWeatherCollectionView.delegate = self
         dailyWeatherCollectionView.dataSource = self
+        dailyWeatherCollectionView.reloadData()
     }
     
 
@@ -99,12 +106,14 @@ extension ForecastInfoVC {
             weatherLabel,
             maxTemperatureLabel,
             minTemperatureLabel,
-            apparentTemperatureLabel,
-            humidityLabel,
-            windLabel,
-            rainLabel,
             dailyWeatherCollectionView
         ])
+//        view.addSubViews([
+//            apparentTemperatureLabel,
+//            humidityLabel,
+//            windLabel,
+//            rainLabel
+//            ])
         dailyWeatherCollectionView.register(DailyWeatherCollectionViewCell.self, forCellWithReuseIdentifier: DailyWeatherCollectionViewCell.reuseIdentifier)
     }
     
@@ -114,10 +123,10 @@ extension ForecastInfoVC {
         weatherLabel.translatesAutoresizingMaskIntoConstraints = false
         maxTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
         minTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
-        apparentTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
-        humidityLabel.translatesAutoresizingMaskIntoConstraints = false
-        windLabel.translatesAutoresizingMaskIntoConstraints = false
-        rainLabel.translatesAutoresizingMaskIntoConstraints = false
+//        apparentTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
+//        humidityLabel.translatesAutoresizingMaskIntoConstraints = false
+//        windLabel.translatesAutoresizingMaskIntoConstraints = false
+//        rainLabel.translatesAutoresizingMaskIntoConstraints = false
         dailyWeatherCollectionView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
@@ -136,22 +145,22 @@ extension ForecastInfoVC {
             minTemperatureLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor, constant: 40),
             minTemperatureLabel.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: 10),
             
-            apparentTemperatureLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            apparentTemperatureLabel.topAnchor.constraint(equalTo: maxTemperatureLabel.bottomAnchor, constant: 10),
+//            apparentTemperatureLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+//            apparentTemperatureLabel.topAnchor.constraint(equalTo: maxTemperatureLabel.bottomAnchor, constant: 10),
+//            
+//            humidityLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+//            humidityLabel.topAnchor.constraint(equalTo: apparentTemperatureLabel.bottomAnchor, constant: 20),
+//            
+//            windLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+//            windLabel.topAnchor.constraint(equalTo: humidityLabel.bottomAnchor, constant: 20),
+//            
+//            rainLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+//            rainLabel.topAnchor.constraint(equalTo: windLabel.bottomAnchor, constant: 20),
             
-            humidityLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            humidityLabel.topAnchor.constraint(equalTo: apparentTemperatureLabel.bottomAnchor, constant: 20),
-            
-            windLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            windLabel.topAnchor.constraint(equalTo: humidityLabel.bottomAnchor, constant: 20),
-            
-            rainLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            rainLabel.topAnchor.constraint(equalTo: windLabel.bottomAnchor, constant: 20),
-            
-            dailyWeatherCollectionView.topAnchor.constraint(equalTo: rainLabel.bottomAnchor, constant: 10),
+            dailyWeatherCollectionView.topAnchor.constraint(equalTo: maxTemperatureLabel.bottomAnchor, constant: 60),
             dailyWeatherCollectionView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             dailyWeatherCollectionView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            dailyWeatherCollectionView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -200)
+            dailyWeatherCollectionView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 1 / 5)
         ])
     }
 }
@@ -177,6 +186,12 @@ extension ForecastInfoVC {
 }
 
 extension ForecastInfoVC : UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        let numOfSection = 5
+        print("Number of section : \(numOfSection)")
+        return numOfSection
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         print("Number of Items in section : \(temperature.count)")
         return temperature.count
@@ -197,9 +212,11 @@ extension ForecastInfoVC : UICollectionViewDelegate {
     
 }
 
-extension ForecastInfoVC : UICollectionViewDelegateFlowLayout {
+extension ForecastInfoVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 70, height: 150)
+        let width = collectionView.bounds.width / 4.5
+        let height = collectionView.bounds.height
+        return CGSize(width: width, height: height)
     }
 }
 
