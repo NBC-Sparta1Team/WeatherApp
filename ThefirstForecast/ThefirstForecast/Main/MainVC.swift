@@ -4,12 +4,26 @@
 //  Created by 원동진 on 2/5/24.
 //
 
-import UIKit
 import Foundation
+import UIKit
+
+struct Weather {
+    var location: String
+    var windSpeed: String
+    var minTemperature: Int
+    var maxTemperature: Int
+    var averageTemperature: Int
+}
 
 class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     var tableView: UITableView = UITableView()
+    
+    var dummyData: [Weather] = [
+        Weather(location: "서울", windSpeed: "풍속: 5m/s", minTemperature: -5, maxTemperature: 3, averageTemperature: -1),
+        Weather(location: "부산", windSpeed: "풍속: 3m/s", minTemperature: 0, maxTemperature: 8, averageTemperature: 4),
+        Weather(location: "부산", windSpeed: "풍속: 3m/s", minTemperature: 0, maxTemperature: 8, averageTemperature: 4)
+    ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +45,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         searchTextField.attributedPlaceholder = NSAttributedString(string: "도시 또는 공항 검색", attributes: [NSAttributedString.Key.foregroundColor : UIColor.black])
         searchTextField.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(searchTextField)
+        
+        // 셀 등록
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         
         //테이블 뷰 설정
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -58,6 +75,11 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             searchTextField.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
             searchTextField.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
             
+            tableView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 20),
+            tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
+            tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
+            tableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
+            
             settingButton.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: -60),
             settingButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -30)
         ])
@@ -65,25 +87,51 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     // 셀 갯수
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return dummyData.count
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 0
     }
     
     // 셀 디자인
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: "Cell")
-        cell.backgroundColor = .lightGray
-        cell.layer.cornerRadius = 10
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        
+        // 지역 이름 레이블 추가
+        let locationLabel = UILabel(frame: CGRect(x: 10, y: 10, width: 150, height: 20))
+        locationLabel.text = dummyData[indexPath.row].location
+        locationLabel.font = UIFont.boldSystemFont(ofSize: 16)
+        cell.contentView.addSubview(locationLabel)
+        
+        // 풍속 레이블 추가
+        let windSpeedLabel = UILabel(frame: CGRect(x: 10, y: 40, width: 150, height: 20))
+        windSpeedLabel.text = dummyData[indexPath.row].windSpeed
+        windSpeedLabel.font = UIFont.systemFont(ofSize: 14)
+        cell.contentView.addSubview(windSpeedLabel)
+        
+        // 최저/최고 온도 레이블 추가
+        let temperatureLabel = UILabel(frame: CGRect(x: cell.contentView.bounds.width - 160, y: 10, width: 150, height: 20))
+        temperatureLabel.text = "최저: \(dummyData[indexPath.row].minTemperature)℃  최고: \(dummyData[indexPath.row].maxTemperature)℃"
+        temperatureLabel.textAlignment = .right
+        temperatureLabel.font = UIFont.systemFont(ofSize: 14)
+        cell.contentView.addSubview(temperatureLabel)
+        
+        // 평균 온도 레이블 추가
+        let averageTemperatureLabel = UILabel(frame: CGRect(x: cell.contentView.bounds.width - 160, y: 40, width: 150, height: 20))
+        averageTemperatureLabel.text = "\(dummyData[indexPath.row].averageTemperature)℃"
+        averageTemperatureLabel.textAlignment = .right
+        averageTemperatureLabel.font = UIFont.systemFont(ofSize: 14)
+        cell.contentView.addSubview(averageTemperatureLabel)
+        
+        cell.contentView.backgroundColor = .lightGray
+        
         return cell
     }
     
-    // 셀 세로 크기
+    // 셀 세로 크기 및 간격
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
-    }
-    
-    // 셀 간격
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 20
+        return 60 + 20 // 셀 높이 + 간격
     }
     
     @objc func settingButtonTapped() {
@@ -101,4 +149,5 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     */
 
 }
+
 
