@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		3F16334A2B70D43500603161 /* DailyWeatherCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1633492B70D43500603161 /* DailyWeatherCollectionViewCell.swift */; };
+		3F1633932B73C3B400603161 /* CurrentWeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1633922B73C3B400603161 /* CurrentWeatherView.swift */; };
+		3F1633952B73CECD00603161 /* WindView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1633942B73CECD00603161 /* WindView.swift */; };
 		F88C53482B70C8B0000624A2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C53472B70C8B0000624A2 /* AppDelegate.swift */; };
 		F88C534A2B70C8B0000624A2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C53492B70C8B0000624A2 /* SceneDelegate.swift */; };
 		F88C534C2B70C8B0000624A2 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C534B2B70C8B0000624A2 /* TabBarController.swift */; };
@@ -22,6 +24,8 @@
 
 /* Begin PBXFileReference section */
 		3F1633492B70D43500603161 /* DailyWeatherCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyWeatherCollectionViewCell.swift; sourceTree = "<group>"; };
+		3F1633922B73C3B400603161 /* CurrentWeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentWeatherView.swift; sourceTree = "<group>"; };
+		3F1633942B73CECD00603161 /* WindView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindView.swift; sourceTree = "<group>"; };
 		F88C53442B70C8B0000624A2 /* ThefirstForecast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ThefirstForecast.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F88C53472B70C8B0000624A2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F88C53492B70C8B0000624A2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -100,6 +104,8 @@
 			isa = PBXGroup;
 			children = (
 				F88C53622B70C9FF000624A2 /* ForecastInfoVC.swift */,
+				3F1633922B73C3B400603161 /* CurrentWeatherView.swift */,
+				3F1633942B73CECD00603161 /* WindView.swift */,
 				3F1633492B70D43500603161 /* DailyWeatherCollectionViewCell.swift */,
 			);
 			path = ForecastInfo;
@@ -192,9 +198,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F1633952B73CECD00603161 /* WindView.swift in Sources */,
 				3F16334A2B70D43500603161 /* DailyWeatherCollectionViewCell.swift in Sources */,
 				F88C53612B70C9E4000624A2 /* WeeklyForecastVC.swift in Sources */,
 				F88C534C2B70C8B0000624A2 /* TabBarController.swift in Sources */,
+				3F1633932B73C3B400603161 /* CurrentWeatherView.swift in Sources */,
 				F88C535F2B70C9CB000624A2 /* MainVC.swift in Sources */,
 				F88C53632B70C9FF000624A2 /* ForecastInfoVC.swift in Sources */,
 				F88C53522B70C8B0000624A2 /* ThefirstForecast.xcdatamodeld in Sources */,

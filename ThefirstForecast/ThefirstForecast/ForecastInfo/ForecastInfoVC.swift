@@ -19,34 +19,19 @@ class ForecastInfoVC: UIViewController {
     
     let temperature = [3, 2, 1, 2, 5, 7, 5, 4, 3]
     
-    private let locationLabel : UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 28, weight: .regular)
-        return label
+    // 모든 요소 담고있는 stackView
+    private let stackView : UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.alignment = .fill
+        stack.spacing = 0
+        return stack
     }()
     
-    private let dailyTemperatureLabel : UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 64, weight: .regular)
-        return label
-    }()
-    
-    private let weatherLabel : UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .bold)
-        return label
-    }()
-    
-    private let maxTemperatureLabel : UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .regular)
-        return label
-    }()
-    
-    private let minTemperatureLabel : UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .regular)
-        return label
+    // 위치, 현재온도(main.temp), 기상상태(weather.main), 최고&최저 온도(main.temp_min&max) 보여주는 view
+    private let currentWeatherView : CurrentWeatherView = {
+        let view = CurrentWeatherView()
+        return view
     }()
     
     private let apparentTemperatureLabel : UILabel = {
@@ -73,134 +58,156 @@ class ForecastInfoVC: UIViewController {
         return label
     }()
     
+    // 3시간 단위 온도변화를 표현하는 collectionView(시간, 온도, 아이콘)
     private let dailyWeatherCollectionView : UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 0
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.layer.cornerRadius = 8
+        collectionView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.15)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        return collectionView
+    }()
+    
+    // 체감온도, 습도, 가시거리, 강수량 표현하는 collectionView 작성예정
+    private let otherWeatherCollectionView : UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 0
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.layer.cornerRadius = 8
         collectionView.backgroundColor = .systemGray6
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         return collectionView
+    }()
+    
+    // 풍속(wind.speed), 돌풍(wind.gust), 풍향(wind.deg) 담고있는 view
+    private let windView : WindView = {
+        let view = WindView()
+        view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.15)
+        return view
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        self.view.backgroundColor = .white
-        addSubviews()
-        autoLayout()
-        setLabels()
+        print("#", #function)
+        let backgroundImage = UIImageView(image: UIImage(named: "backgroundImage"))
+        backgroundImage.contentMode = .scaleAspectFill
+        view.insertSubview(backgroundImage, at: 0)
+        backgroundImage.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+                backgroundImage.topAnchor.constraint(equalTo: view.topAnchor),
+                backgroundImage.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                backgroundImage.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                backgroundImage.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            ])
+        addSubviewsInForecaseInfoVC()
+        autoLayoutInForecastInfoVC()
         dailyWeatherCollectionView.delegate = self
         dailyWeatherCollectionView.dataSource = self
         dailyWeatherCollectionView.reloadData()
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        print("##", #function)
+        currentWeatherView.addSubViewsInCurrentWeatherView()
+        currentWeatherView.autoLayoutCurrentWeatherView()
+        currentWeatherView.setCurrentWeatherLabels()
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        print("###", #function)
+        setBackgroundBlur(blurEffect: .regular)
+    }
+    
     
 
 
 }
 
 extension ForecastInfoVC {
-    private func addSubviews() {
-        view.addSubViews([
-            locationLabel,
-            dailyTemperatureLabel,
-            weatherLabel,
-            maxTemperatureLabel,
-            minTemperatureLabel,
-            dailyWeatherCollectionView
-        ])
-//        view.addSubViews([
-//            apparentTemperatureLabel,
-//            humidityLabel,
-//            windLabel,
-//            rainLabel
-//            ])
+    
+    private func setBackgroundBlur(blurEffect: UIBlurEffect.Style) {
+        let blurEffect = UIBlurEffect(style: blurEffect)
+        let effectView = UIVisualEffectView(effect: blurEffect)
+        effectView.frame = dailyWeatherCollectionView.bounds
+        effectView.layer.cornerRadius = 15
+        dailyWeatherCollectionView.layer.cornerRadius = 15
+        
+        // clipsToBounds가 true일 때, EffectView에 cornerRadius 적용됨.
+        effectView.clipsToBounds = true
+        // blur처리된 뷰를 한 겹 올리는 것
+        view.addSubview(effectView)
+    }
+    // ForecaseInfo에 addSubView
+    private func addSubviewsInForecaseInfoVC() {
+        view.addSubview(stackView)
+        view.addSubview(currentWeatherView)
+        view.addSubview(dailyWeatherCollectionView)
+        
+//        stackView.addArrangedSubview(dailyWeatherCollectionView)
+//        view.addSubview(otherWeatherCollectionView)
+        view.addSubview(windView)
+        
         dailyWeatherCollectionView.register(DailyWeatherCollectionViewCell.self, forCellWithReuseIdentifier: DailyWeatherCollectionViewCell.reuseIdentifier)
+//        otherWeatherCollectionView.register(<#T##cellClass: AnyClass?##AnyClass?#>, forCellWithReuseIdentifier: <#T##String#>)
+        print(#function)
     }
     
-    private func autoLayout() {
-        locationLabel.translatesAutoresizingMaskIntoConstraints = false
-        dailyTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
-        weatherLabel.translatesAutoresizingMaskIntoConstraints = false
-        maxTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
-        minTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
-//        apparentTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
-//        humidityLabel.translatesAutoresizingMaskIntoConstraints = false
-//        windLabel.translatesAutoresizingMaskIntoConstraints = false
-//        rainLabel.translatesAutoresizingMaskIntoConstraints = false
+    // Forecast에 들어갈 view들의 layout 설정
+    private func autoLayoutInForecastInfoVC() {
+        stackView.translatesAutoresizingMaskIntoConstraints = false
         dailyWeatherCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        otherWeatherCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        windView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            locationLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            locationLabel.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 80),
+            stackView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
             
-            dailyTemperatureLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor, constant: 13),
-            dailyTemperatureLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 10),
+            currentWeatherView.topAnchor.constraint(equalTo: view.topAnchor),
+            currentWeatherView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            currentWeatherView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            currentWeatherView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1 / 2.5), // ForecastInfoVC의 1/2.5 크기로 지정
             
-            weatherLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            weatherLabel.topAnchor.constraint(equalTo: dailyTemperatureLabel.bottomAnchor, constant: 10),
+            dailyWeatherCollectionView.topAnchor.constraint(equalTo: currentWeatherView.bottomAnchor),
+            dailyWeatherCollectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
+            dailyWeatherCollectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
+            dailyWeatherCollectionView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 1 / 5),
             
-            maxTemperatureLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor, constant: -40),
-            maxTemperatureLabel.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: 10),
+//            otherWeatherCollectionView.topAnchor.constraint(equalTo: dailyWeatherCollectionView.bottomAnchor, constant: 0),
+//            otherWeatherCollectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
+//            otherWeatherCollectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
+//            otherWeatherCollectionView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 1 / 2.5),
             
-            minTemperatureLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor, constant: 40),
-            minTemperatureLabel.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: 10),
-            
-//            apparentTemperatureLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-//            apparentTemperatureLabel.topAnchor.constraint(equalTo: maxTemperatureLabel.bottomAnchor, constant: 10),
-//            
-//            humidityLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-//            humidityLabel.topAnchor.constraint(equalTo: apparentTemperatureLabel.bottomAnchor, constant: 20),
-//            
-//            windLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-//            windLabel.topAnchor.constraint(equalTo: humidityLabel.bottomAnchor, constant: 20),
-//            
-//            rainLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-//            rainLabel.topAnchor.constraint(equalTo: windLabel.bottomAnchor, constant: 20),
-            
-            dailyWeatherCollectionView.topAnchor.constraint(equalTo: maxTemperatureLabel.bottomAnchor, constant: 60),
-            dailyWeatherCollectionView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            dailyWeatherCollectionView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            dailyWeatherCollectionView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 1 / 5)
+            windView.topAnchor.constraint(equalTo: dailyWeatherCollectionView.bottomAnchor),
+            windView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
+            windView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
+            windView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 1 / 5),
         ])
-    }
-}
-
-extension ForecastInfoVC {
-    private func setLabels() {
-        locationLabel.text = "나의 위치"
-        dailyTemperatureLabel.text = "6°"
-        weatherLabel.text = "바람"
-        maxTemperatureLabel.text = "최고 : 6°"
-        minTemperatureLabel.text = "최저 : 0°"
-        apparentTemperatureLabel.text = "체감온도 : 5°"
-        humidityLabel.text = """
-                             습도
-                             15%
-                             """
-        windLabel.text = "풍향 : 북서쪽 풍속 1m/s"
-        rainLabel.text = """
-                         강수량
-                         10mm
-                         """
+        print("windView.frame after", #function, ": \(windView.frame)")
+        print(#function)
     }
 }
 
 extension ForecastInfoVC : UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         let numOfSection = 5
-        print("Number of section : \(numOfSection)")
+//        print("Number of section : \(numOfSection)")
         return numOfSection
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print("Number of Items in section : \(temperature.count)")
+//        print("Number of Items in section : \(temperature.count)")
         return temperature.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = dailyWeatherCollectionView.dequeueReusableCell(withReuseIdentifier: DailyWeatherCollectionViewCell.reuseIdentifier, for: indexPath) as? DailyWeatherCollectionViewCell
         let time = time[indexPath.item]
-        let index = temperature[indexPath.item]
         cell?.setCollectionViewCell(time: time, wind: "\(temperature[indexPath.item])", temperature: "\(temperature[indexPath.item])°")
         return cell ?? UICollectionViewCell()
     }
@@ -214,8 +221,8 @@ extension ForecastInfoVC : UICollectionViewDelegate {
 
 extension ForecastInfoVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = collectionView.bounds.width / 4.5
-        let height = collectionView.bounds.height
+        let width = collectionView.frame.width / 4.5
+        let height = collectionView.frame.height
         return CGSize(width: width, height: height)
     }
 }
