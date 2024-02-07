@@ -15,7 +15,6 @@ class WeeklyForecastVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         self.view.backgroundColor = .white
         
         weeklyTableView = UITableView(frame: view.bounds, style: .plain)

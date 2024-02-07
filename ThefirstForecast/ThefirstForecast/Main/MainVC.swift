@@ -7,6 +7,7 @@
 import Foundation
 import UIKit
 
+class MainVC: UIViewController {
 struct Weather {
     var location: String
     var windSpeed: String
@@ -27,7 +28,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         self.view.backgroundColor = .white
         
         // "날씨" 라벨 추가
@@ -133,6 +133,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60 + 20 // 셀 높이 + 간격
     }
+
     
     @objc func settingButtonTapped() {
         print("섭씨 화씨 전환")
