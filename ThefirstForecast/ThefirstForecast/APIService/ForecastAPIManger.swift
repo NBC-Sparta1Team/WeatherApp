@@ -30,13 +30,10 @@ class ForecastAPIManger{
             return "우편 번호를 이용하세요."
         }
     }
-    func getCoordinate(fromCityDoName cityDoName : String, completion : @escaping(CityCoordinateModel) -> Void){
-        guard let baseURL = URL(string: "http://api.openweathermap.org/geo/1.0/direct") else {
-            print("Error : URL")
-            return
-        }
+    func getCoordinate(fromCityDoName cityDoName : String, completion : @escaping(CoordinatModel) -> Void){ // 도시이름 -> 좌표 API
+        let url = EndPoint.geo(APItype: "direct").url
         let cityDoName = self.convertName(eng: cityDoName) // 특별시,광역시, ~도
-        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
         components?.queryItems = [URLQueryItem(name: "q", value: "\(cityDoName),kr"),URLQueryItem(name: "limit", value: "5"),URLQueryItem(name: "appid", value: APIKey)]
         guard let requestURL = components?.url else { return}
         var request = URLRequest(url: requestURL)
@@ -50,7 +47,7 @@ class ForecastAPIManger{
                 return
             }
             do{
-                let coordianteData : [CityCoordinateModel] = try JSONDecoder().decode([CityCoordinateModel].self, from: data)
+                let coordianteData : [CoordinatModel] = try JSONDecoder().decode([CoordinatModel].self, from: data)
                 completion(coordianteData.first!)
             }catch{
                 print("Decoding Error : \(String(describing: error.localizedDescription))")
@@ -61,12 +58,9 @@ class ForecastAPIManger{
         }.resume()
     }
     
-    func getCoordinate(fromZipcode zipCode : String, completion : @escaping(ZipCodeModel) -> Void){
-        guard let baseURL = URL(string: "http://api.openweathermap.org/geo/1.0/zip") else {
-            print("Error : URL")
-            return
-        }
-        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)
+    func getCoordinate(fromZipcode zipCode : String, completion : @escaping(CoordinatModel) -> Void){ // 우편번호-> 좌표 API
+        let url = EndPoint.geo(APItype: "zip").url
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
         components?.queryItems = [URLQueryItem(name: "zip", value: "\(zipCode),kr"),URLQueryItem(name: "appid", value: APIKey)]
         guard let requestURL = components?.url else { return}
         var request = URLRequest(url: requestURL)
@@ -80,7 +74,7 @@ class ForecastAPIManger{
                 return
             }
             do{
-                let coordianteData : ZipCodeModel = try JSONDecoder().decode(ZipCodeModel.self, from: data)
+                let coordianteData : CoordinatModel = try JSONDecoder().decode(CoordinatModel.self, from: data)
                 completion(coordianteData)
             }catch{
                 print("Decoding Error : \(String(describing: error.localizedDescription))")
@@ -90,12 +84,9 @@ class ForecastAPIManger{
             }
         }.resume()
     }
-    func getForecastData(from coordinate : Coordinate,completion : @escaping(ForecastInfoModel)->Void){
-        guard let baseURL = URL(string: "https://api.openweathermap.org/data/2.5/weather") else {
-            print("Error : URL")
-            return
-        }
-        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)
+    func getForecastData(from coordinate : Coordinate,completion : @escaping(ForecastInfoModel)->Void){ //좌표 -> 날씨 데이터 API
+        let url = EndPoint.data(APItype: "weather").url
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
         components?.queryItems = [URLQueryItem(name: "lat", value: "\(coordinate.lat)"),URLQueryItem(name: "lon", value: "\(coordinate.lon)"),URLQueryItem(name: "appid", value: APIKey),URLQueryItem(name: "lang", value: "kr")]
         guard let requestURL = components?.url else { return}
         var request = URLRequest(url: requestURL)
@@ -119,12 +110,9 @@ class ForecastAPIManger{
             }
         }.resume()
     }
-    func getWeeklyForecastData(from coordinate : Coordinate,completion : @escaping(WeeklyForecastModel)->Void){
-        guard let baseURL = URL(string: "https://api.openweathermap.org/data/2.5/forecast") else {
-            print("Error : URL")
-            return
-        }
-        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)
+    func getWeeklyForecastData(from coordinate : Coordinate,completion : @escaping(WeeklyForecastModel)->Void){ // 6days/3Hour API
+        let url = EndPoint.data(APItype: "forecast").url
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
         components?.queryItems = [URLQueryItem(name: "lat", value: "\(coordinate.lat)"),URLQueryItem(name: "lon", value: "\(coordinate.lon)"),URLQueryItem(name: "appid", value: APIKey),URLQueryItem(name: "lang", value: "kr"),URLQueryItem(name: "units", value: "metric")]
         guard let requestURL = components?.url else { return}
         var request = URLRequest(url: requestURL)

@@ -6,11 +6,8 @@
 //
 
 import Foundation
-struct CityCoordinateModel : Decodable{
-    let name: String
-    let lat, lon: Double
-}
-struct ZipCodeModel : Decodable{
+
+struct CoordinatModel : Decodable{
     let name : String
     let lat, lon : Double
 }
@@ -18,7 +15,7 @@ struct Coordinate{
     let lat : Double
     let lon : Double
 }
-// MARK: - Welcome
+// MARK: - ForecastInfoModel
 struct ForecastInfoModel: Decodable {
     let coord: Coord
     let weather: [Weather]
@@ -64,6 +61,7 @@ struct Main: Decodable {
 struct Wind: Decodable {
     let speed: Double // 바람속도
     let deg: Int // 풍향,각도
+    
 }
 // MARK: - Rain
 struct Rain: Decodable {
