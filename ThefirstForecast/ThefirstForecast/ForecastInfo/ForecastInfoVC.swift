@@ -22,13 +22,18 @@ class ForecastInfoVC: UIViewController {
     let value = [1, 2, 3, 4]
     let weatherDescription = ["1습도로 인해 체감 온도가 실제 온도보다 더 높게 느껴집니다.", "2이후 수요일에 2mm의 비가 예상됩니다.", "3가시거리가 매우 좋습니다.", "4현재 이슬점이 23°입니다."]
     
-    // 모든 요소 담고있는 stackView
-    private let stackView : UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .vertical
-        stack.alignment = .fill
-        stack.spacing = 0
-        return stack
+    
+    private let scrollView : UIScrollView = {
+        let view = UIScrollView()
+        view.backgroundColor = .clear
+        view.contentInsetAdjustmentBehavior = .never    // contentView가 navigationBar를 무시하고 constant 잡을 수 있도록 해줌
+        return view
+    }()
+    
+    private let contentView : UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        return view
     }()
     
     // 위치, 현재온도(main.temp), 기상상태(weather.main), 최고&최저 온도(main.temp_min&max) 보여주는 view
@@ -73,7 +78,8 @@ class ForecastInfoVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         print("#", #function)
-        
+        self.view.backgroundColor = .orange
+        self.navigationController?.navigationBar.isHidden = true
         let backgroundImage = UIImageView(image: UIImage(named: "backgroundImage"))
         backgroundImage.contentMode = .scaleAspectFill
         view.insertSubview(backgroundImage, at: 0)
@@ -85,7 +91,13 @@ class ForecastInfoVC: UIViewController {
                 backgroundImage.bottomAnchor.constraint(equalTo: view.bottomAnchor)
             ])
         
-        print("collectionView.frame in", #function, ": \(dailyWeatherCollectionView.frame)")
+        
+        addSubviewsInForecaseInfoVC()
+        autoLayoutInForecastInfoVC()
+        
+        currentWeatherView.addSubViewsInCurrentWeatherView()
+        currentWeatherView.autoLayoutCurrentWeatherView()
+        currentWeatherView.setCurrentWeatherLabels()
         
         dailyWeatherCollectionView.delegate = self
         dailyWeatherCollectionView.dataSource = self
@@ -98,18 +110,19 @@ class ForecastInfoVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         print("##", #function)
-        currentWeatherView.addSubViewsInCurrentWeatherView()
-        currentWeatherView.autoLayoutCurrentWeatherView()
-        currentWeatherView.setCurrentWeatherLabels()
-        print("collectionView.frame in", #function, ": \(dailyWeatherCollectionView.frame)")
     }
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
+    
+    // view가 움직일 때마다 계속 호출되고 있음. 사용하면 안됨.
+//    override func viewDidLayoutSubviews() {
+//        super.viewDidLayoutSubviews()
+//        print("###", #function)
+//    }
+    
+    override func viewIsAppearing(_ animated: Bool) {
+        super.viewIsAppearing(animated)
         print("###", #function)
-        setBackgroundBlur(blurEffect: .regular, on: dailyWeatherCollectionView)
+        setBlurOfDailyWeatherCollectionView(blurEffect: .regular, on: dailyWeatherCollectionView)
         print("collectionView.frame in", #function, ": \(dailyWeatherCollectionView.frame)")
-        addSubviewsInForecaseInfoVC()
-        autoLayoutInForecastInfoVC()
     }
     
     
@@ -119,7 +132,7 @@ class ForecastInfoVC: UIViewController {
 
 extension ForecastInfoVC {
     
-    private func setBackgroundBlur(blurEffect: UIBlurEffect.Style, on thisView: UIView) {
+    private func setBlurOfDailyWeatherCollectionView(blurEffect: UIBlurEffect.Style, on thisView: UIView) {
         print(#function)
         let blurEffect = UIBlurEffect(style: blurEffect)
         let effectView = UIVisualEffectView(effect: blurEffect)
@@ -131,17 +144,23 @@ extension ForecastInfoVC {
         // clipsToBounds가 true일 때, EffectView에 cornerRadius 적용됨.
         effectView.clipsToBounds = true
         // blur처리된 뷰를 한 겹 올리는 것
-        view.addSubview(effectView)
+        thisView.addSubview(effectView)
     }
     // ForecaseInfo에 addSubView
     private func addSubviewsInForecaseInfoVC() {
-        view.addSubview(stackView)
-        view.addSubview(currentWeatherView)
-        view.addSubview(dailyWeatherCollectionView)
         
-//        stackView.addArrangedSubview(dailyWeatherCollectionView)
-        view.addSubview(otherInfoCollectionView)
-        view.addSubview(windView)
+        self.view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        
+        contentView.addSubview(currentWeatherView)
+        contentView.addSubview(dailyWeatherCollectionView)
+        contentView.addSubview(otherInfoCollectionView)
+        contentView.addSubview(windView)
+        
+//        view.addSubview(currentWeatherView)
+//        view.addSubview(dailyWeatherCollectionView)
+//        view.addSubview(otherInfoCollectionView)
+//        view.addSubview(windView)
         
         dailyWeatherCollectionView.register(DailyWeatherCollectionViewCell.self, forCellWithReuseIdentifier: DailyWeatherCollectionViewCell.reuseIdentifier)
         otherInfoCollectionView.register(OtherInfoCollectionViewCell.self, forCellWithReuseIdentifier: OtherInfoCollectionViewCell.reuseIdentifier)
@@ -150,23 +169,31 @@ extension ForecastInfoVC {
     
     // Forecast에 들어갈 view들의 layout 설정
     private func autoLayoutInForecastInfoVC() {
-        stackView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         dailyWeatherCollectionView.translatesAutoresizingMaskIntoConstraints = false
         otherInfoCollectionView.translatesAutoresizingMaskIntoConstraints = false
         windView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: self.view.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
+            scrollView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
             
-            currentWeatherView.topAnchor.constraint(equalTo: view.topAnchor),
-            currentWeatherView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            currentWeatherView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            currentWeatherView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1 / 2.5), // ForecastInfoVC의 1/2.5 크기로 지정
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            contentView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 2.0),
             
-            dailyWeatherCollectionView.topAnchor.constraint(equalTo: currentWeatherView.bottomAnchor, constant: -200),
+            currentWeatherView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            currentWeatherView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            currentWeatherView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            currentWeatherView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 1 / 2.5), // ForecastInfoVC의 1/2.5 크기로 지정
+            
+            dailyWeatherCollectionView.topAnchor.constraint(equalTo: currentWeatherView.bottomAnchor, constant: 0),
             dailyWeatherCollectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
             dailyWeatherCollectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
             dailyWeatherCollectionView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 1 / 5),
