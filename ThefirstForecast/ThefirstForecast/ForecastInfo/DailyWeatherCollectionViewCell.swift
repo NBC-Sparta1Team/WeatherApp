@@ -13,6 +13,7 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
     private let timeLabel : UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 17, weight: .regular)
+        label.textColor = .white
         return label
     }()
     
@@ -25,6 +26,7 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
     private let hourlyTemperatureLabel : UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 17, weight: .regular)
+        label.textColor = .white
         return label
     }()
     
@@ -34,9 +36,9 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
         timeLabel.text = time
         weatherImage.image = UIImage(systemName: "cloud.sun.rain")
         hourlyTemperatureLabel.text = temperature
-        self.contentView.backgroundColor = UIColor(
-            red: drand48(), green: drand48(), blue: drand48(), alpha: drand48()
-        )
+//        self.contentView.backgroundColor = UIColor(
+//            red: drand48(), green: drand48(), blue: drand48(), alpha: drand48()
+//        )
     }
     
     private func addSubViews() {

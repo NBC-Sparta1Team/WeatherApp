@@ -77,7 +77,7 @@ class WindView: UIView {
         super.layoutSubviews()
         print(#function)
         borderLine.backgroundColor = .white
-        setBackgroundBlur(blurEffect: .regular)
+        setBackgroundBlurOfWindView(blurEffect: .regular)
         addSubViewsInWindView()
         autoLayoutWindView()
         setWindViewLabel()
@@ -95,10 +95,11 @@ class WindView: UIView {
         fatalError("init(coder: ) has not been implemented")
     }
     
-    private func setBackgroundBlur(blurEffect: UIBlurEffect.Style) {
+    private func setBackgroundBlurOfWindView(blurEffect: UIBlurEffect.Style) {
         let blurEffect = UIBlurEffect(style: blurEffect)
         let effectView = UIVisualEffectView(effect: blurEffect)
         effectView.frame = self.bounds
+        print("WindView.bounds in", #function, ": \(self.bounds)")
         effectView.layer.cornerRadius = 15
         self.layer.cornerRadius = 15
         
@@ -126,7 +127,7 @@ class WindView: UIView {
     }
     
     func autoLayoutWindView() {
-        print("WindView.bounds : \(self.bounds)")
+        print("WindView.bounds in", #function, ": \(self.bounds)")
 
         windSpeedScale.translatesAutoresizingMaskIntoConstraints = false
         windLabel.translatesAutoresizingMaskIntoConstraints = false

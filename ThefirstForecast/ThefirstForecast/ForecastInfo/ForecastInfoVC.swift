@@ -34,30 +34,6 @@ class ForecastInfoVC: UIViewController {
         return view
     }()
     
-    private let apparentTemperatureLabel : UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .regular)
-        return label
-    }()
-    
-    private let humidityLabel : UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .regular)
-        return label
-    }()
-    
-    private let windLabel : UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .regular)
-        return label
-    }()
-    
-    private let rainLabel : UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .regular)
-        return label
-    }()
-    
     // 3시간 단위 온도변화를 표현하는 collectionView(시간, 온도, 아이콘)
     private let dailyWeatherCollectionView : UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -89,9 +65,12 @@ class ForecastInfoVC: UIViewController {
         return view
     }()
 
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         print("#", #function)
+        
         let backgroundImage = UIImageView(image: UIImage(named: "backgroundImage"))
         backgroundImage.contentMode = .scaleAspectFill
         view.insertSubview(backgroundImage, at: 0)
@@ -102,8 +81,9 @@ class ForecastInfoVC: UIViewController {
                 backgroundImage.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 backgroundImage.bottomAnchor.constraint(equalTo: view.bottomAnchor)
             ])
-        addSubviewsInForecaseInfoVC()
-        autoLayoutInForecastInfoVC()
+        
+        print("collectionView.frame in", #function, ": \(dailyWeatherCollectionView.frame)")
+        
         dailyWeatherCollectionView.delegate = self
         dailyWeatherCollectionView.dataSource = self
         dailyWeatherCollectionView.reloadData()
@@ -114,11 +94,15 @@ class ForecastInfoVC: UIViewController {
         currentWeatherView.addSubViewsInCurrentWeatherView()
         currentWeatherView.autoLayoutCurrentWeatherView()
         currentWeatherView.setCurrentWeatherLabels()
+        print("collectionView.frame in", #function, ": \(dailyWeatherCollectionView.frame)")
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         print("###", #function)
         setBackgroundBlur(blurEffect: .regular)
+        print("collectionView.frame in", #function, ": \(dailyWeatherCollectionView.frame)")
+        addSubviewsInForecaseInfoVC()
+        autoLayoutInForecastInfoVC()
     }
     
     
@@ -129,9 +113,11 @@ class ForecastInfoVC: UIViewController {
 extension ForecastInfoVC {
     
     private func setBackgroundBlur(blurEffect: UIBlurEffect.Style) {
+        print(#function)
         let blurEffect = UIBlurEffect(style: blurEffect)
         let effectView = UIVisualEffectView(effect: blurEffect)
-        effectView.frame = dailyWeatherCollectionView.bounds
+        effectView.frame = dailyWeatherCollectionView.frame
+        print("effectView.frame : \(effectView.frame)")
         effectView.layer.cornerRadius = 15
         dailyWeatherCollectionView.layer.cornerRadius = 15
         
@@ -145,6 +131,9 @@ extension ForecastInfoVC {
         view.addSubview(stackView)
         view.addSubview(currentWeatherView)
         view.addSubview(dailyWeatherCollectionView)
+        let blurEffect = UIBlurEffect(style: .regular)
+        let effectView = UIVisualEffectView(effect: blurEffect)
+        dailyWeatherCollectionView.addSubview(effectView)
         
 //        stackView.addArrangedSubview(dailyWeatherCollectionView)
 //        view.addSubview(otherWeatherCollectionView)
@@ -183,11 +172,12 @@ extension ForecastInfoVC {
 //            otherWeatherCollectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
 //            otherWeatherCollectionView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 1 / 2.5),
             
-            windView.topAnchor.constraint(equalTo: dailyWeatherCollectionView.bottomAnchor),
+            windView.topAnchor.constraint(equalTo: dailyWeatherCollectionView.bottomAnchor, constant: 10),
             windView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
             windView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
             windView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 1 / 5),
         ])
+        print("collectionView.frame after", #function, ": \(dailyWeatherCollectionView.frame)")
         print("windView.frame after", #function, ": \(windView.frame)")
         print(#function)
     }
