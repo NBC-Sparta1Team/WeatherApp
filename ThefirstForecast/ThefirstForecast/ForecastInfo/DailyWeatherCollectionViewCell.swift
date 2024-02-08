@@ -12,20 +12,20 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
     
     private let timeLabel : UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .regular)
+        label.font = .systemFont(ofSize: 17, weight: .medium)
         label.textColor = .white
         return label
     }()
     
     private let weatherImage : UIImageView = {
         let image = UIImageView()
-        image.contentMode = .center
+        image.contentMode = .scaleAspectFit
         return image
     }()
     
     private let hourlyTemperatureLabel : UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .regular)
+        label.font = .systemFont(ofSize: 23, weight: .semibold)
         label.textColor = .white
         return label
     }()
@@ -56,6 +56,8 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
             
             weatherImage.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             weatherImage.centerYAnchor.constraint(equalTo: contentView.centerYAnchor, constant: 0),
+            weatherImage.widthAnchor.constraint(equalToConstant: 50),
+            weatherImage.heightAnchor.constraint(equalToConstant: 50),
             
             hourlyTemperatureLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor, constant: 3),
             hourlyTemperatureLabel.centerYAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -(contentView.bounds.height / 6)),

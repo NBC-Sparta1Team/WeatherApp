@@ -107,9 +107,9 @@
 			children = (
 				F88C53622B70C9FF000624A2 /* ForecastInfoVC.swift */,
 				3F1633922B73C3B400603161 /* CurrentWeatherView.swift */,
-				3F1633942B73CECD00603161 /* WindView.swift */,
 				3F1633492B70D43500603161 /* DailyWeatherCollectionViewCell.swift */,
 				3F1633962B747C2B00603161 /* OtherInfoCollectionViewCell.swift */,
+				3F1633942B73CECD00603161 /* WindView.swift */,
 			);
 			path = ForecastInfo;
 			sourceTree = "<group>";

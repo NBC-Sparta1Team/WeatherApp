@@ -21,7 +21,7 @@ class ForecastInfoVC: UIViewController {
     
     let sectionIcon = ["thermometer.medium", "drop.fill", "eye.fill", "humidity"]
     let category = ["체감온도", "강수량", "가시거리", "습도"]
-    let value = [1, 2, 3, 4]
+    let value = ["23°", "0mm", "30km", "60%"]
     let weatherDescription = ["습도로 인해 체감 온도가 실제 온도보다 더 높게 느껴집니다.", "이후 수요일에 2mm의 비가 예상됩니다.", "가시거리가 매우 좋습니다.", "현재 이슬점이 23°입니다."]
     
     
@@ -72,7 +72,7 @@ class ForecastInfoVC: UIViewController {
     // 풍속(wind.speed), 돌풍(wind.gust), 풍향(wind.deg) 담고있는 view
     private let windView : WindView = {
         let view = WindView()
-        view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.15)
+        view.backgroundColor = .clear
         return view
     }()
 
@@ -81,7 +81,7 @@ class ForecastInfoVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         print("#", #function)
-        self.view.backgroundColor = .orange
+        self.view.backgroundColor = .white
         self.navigationController?.navigationBar.isHidden = true
         
         let backgroundImage = UIImageView(image: UIImage(named: "backgroundImage"))
@@ -181,12 +181,13 @@ extension ForecastInfoVC {
     private func autoLayoutInForecastInfoVC() {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
+        currentWeatherView.translatesAutoresizingMaskIntoConstraints = false
         dailyWeatherCollectionView.translatesAutoresizingMaskIntoConstraints = false
         otherInfoCollectionView.translatesAutoresizingMaskIntoConstraints = false
         windView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            scrollView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
@@ -201,7 +202,7 @@ extension ForecastInfoVC {
             currentWeatherView.topAnchor.constraint(equalTo: contentView.topAnchor),
             currentWeatherView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             currentWeatherView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            currentWeatherView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 1 / 2.5), // ForecastInfoVC의 1/2.5 크기로 지정
+            currentWeatherView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 1 / 3), // ForecastInfoVC의 1/2.5 크기로 지정
             
             dailyWeatherCollectionView.topAnchor.constraint(equalTo: currentWeatherView.bottomAnchor, constant: 0),
             dailyWeatherCollectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
@@ -263,7 +264,7 @@ extension ForecastInfoVC : UICollectionViewDataSource {
             cell?.setOtherInfoCell(
                 icon: UIImage(systemName: sectionIcon) ?? UIImage(),
                 title: category,
-                value: String(value),
+                value: value,
                 description: weatherDescription)
             return cell ?? UICollectionViewCell()
         }

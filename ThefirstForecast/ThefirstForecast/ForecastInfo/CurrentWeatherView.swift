@@ -10,36 +10,61 @@ import UIKit
 class CurrentWeatherView : UIView {
     private let locationLabel : UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 28, weight: .regular)
+        label.font = .systemFont(ofSize: 32, weight: .regular)
         label.textColor = .white
+        label.layer.shadowColor = UIColor.black.cgColor
+        label.layer.shadowRadius = 10.0
+        label.layer.shadowOpacity = 0.5
+        label.layer.shadowOffset = CGSize(width: 1, height: 1)
+        label.layer.masksToBounds = false
         return label
     }()
     
     private let dailyTemperatureLabel : UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 64, weight: .regular)
+        label.font = .systemFont(ofSize: 95, weight: .thin)
         label.textColor = .white
+        label.layer.shadowColor = UIColor.black.cgColor
+        label.layer.shadowRadius = 10.0
+        label.layer.shadowOpacity = 0.5
+        label.layer.shadowOffset = CGSize(width: 1, height: 1)
+        label.layer.masksToBounds = false
         return label
     }()
     
     private let weatherLabel : UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .bold)
+        label.font = .systemFont(ofSize: 21, weight: .bold)
         label.textColor = .white
+        label.layer.shadowColor = UIColor.black.cgColor
+        label.layer.shadowRadius = 10.0
+        label.layer.shadowOpacity = 0.5
+        label.layer.shadowOffset = CGSize(width: 1, height: 1)
+        label.layer.masksToBounds = false
         return label
     }()
     
     private let maxTemperatureLabel : UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .regular)
+        label.font = .systemFont(ofSize: 21, weight: .regular)
         label.textColor = .white
+        label.layer.shadowColor = UIColor.black.cgColor
+        label.layer.shadowRadius = 10.0
+        label.layer.shadowOpacity = 0.5
+        label.layer.shadowOffset = CGSize(width: 1, height: 1)
+        label.layer.masksToBounds = false
         return label
     }()
     
     private let minTemperatureLabel : UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .regular)
+        label.font = .systemFont(ofSize: 21, weight: .regular)
         label.textColor = .white
+        label.layer.shadowColor = UIColor.black.cgColor
+        label.layer.shadowRadius = 10.0
+        label.layer.shadowOpacity = 0.5
+        label.layer.shadowOffset = CGSize(width: 1, height: 1)
+        label.layer.masksToBounds = false
         return label
     }()
     
@@ -76,23 +101,22 @@ class CurrentWeatherView : UIView {
         weatherLabel.translatesAutoresizingMaskIntoConstraints = false
         maxTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
         minTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
-        self.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             locationLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            locationLabel.topAnchor.constraint(equalTo: topAnchor, constant: 80),
+            locationLabel.topAnchor.constraint(equalTo: topAnchor, constant: 45),
             
             dailyTemperatureLabel.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 13),
-            dailyTemperatureLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 10),
+            dailyTemperatureLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: -5),
             
             weatherLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            weatherLabel.topAnchor.constraint(equalTo: dailyTemperatureLabel.bottomAnchor, constant: 10),
+            weatherLabel.topAnchor.constraint(equalTo: dailyTemperatureLabel.bottomAnchor, constant: -5),
             
             maxTemperatureLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: -40),
-            maxTemperatureLabel.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: 10),
+            maxTemperatureLabel.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: 5),
             
             minTemperatureLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: 40),
-            minTemperatureLabel.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: 10),
+            minTemperatureLabel.centerYAnchor.constraint(equalTo: maxTemperatureLabel.centerYAnchor),
         ])
         print(#function)
     }

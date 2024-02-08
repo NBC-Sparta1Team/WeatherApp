@@ -10,50 +10,79 @@ import UIKit
 class WindView: UIView {
     private let windSpeedScale : UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .regular)
-        label.textColor = .white
+        label.font = .systemFont(ofSize: 15, weight: .semibold)
+        label.textColor = UIColor.white.withAlphaComponent(0.5)
         return label
     }()
     
     private let windLabel : UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .regular)
+        label.font = .systemFont(ofSize: 15, weight: .semibold)
         label.textColor = .white
         return label
     }()
     
     private let windSpeed : UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 35, weight: .regular)
+        label.font = .systemFont(ofSize: 38, weight: .bold)
         label.textColor = .white
         return label
     }()
     
     private let gustScale : UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .regular)
-        label.textColor = .white
+        label.font = .systemFont(ofSize: 15, weight: .semibold)
+        label.textColor = UIColor.white.withAlphaComponent(0.5)
         return label
     }()
     
     private let gustLabel : UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .regular)
+        label.font = .systemFont(ofSize: 15, weight: .semibold)
         label.textColor = .white
         return label
     }()
     
     private let gustSpeed: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 35, weight: .regular)
+        label.font = .systemFont(ofSize: 38, weight: .bold)
         label.textColor = .white
         return label
     }()
     
     private let windDirection : UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .regular)
+        label.font = .systemFont(ofSize: 19, weight: .bold)
         label.textColor = .white
+        return label
+    }()
+    
+    private let north : UILabel = {
+        let label = UILabel()
+        label.text = "북"
+        label.font = .systemFont(ofSize: 13, weight: .bold)
+        label.textColor = UIColor.white.withAlphaComponent(0.5)
+        return label
+    }()
+    private let west : UILabel = {
+        let label = UILabel()
+        label.text = "서"
+        label.font = .systemFont(ofSize: 13, weight: .bold)
+        label.textColor = UIColor.white.withAlphaComponent(0.5)
+        return label
+    }()
+    private let east : UILabel = {
+        let label = UILabel()
+        label.text = "동"
+        label.font = .systemFont(ofSize: 13, weight: .bold)
+        label.textColor = UIColor.white.withAlphaComponent(0.5)
+        return label
+    }()
+    private let south : UILabel = {
+        let label = UILabel()
+        label.text = "남"
+        label.font = .systemFont(ofSize: 13, weight: .bold)
+        label.textColor = UIColor.white.withAlphaComponent(0.5)
         return label
     }()
     
@@ -76,7 +105,7 @@ class WindView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         print(#function)
-        borderLine.backgroundColor = .white
+        borderLine.backgroundColor = UIColor.white.withAlphaComponent(0.5)
         setBackgroundBlurOfWindView(blurEffect: .regular)
         addSubViewsInWindView()
         autoLayoutWindView()
@@ -119,6 +148,10 @@ class WindView: UIView {
             gustLabel,
             gustSpeed,
             windDirection,
+            north,
+            west,
+            south,
+            east,
             borderLine,
             compassScale,
             magneticNeedle
@@ -139,6 +172,10 @@ class WindView: UIView {
         borderLine.translatesAutoresizingMaskIntoConstraints = false
         compassScale.translatesAutoresizingMaskIntoConstraints = false
         magneticNeedle.translatesAutoresizingMaskIntoConstraints = false
+        north.translatesAutoresizingMaskIntoConstraints = false
+        south.translatesAutoresizingMaskIntoConstraints = false
+        west.translatesAutoresizingMaskIntoConstraints = false
+        east.translatesAutoresizingMaskIntoConstraints = false
         self.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             
@@ -168,6 +205,18 @@ class WindView: UIView {
             windDirection.centerXAnchor.constraint(equalTo: compassScale.centerXAnchor),
             windDirection.centerYAnchor.constraint(equalTo: compassScale.centerYAnchor),
             
+            north.centerXAnchor.constraint(equalTo: compassScale.centerXAnchor),
+            north.topAnchor.constraint(equalTo: compassScale.topAnchor, constant: 10),
+            
+            west.leadingAnchor.constraint(equalTo: compassScale.leadingAnchor, constant: 10),
+            west.centerYAnchor.constraint(equalTo: compassScale.centerYAnchor),
+            
+            east.trailingAnchor.constraint(equalTo: compassScale.trailingAnchor, constant: -10),
+            east.centerYAnchor.constraint(equalTo: compassScale.centerYAnchor),
+            
+            south.centerXAnchor.constraint(equalTo: compassScale.centerXAnchor),
+            south.bottomAnchor.constraint(equalTo: compassScale.bottomAnchor, constant: -10),
+            
             compassScale.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             compassScale.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
             compassScale.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1 / 3),
@@ -188,7 +237,7 @@ class WindView: UIView {
         gustScale.text = "m/s"
         gustLabel.text = "돌풍"
         gustSpeed.text = "3"
-        let degree = 140
+        let degree = 102
         let cgFloat = CGFloat(degree) * .pi / 360
         magneticNeedle.transform = magneticNeedle.transform.rotated(by: cgFloat)
         switch degree {
