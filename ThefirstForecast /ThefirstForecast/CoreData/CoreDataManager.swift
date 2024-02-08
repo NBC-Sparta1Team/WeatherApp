@@ -1,4 +1,5 @@
 //
+//
 //  CoreDataManager.swift
 //  ThefirstForecast
 //

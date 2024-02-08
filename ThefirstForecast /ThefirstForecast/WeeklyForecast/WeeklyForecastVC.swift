@@ -15,7 +15,7 @@ class WeeklyForecastVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+//        getWeeklyAverageData(coordiante: Coordinate(lat: 35.8312, lon: 128.7385))
         self.view.backgroundColor = .white
         
         weeklyTableView = UITableView(frame: view.bounds, style: .plain)
@@ -83,5 +83,13 @@ extension WeeklyForecastVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
             return 100
         }
+}
+
+extension WeeklyForecastVC {
+    func getWeeklyAverageData(coordiante : Coordinate){
+        WeeklyForecastAPIManger.shred.getWeeklyAverageData(from: coordiante) { oneDayAverageData in
+            let oneDayAverageDataList = oneDayAverageData
+        }
+    }
 }
 
