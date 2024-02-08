@@ -27,7 +27,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+//        getSearchData(input: "38613")
+//        getForecastData(from: Coordinate(lat: 35.8312, lon: 128.7385))
         self.view.backgroundColor = .white
         
         // "날씨" 라벨 추가
@@ -84,7 +85,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             settingButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -30)
         ])
     }
-    
+ 
     // 셀 갯수
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dummyData.count
@@ -151,3 +152,15 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
 }
 
 
+extension MainVC{
+    func getSearchData(input : String){ // Search했을 경우 사용 되는 날씨 정보 API
+        ForecastAPIManger.shared.SynthesizeGetCoodinateData(from: input) { ForecastInfoModel in
+            let foreCastDataFromSearch = ForecastInfoModel
+        }
+    }
+    func getForecastData(from coordinate : Coordinate){ //  좌표로 날씨 정보를 불러오는 API
+        ForecastAPIManger.shared.getForecastData(from: coordinate) { ForecastInfoModel in
+            let foreCastDataFromCoordinate = ForecastInfoModel
+        }
+    }
+}
