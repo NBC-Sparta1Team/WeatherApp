@@ -30,15 +30,12 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    func setCollectionViewCell(time: String, wind: String, temperature: String) {
+    func setCollectionViewCell(time: String, icon: UIImage, temperature: String) {
         addSubViews()
         autoLayout()
         timeLabel.text = time
-        weatherImage.image = UIImage(systemName: "cloud.sun.rain")
+        weatherImage.image = icon
         hourlyTemperatureLabel.text = temperature
-//        self.contentView.backgroundColor = UIColor(
-//            red: drand48(), green: drand48(), blue: drand48(), alpha: drand48()
-//        )
     }
     
     private func addSubViews() {
