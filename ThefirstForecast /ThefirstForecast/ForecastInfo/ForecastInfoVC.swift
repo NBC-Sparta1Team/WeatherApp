@@ -78,7 +78,7 @@ class ForecastInfoVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        get3HourData(coordinate: Coordinate(lat: 35.8312, lon: 128.7385), date: "2024-02-08")
         self.view.backgroundColor = .white
         addSubviews()
         autoLayout()
@@ -206,5 +206,14 @@ extension ForecastInfoVC : UICollectionViewDelegateFlowLayout {
 extension UIView {
     func addSubViews(_ views : [UIView]){
         _ = views.map{self.addSubview($0)}
+    }
+}
+extension ForecastInfoVC {
+    func get3HourData(coordinate : Coordinate,date : String){
+        WeeklyForecastAPIManger.shred.getOneDaySplitForecastData(coordinate: coordinate) {  weeklyForecastData in
+            let the3HourData = weeklyForecastData.filter{$0.contains { list in
+                list.dtTxt.split(separator: " ").first! == date
+            }}
+        }
     }
 }

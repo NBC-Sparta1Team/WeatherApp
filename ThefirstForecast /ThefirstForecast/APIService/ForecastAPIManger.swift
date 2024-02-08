@@ -30,7 +30,7 @@ class ForecastAPIManger{
             return "우편 번호를 이용하세요."
         }
     }
-    func getCoordinate(fromCityDoName cityDoName : String, completion : @escaping(CoordinatModel) -> Void){ // 도시이름 -> 좌표 API
+    func getCoordinate(fromCityDoName cityDoName : String, completion : @escaping(Coordinate) -> Void){ // 도시이름 -> 좌표 API
         let url = EndPoint.geo(APItype: "direct").url
         let cityDoName = self.convertName(eng: cityDoName) // 특별시,광역시, ~도
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
@@ -47,8 +47,8 @@ class ForecastAPIManger{
                 return
             }
             do{
-                let coordianteData : [CoordinatModel] = try JSONDecoder().decode([CoordinatModel].self, from: data)
-                completion(coordianteData.first!)
+                let coordianteData : [CoordinateModel] = try JSONDecoder().decode([CoordinateModel].self, from: data)
+                completion(Coordinate(lat: coordianteData.first!.lat, lon: coordianteData.first!.lon))
             }catch{
                 print("Decoding Error : \(String(describing: error.localizedDescription))")
             }
@@ -58,7 +58,7 @@ class ForecastAPIManger{
         }.resume()
     }
     
-    func getCoordinate(fromZipcode zipCode : String, completion : @escaping(CoordinatModel) -> Void){ // 우편번호-> 좌표 API
+    func getCoordinate(fromZipcode zipCode : String, completion : @escaping(Coordinate) -> Void){ // 우편번호-> 좌표 API
         let url = EndPoint.geo(APItype: "zip").url
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
         components?.queryItems = [URLQueryItem(name: "zip", value: "\(zipCode),kr"),URLQueryItem(name: "appid", value: APIKey)]
@@ -74,8 +74,9 @@ class ForecastAPIManger{
                 return
             }
             do{
-                let coordianteData : CoordinatModel = try JSONDecoder().decode(CoordinatModel.self, from: data)
-                completion(coordianteData)
+                let coordianteData : CoordinateModel = try JSONDecoder().decode(CoordinateModel.self, from: data)
+                
+                completion(Coordinate(lat: coordianteData.lat, lon: coordianteData.lon))
             }catch{
                 print("Decoding Error : \(String(describing: error.localizedDescription))")
             }
@@ -103,37 +104,34 @@ class ForecastAPIManger{
                 let forecastData : ForecastInfoModel = try JSONDecoder().decode(ForecastInfoModel.self, from: data)
                 completion(forecastData)
             }catch{
-                print("Decoding Error : \(String(describing: error.localizedDescription))")
+                print("Decoding Error getForecastData : \(String(describing: error.localizedDescription))")
             }
             if let httpResponse = response as? HTTPURLResponse {
                 print("HTTP Status Code : \(httpResponse.statusCode)")
             }
         }.resume()
     }
-    func getWeeklyForecastData(from coordinate : Coordinate,completion : @escaping(WeeklyForecastModel)->Void){ // 6days/3Hour API
-        let url = EndPoint.data(APItype: "forecast").url
-        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
-        components?.queryItems = [URLQueryItem(name: "lat", value: "\(coordinate.lat)"),URLQueryItem(name: "lon", value: "\(coordinate.lon)"),URLQueryItem(name: "appid", value: APIKey),URLQueryItem(name: "lang", value: "kr"),URLQueryItem(name: "units", value: "metric")]
-        guard let requestURL = components?.url else { return}
-        var request = URLRequest(url: requestURL)
-        request.httpMethod = "GET"
-        URLSession(configuration: .default).dataTask(with: request) { data, response, error in
-            guard error == nil else{
-                print("Error : \(String(describing: error?.localizedDescription))")
-                return
+    func SynthesizeGetCoodinateData(from input : String, completion : @escaping(ForecastInfoModel)->Void){ // 우편번호 or 도시이름 -> 좌표 출력 -> 날씨 정보 데이터
+        if divisionType(Input: input){
+            getCoordinate(fromZipcode: input) { getCoordinateData in
+                self.getForecastData(from: getCoordinateData) { getForecastData in
+                    completion(getForecastData)
+                }
             }
-            guard let data = data else {
-                return
+        }else{
+            getCoordinate(fromCityDoName: input) { getCoordinateData in
+                self.getForecastData(from: getCoordinateData) { getForecastData in
+                    completion(getForecastData)
+                }
             }
-            do{
-                let weeklyForecastData : WeeklyForecastModel = try JSONDecoder().decode(WeeklyForecastModel.self, from: data)
-                completion(weeklyForecastData)
-            }catch{
-                print("Decoding Error : \(String(describing: error.localizedDescription))")
+        }
+    }
+    func divisionType(Input : String)-> Bool{ // false : 도시 이름 , true : 우편번호
+        for i in Input{
+            if !i.isNumber{
+                return false
             }
-            if let httpResponse = response as? HTTPURLResponse {
-                print("HTTP Status Code : \(httpResponse.statusCode)")
-            }
-        }.resume()
+        }
+        return true
     }
 }

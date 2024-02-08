@@ -13,9 +13,9 @@ struct OneDayAverageData{
     let tempMin : Double
     let feelsLike : Double // 체감온도
     let humidty : Int // 습도
-    let windSpeed : Double
-    let windDeg : Double
-    let rainfall : Double
-    let description : String
+    let windSpeed : Double // 풍향
+    let windDeg : Double // 풍각
+    let rainfall : Double // 강수량
+    let description : String // 
     let icon : String
 }
