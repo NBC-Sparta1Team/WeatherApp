@@ -9,7 +9,7 @@ import UIKit
 
 class WeeklyForecastVC: UIViewController {
     var weeklyTableView: UITableView!
-    
+
     
     var weatherForecasts: [WeatherForecast] = []
     
@@ -23,6 +23,10 @@ class WeeklyForecastVC: UIViewController {
         weeklyTableView.backgroundColor = .white
         weeklyTableView.dataSource = self
         weeklyTableView.delegate = self
+        
+        weeklyTableView.separatorStyle = .none
+       
+        weeklyTableView.showsVerticalScrollIndicator = false
         
         weeklyTableView.register(WeeklyForecastTableViewCell.self, forCellReuseIdentifier: "WeeklyForecastTableViewCell")
         
@@ -40,10 +44,10 @@ class WeeklyForecastVC: UIViewController {
         weatherForecasts = dummyWeatherForecasts
         
         weeklyTableView.reloadData()
-        
+      
     }
     
-
+ 
    
 
 }
@@ -54,26 +58,30 @@ extension WeeklyForecastVC: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "WeeklyForecastTableViewCell", for: indexPath) as! WeeklyForecastTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "WeeklyForecastTableViewCell", for: indexPath)
+        as! WeeklyForecastTableViewCell
         
         let forecast = weatherForecasts[indexPath.row]
         cell.dateLabel.text = forecast.date
             cell.dayOfWeekLabel.text = forecast.dayOfWeek
-            cell.minTemperatureLabel.text = "\(forecast.minTemperature) °C"
-            cell.maxTemperatureLabel.text = "\(forecast.maxTemperature) °C"
-            cell.averageTemperatureLabel.text = "\(forecast.averageTemperature) °C"
-            cell.precipitationLabel.text = "\(forecast.precipitation) mm"
+            cell.minTemperatureLabel.text = "\(forecast.minTemperature) °"
+            cell.maxTemperatureLabel.text = "\(forecast.maxTemperature) °"
+            cell.averageTemperatureLabel.text = "\(forecast.averageTemperature) °"
+            cell.precipitationLabel.text = "\(forecast.precipitation) 1m/s"
             cell.weatherIconImageView.image = forecast.weatherIcon
-            
+        
         
         return cell
     }
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 90.0 // 固定高度為 50 點
-    }
+    
+    
     
 }
 
 extension WeeklyForecastVC: UITableViewDelegate {
+ //畫幾次
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+            return 100
+        }
 }
 
