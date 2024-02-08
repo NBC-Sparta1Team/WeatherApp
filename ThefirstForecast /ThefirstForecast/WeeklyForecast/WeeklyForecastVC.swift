@@ -63,7 +63,6 @@ extension WeeklyForecastVC: UITableViewDataSource {
         
         let forecast = weatherForecasts[indexPath.row]
         cell.dateLabel.text = forecast.date
-            cell.dayOfWeekLabel.text = forecast.dayOfWeek
             cell.minTemperatureLabel.text = "\(forecast.minTemperature) °"
             cell.maxTemperatureLabel.text = "\(forecast.maxTemperature) °"
             cell.averageTemperatureLabel.text = "\(forecast.averageTemperature) °"
