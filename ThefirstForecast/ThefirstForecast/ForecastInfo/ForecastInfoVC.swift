@@ -14,17 +14,41 @@ enum WeatherSection {
 }
 
 class ForecastInfoVC: UIViewController {
+    // MARK: 각 View에 사용될 변수
+    // 1. CurrentWeatherView에 사용되는 변수들
+    private let location = "나의 위치"
+    private let dailyTemperature = "6°"
+    private let weatherMain = "바람"
+    private let maxTemperature = "최고 : 6°"
+    private let minTemperature = "최저 : 0°"
     
-    let time = ["오전 0시", "오전 3시", "오전 6시", "오전 9시", "오전 12시", "오전 15시", "오전 18시", "오전 21시", "오전 24시"]
-    let weather = ["cloud.sun.fill", "cloud.sun.rain.fill", "cloud.sleet.fill", "sun.max.fill", "sun.rain.fill", "rainbow", "cloud.sun.rain.fill", "cloud.sleet.fill", "sun.max.fill"]
-    let temperature = [3, 2, 1, 2, 5, 7, 5, 4, 3]
+    // 2. DailyWeatherCollectionViewCell에 사용되는 변수들
+    private let time = ["오전 0시", "오전 3시", "오전 6시", "오전 9시", "오전 12시", "오전 15시", "오전 18시", "오전 21시", "오전 24시"]
+    private let weather = ["cloud.sun.fill", "cloud.sun.rain.fill", "cloud.sleet.fill", "sun.max.fill", "sun.rain.fill", "rainbow", "cloud.sun.rain.fill", "cloud.sleet.fill", "sun.max.fill"]
+    private let temperature = [3, 2, 1, 2, 5, 7, 5, 4, 3]
     
-    let sectionIcon = ["thermometer.medium", "drop.fill", "eye.fill", "humidity"]
-    let category = ["체감온도", "강수량", "가시거리", "습도"]
-    let value = ["23°", "0mm", "30km", "60%"]
-    let weatherDescription = ["습도로 인해 체감 온도가 실제 온도보다 더 높게 느껴집니다.", "이후 수요일에 2mm의 비가 예상됩니다.", "가시거리가 매우 좋습니다.", "현재 이슬점이 23°입니다."]
+    // 3. OtherInfoCollectionView에 사용되는 변수들
+    private let sectionIcon = ["thermometer.medium", "drop.fill", "eye.fill", "humidity"]
+    private let category = ["체감온도", "강수량", "가시거리", "습도"]
+    private let value = ["23°", "0mm", "30km", "60%"]
+    private let weatherDescription = ["습도로 인해 체감 온도가 실제 온도보다 더 높게 느껴집니다.", "이후 수요일에 2mm의 비가 예상됩니다.", "가시거리가 매우 좋습니다.", "현재 이슬점이 23°입니다."]
+    
+    // 4. WindView에 사용되는 변수들
+    private let windSpeed = "3"
+    private let gustSpeed = "13"
+    private let windDegree = 110
+
     
     
+    // MARK: ForecastInfoVC에 포함된 Views 선언
+    // 배경
+    let backgroundImage : UIImageView = {
+        let background = UIImageView()
+        background.image = UIImage(named: "backgroundImage")
+        background.contentMode = .scaleAspectFill
+        return background
+    }()
+    // 화면을 스크롤하고, Pull to Refresh하는 ScrollView와 모든 요소가 들어간 contentView
     private let scrollView : UIScrollView = {
         let view = UIScrollView()
         view.backgroundColor = .clear
@@ -32,20 +56,21 @@ class ForecastInfoVC: UIViewController {
         view.refreshControl = UIRefreshControl()
         return view
     }()
-    
     private let contentView : UIView = {
         let view = UIView()
         view.backgroundColor = .clear
         return view
     }()
     
-    // 위치, 현재온도(main.temp), 기상상태(weather.main), 최고&최저 온도(main.temp_min&max) 보여주는 view
+    
+    
+    // 1.currentWeather : 위치, 현재온도(main.temp), 기상상태(weather.main), 최고&최저 온도(main.temp_min&max)
     private let currentWeatherView : CurrentWeatherView = {
         let view = CurrentWeatherView()
         return view
     }()
     
-    // 3시간 단위 온도변화를 표현하는 collectionView(시간, 온도, 아이콘)
+    // 2.dailyWeather : 3시간 단위 온도변화를 표현(시간, 온도, 아이콘)
     private let dailyWeatherCollectionView : UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -57,7 +82,7 @@ class ForecastInfoVC: UIViewController {
         return collectionView
     }()
     
-    // 체감온도, 습도, 가시거리, 강수량 표현하는 collectionView 작성예정
+    // 3.otherInfo : 체감온도, 습도, 가시거리, 강수량 표현 collectionView
     private let otherInfoCollectionView : UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -69,7 +94,7 @@ class ForecastInfoVC: UIViewController {
         return collectionView
     }()
     
-    // 풍속(wind.speed), 돌풍(wind.gust), 풍향(wind.deg) 담고있는 view
+    // 4.wind : 풍속(wind.speed), 돌풍(wind.gust), 풍향(wind.deg) 담고있는 view
     private let windView : WindView = {
         let view = WindView()
         view.backgroundColor = .clear
@@ -78,22 +103,12 @@ class ForecastInfoVC: UIViewController {
 
     
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         print("#", #function)
         self.view.backgroundColor = .white
         self.navigationController?.navigationBar.isHidden = true
-        
-        let backgroundImage = UIImageView(image: UIImage(named: "backgroundImage"))
-        backgroundImage.contentMode = .scaleAspectFill
-        view.insertSubview(backgroundImage, at: 0)
-        backgroundImage.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-                backgroundImage.topAnchor.constraint(equalTo: view.topAnchor),
-                backgroundImage.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                backgroundImage.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                backgroundImage.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-            ])
         
         scrollView.refreshControl?.addTarget(self, action: #selector(refreshFunction), for: .valueChanged)
         
@@ -102,15 +117,18 @@ class ForecastInfoVC: UIViewController {
         
         currentWeatherView.addSubViewsInCurrentWeatherView()
         currentWeatherView.autoLayoutCurrentWeatherView()
-        currentWeatherView.setCurrentWeatherLabels()
+        currentWeatherView.setCurrentWeatherLabels(
+            location: location,
+            dailyTemperature: dailyTemperature,
+            weather: weatherMain,
+            maxTemperature: maxTemperature,
+            minTemperature: minTemperature
+        )
         
-        dailyWeatherCollectionView.delegate = self
-        dailyWeatherCollectionView.dataSource = self
-        dailyWeatherCollectionView.reloadData()
-        
-        otherInfoCollectionView.delegate = self
-        otherInfoCollectionView.dataSource = self
-        otherInfoCollectionView.reloadData()
+        windView.setWindViewLabel(
+            windSpeed: windSpeed,
+            gustSpeed: gustSpeed,
+            windDegree: windDegree)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -139,7 +157,7 @@ extension ForecastInfoVC {
     
     @objc func refreshFunction() {
         scrollView.refreshControl?.endRefreshing()
-        
+        // refresh에 수행할 동작
     }
     
     private func setBlurOfDailyWeatherCollectionView(blurEffect: UIBlurEffect.Style, on thisView: UIView) {
@@ -156,21 +174,30 @@ extension ForecastInfoVC {
         // blur처리된 뷰를 한 겹 올리는 것
         thisView.addSubview(effectView)
     }
-    // ForecaseInfo에 addSubView
+    
+    // ForecaseInfoVC에 addSubView
     private func addSubviewsInForecaseInfoVC() {
+        // backgroundImage를 insertSubview
+        view.insertSubview(backgroundImage, at: 0)
         
+        // scrollView에 scroll될 contentView를 addSubview하고
         self.view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
+        // contentView에 모든 요소 addSubview.
         contentView.addSubview(currentWeatherView)
         contentView.addSubview(dailyWeatherCollectionView)
         contentView.addSubview(otherInfoCollectionView)
         contentView.addSubview(windView)
         
-//        view.addSubview(currentWeatherView)
-//        view.addSubview(dailyWeatherCollectionView)
-//        view.addSubview(otherInfoCollectionView)
-//        view.addSubview(windView)
+        // collectionView delegata, dataSoure 지정, cell 등록
+        dailyWeatherCollectionView.delegate = self
+        dailyWeatherCollectionView.dataSource = self
+        dailyWeatherCollectionView.reloadData()
+        
+        otherInfoCollectionView.delegate = self
+        otherInfoCollectionView.dataSource = self
+        otherInfoCollectionView.reloadData()
         
         dailyWeatherCollectionView.register(DailyWeatherCollectionViewCell.self, forCellWithReuseIdentifier: DailyWeatherCollectionViewCell.reuseIdentifier)
         otherInfoCollectionView.register(OtherInfoCollectionViewCell.self, forCellWithReuseIdentifier: OtherInfoCollectionViewCell.reuseIdentifier)
@@ -185,8 +212,14 @@ extension ForecastInfoVC {
         dailyWeatherCollectionView.translatesAutoresizingMaskIntoConstraints = false
         otherInfoCollectionView.translatesAutoresizingMaskIntoConstraints = false
         windView.translatesAutoresizingMaskIntoConstraints = false
+        backgroundImage.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
+            backgroundImage.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundImage.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backgroundImage.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            backgroundImage.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
             scrollView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
@@ -226,15 +259,15 @@ extension ForecastInfoVC {
 }
 
 extension ForecastInfoVC : UICollectionViewDataSource {
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        let numOfSection = 1
-        if collectionView == dailyWeatherCollectionView {
-            return numOfSection
-        } else {
-            return 1
-        }
-                
-    }
+//    func numberOfSections(in collectionView: UICollectionView) -> Int {
+//        let numOfSection = 1
+//        if collectionView == dailyWeatherCollectionView {
+//            return numOfSection
+//        } else {
+//            return 1
+//        }
+//                
+//    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == dailyWeatherCollectionView {

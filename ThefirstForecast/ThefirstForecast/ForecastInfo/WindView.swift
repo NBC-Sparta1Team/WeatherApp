@@ -22,7 +22,7 @@ class WindView: UIView {
         return label
     }()
     
-    private let windSpeed : UILabel = {
+    private let windSpeedLabel : UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 38, weight: .bold)
         label.textColor = .white
@@ -43,7 +43,7 @@ class WindView: UIView {
         return label
     }()
     
-    private let gustSpeed: UILabel = {
+    private let gustSpeedLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 38, weight: .bold)
         label.textColor = .white
@@ -109,7 +109,6 @@ class WindView: UIView {
         setBackgroundBlurOfWindView(blurEffect: .regular)
         addSubViewsInWindView()
         autoLayoutWindView()
-        setWindViewLabel()
     }
     
     override init(frame: CGRect) {
@@ -143,10 +142,10 @@ class WindView: UIView {
         addSubViews([
             windSpeedScale,
             windLabel,
-            windSpeed,
+            windSpeedLabel,
             gustScale,
             gustLabel,
-            gustSpeed,
+            gustSpeedLabel,
             windDirection,
             north,
             west,
@@ -164,10 +163,10 @@ class WindView: UIView {
 
         windSpeedScale.translatesAutoresizingMaskIntoConstraints = false
         windLabel.translatesAutoresizingMaskIntoConstraints = false
-        windSpeed.translatesAutoresizingMaskIntoConstraints = false
+        windSpeedLabel.translatesAutoresizingMaskIntoConstraints = false
         gustScale.translatesAutoresizingMaskIntoConstraints = false
         gustLabel.translatesAutoresizingMaskIntoConstraints = false
-        gustSpeed.translatesAutoresizingMaskIntoConstraints = false
+        gustSpeedLabel.translatesAutoresizingMaskIntoConstraints = false
         windDirection.translatesAutoresizingMaskIntoConstraints = false
         borderLine.translatesAutoresizingMaskIntoConstraints = false
         compassScale.translatesAutoresizingMaskIntoConstraints = false
@@ -184,19 +183,19 @@ class WindView: UIView {
             borderLine.heightAnchor.constraint(equalToConstant: 1),
             borderLine.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 4 / 7),
             
-            windSpeed.bottomAnchor.constraint(equalTo: borderLine.topAnchor, constant: -10),
-            windSpeed.centerXAnchor.constraint(equalTo: self.leadingAnchor, constant: 30),
+            windSpeedLabel.bottomAnchor.constraint(equalTo: borderLine.topAnchor, constant: -10),
+            windSpeedLabel.centerXAnchor.constraint(equalTo: self.leadingAnchor, constant: 30),
             
-            windLabel.bottomAnchor.constraint(equalTo: windSpeed.bottomAnchor, constant: -5),
+            windLabel.bottomAnchor.constraint(equalTo: windSpeedLabel.bottomAnchor, constant: -5),
             windLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 60),
             
             windSpeedScale.bottomAnchor.constraint(equalTo: windLabel.topAnchor, constant: -1),
             windSpeedScale.centerXAnchor.constraint(equalTo: windLabel.centerXAnchor),
             
-            gustSpeed.topAnchor.constraint(equalTo: borderLine.bottomAnchor, constant: 10),
-            gustSpeed.centerXAnchor.constraint(equalTo: windSpeed.centerXAnchor),
+            gustSpeedLabel.topAnchor.constraint(equalTo: borderLine.bottomAnchor, constant: 10),
+            gustSpeedLabel.centerXAnchor.constraint(equalTo: windSpeedLabel.centerXAnchor),
             
-            gustScale.topAnchor.constraint(equalTo: gustSpeed.topAnchor, constant: 5),
+            gustScale.topAnchor.constraint(equalTo: gustSpeedLabel.topAnchor, constant: 5),
             gustScale.centerXAnchor.constraint(equalTo: windLabel.centerXAnchor),
             
             gustLabel.topAnchor.constraint(equalTo: gustScale.bottomAnchor, constant: 1),
@@ -230,17 +229,17 @@ class WindView: UIView {
         print(#function)
     }
     
-    func setWindViewLabel() {
+    func setWindViewLabel(windSpeed: String, gustSpeed: String, windDegree: Int) {
         windSpeedScale.text = "m/s"
         windLabel.text = "바람"
-        windSpeed.text = "55"
+        windSpeedLabel.text = windSpeed
         gustScale.text = "m/s"
         gustLabel.text = "돌풍"
-        gustSpeed.text = "3"
-        let degree = 102
-        let cgFloat = CGFloat(degree) * .pi / 360
+        gustSpeedLabel.text = gustSpeed
+        let windDegree = windDegree
+        let cgFloat = CGFloat(windDegree) * .pi / 180
         magneticNeedle.transform = magneticNeedle.transform.rotated(by: cgFloat)
-        switch degree {
+        switch windDegree {
         case 0 ... 11 :
             windDirection.text = "북"
         case 12 ... 34 :

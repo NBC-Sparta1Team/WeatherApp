@@ -121,12 +121,12 @@ class CurrentWeatherView : UIView {
         print(#function)
     }
     
-    func setCurrentWeatherLabels() {
-        locationLabel.text = "나의 위치"
-        dailyTemperatureLabel.text = "6°"
-        weatherLabel.text = "바람"
-        maxTemperatureLabel.text = "최고 : 6°"
-        minTemperatureLabel.text = "최저 : 0°"
+    func setCurrentWeatherLabels(location: String, dailyTemperature: String, weather: String, maxTemperature: String, minTemperature: String) {
+        locationLabel.text = location
+        dailyTemperatureLabel.text = dailyTemperature
+        weatherLabel.text = weather
+        maxTemperatureLabel.text = maxTemperature
+        minTemperatureLabel.text = minTemperature
         print(#function)
     }
 }
