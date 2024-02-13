@@ -78,7 +78,7 @@ class ForecastInfoVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-//        get3HourData(coordinate: Coordinate(lat: 35.8312, lon: 128.7385), date: "2024-02-08")
+        get3HourData(coordinate: Coordinate(lat: 35.8312, lon: 128.7385), date: "2024-02-08")
         self.view.backgroundColor = .white
         addSubviews()
         autoLayout()

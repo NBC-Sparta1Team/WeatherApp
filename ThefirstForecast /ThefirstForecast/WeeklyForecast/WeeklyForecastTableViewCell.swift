@@ -94,14 +94,15 @@ class WeeklyForecastTableViewCell: UITableViewCell {
         maxTemperatureLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
         averageTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
         averageTemperatureLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15).isActive = true
-        averageTemperatureLabel.leadingAnchor.constraint(equalTo: weatherIconImageView.trailingAnchor, constant: 5).isActive = true
         averageTemperatureLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
         precipitationLabel.translatesAutoresizingMaskIntoConstraints = false
         precipitationLabel.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 10).isActive = true
         precipitationLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
         weatherIconImageView.translatesAutoresizingMaskIntoConstraints = false
-        weatherIconImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15).isActive = true
-        weatherIconImageView.trailingAnchor.constraint(equalTo: averageTemperatureLabel.leadingAnchor, constant: -5).isActive = true
+        weatherIconImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant:15).isActive = true
+        weatherIconImageView.leadingAnchor.constraint(equalTo: dateLabel.trailingAnchor, constant: 10).isActive = true
+        weatherIconImageView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        weatherIconImageView.widthAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
