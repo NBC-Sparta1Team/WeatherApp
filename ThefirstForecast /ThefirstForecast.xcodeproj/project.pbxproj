@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3F16334A2B70D43500603161 /* DailyWeatherCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1633492B70D43500603161 /* DailyWeatherCollectionViewCell.swift */; };
+		7F64B0372B73975100309C5E /* SearchControllerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F64B0362B73975100309C5E /* SearchControllerVC.swift */; };
 		F85006292B73ABE3007AB351 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85006282B73ABE3007AB351 /* CoreDataManager.swift */; };
 		F850062B2B73ACAE007AB351 /* WeeklyForecastModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F850062A2B73ACAE007AB351 /* WeeklyForecastModel.swift */; };
 		F850062D2B73ACCC007AB351 /* WeeklyForecastTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F850062C2B73ACCC007AB351 /* WeeklyForecastTableViewCell.swift */; };
@@ -29,6 +30,7 @@
 
 /* Begin PBXFileReference section */
 		3F1633492B70D43500603161 /* DailyWeatherCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyWeatherCollectionViewCell.swift; sourceTree = "<group>"; };
+		7F64B0362B73975100309C5E /* SearchControllerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchControllerVC.swift; sourceTree = "<group>"; };
 		F85006282B73ABE3007AB351 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		F850062A2B73ACAE007AB351 /* WeeklyForecastModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyForecastModel.swift; sourceTree = "<group>"; };
 		F850062C2B73ACCC007AB351 /* WeeklyForecastTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyForecastTableViewCell.swift; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
 			isa = PBXGroup;
 			children = (
 				F88C535E2B70C9CB000624A2 /* MainVC.swift */,
+				7F64B0362B73975100309C5E /* SearchControllerVC.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -239,6 +242,7 @@
 				F87859D62B724C2600D8E0B0 /* APIURL.swift in Sources */,
 				F88C53632B70C9FF000624A2 /* ForecastInfoVC.swift in Sources */,
 				F88C53522B70C8B0000624A2 /* ThefirstForecast.xcdatamodeld in Sources */,
+				7F64B0372B73975100309C5E /* SearchControllerVC.swift in Sources */,
 				F88C53482B70C8B0000624A2 /* AppDelegate.swift in Sources */,
 				F88C536C2B70D006000624A2 /* ForecastAPIManger.swift in Sources */,
 				F87859D02B71DF6100D8E0B0 /* ForecastAPiModel.swift in Sources */,

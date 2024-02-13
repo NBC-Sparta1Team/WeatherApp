@@ -13,11 +13,17 @@ struct MainWeather {
     var minTemperature: Int
     var maxTemperature: Int
     var averageTemperature: Int
+    var backgroundImage: UIImage?
 }
 
-class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class MainVC: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
+    
 
-    var tableView: UITableView = UITableView()
+    var collectionView: UICollectionView!
+    var searchController: UISearchController!
+    var searchResultsController: searchControllerVC!
+    let weatherLabel = UILabel()
+    let settingButton = UIButton(type: .system)
     
     var dummyData: [MainWeather] = [
         MainWeather(location: "서울", windSpeed: "풍속: 5m/s", minTemperature: -5, maxTemperature: 3, averageTemperature: -1),
@@ -25,63 +31,74 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         MainWeather(location: "부산", windSpeed: "풍속: 3m/s", minTemperature: 0, maxTemperature: 8, averageTemperature: 4)
     ]
     
+    var filteredData: [Weather] = [] // 필터링된 결과 저장 배열
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 //        getSearchData(input: "38613")
 //        getForecastData(from: Coordinate(lat: 35.8312, lon: 128.7385))
         self.view.backgroundColor = .white
         
+        // 콜렉션 뷰 레이아웃 설정
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumLineSpacing = 15
+        layout.minimumInteritemSpacing = 20
+        layout.sectionInset = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+        
+        // 각 셀 크기 설정
+        let cellWidth = (view.frame.width - 1.5 * 20)
+        layout.itemSize = CGSize(width: cellWidth, height: 80)
+        
+        // 검색 결과 표시용 VC 초기화
+        searchResultsController = searchControllerVC()
+        
+        //콜렉션 뷰 초기화 및 설정
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.backgroundColor = .clear
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+        self.view.addSubview(collectionView)
+        
+        //검색 컨트롤러 설정
+        searchController = UISearchController(searchResultsController: searchResultsController)
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "도시 또는 공항 검색"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+        searchController.delegate = self
+        searchController.searchBar.delegate = self
+        
         // "날씨" 라벨 추가
-        let weatherLabel = UILabel()
         weatherLabel.text = "날씨"
         weatherLabel.font = UIFont.systemFont(ofSize: 30, weight: .bold)
         weatherLabel.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(weatherLabel)
         
-        // 검색창 추가
-        let searchTextField = UITextField()
-        searchTextField.placeholder = "도시 또는 공항 검색"
-        searchTextField.borderStyle = .roundedRect
-        searchTextField.backgroundColor = UIColor(white: 0.9, alpha: 1.0)
-        searchTextField.attributedPlaceholder = NSAttributedString(string: "도시 또는 공항 검색", attributes: [NSAttributedString.Key.foregroundColor : UIColor.black])
-        searchTextField.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(searchTextField)
-        
-        // 셀 등록
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
-        
-        //테이블 뷰 설정
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.layer.cornerRadius = 10
-        tableView.separatorStyle = .none
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.backgroundColor = .clear
-        self.view.addSubview(tableView)
-        
         // 섭화씨 전환 버튼 추가
-        let settingButton = UIButton(type: .system)
+        settingButton.isEnabled = true
         settingButton.setImage(UIImage(systemName: "gear"), for: .normal)
         settingButton.tintColor = .black
         settingButton.translatesAutoresizingMaskIntoConstraints = false
         settingButton.addTarget(self, action: #selector(settingButtonTapped), for: .touchUpInside)
+        settingButton.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
         self.view.addSubview(settingButton)
+        
         
         // UI위치 설정
         NSLayoutConstraint.activate([
-            weatherLabel.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: -60),
+            weatherLabel.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant:-110),
             weatherLabel.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
             
-            searchTextField.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: 20),
-            searchTextField.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
-            searchTextField.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
+            collectionView.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: -140),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
-            tableView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 20),
-            tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
-            tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
-            tableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
-            
-            settingButton.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: -60),
+            settingButton.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: -110),
             settingButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -30)
         ])
     }
@@ -91,13 +108,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         return dummyData.count
     }
     
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 0
-    }
-    
-    // 셀 디자인
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
+        cell.backgroundColor = .lightGray
         
         // 지역 이름 레이블 추가
         let locationLabel = UILabel(frame: CGRect(x: 10, y: 10, width: 150, height: 20))
@@ -125,18 +138,83 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         averageTemperatureLabel.font = UIFont.systemFont(ofSize: 14)
         cell.contentView.addSubview(averageTemperatureLabel)
         
-        cell.contentView.backgroundColor = .lightGray
+        cell.layer.cornerRadius = 10
+        cell.layer.masksToBounds = true
         
         return cell
     }
     
-    // 셀 세로 크기 및 간격
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60 + 20 // 셀 높이 + 간격
+    @objc func settingButtonTapped() {
+        let alertController = UIAlertController(title: "온도 단위 선택", message: "원하는 단위를 선택하세요.", preferredStyle: .actionSheet)
+        
+        let celsiusAction = UIAlertAction(title: "섭씨", style: .default) { action in
+            // 섭씨 선택 시 처리할 동작 추가
+            print("섭씨 선택")
+        }
+        
+        let fahrenheitAction = UIAlertAction(title: "화씨", style: .default) { action in
+            // 화씨 선택 시 처리할 동작 추가
+            print("화씨 선택")
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        alertController.addAction(celsiusAction)
+        alertController.addAction(fahrenheitAction)
+        alertController.addAction(cancelAction)
+        
+        // iPad에서 동작하기 위해 추가
+        if let popoverController = alertController.popoverPresentationController {
+            popoverController.sourceView = view
+            popoverController.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 0, height: 0)
+            popoverController.permittedArrowDirections = []
+        }
+        
+        present(alertController, animated: true, completion: nil)
     }
     
-    @objc func settingButtonTapped() {
-        print("섭씨 화씨 전환")
+    // MARK: - UISearchControllerDelegate
+    
+    //검색창 호출과 동시에 실행되는 메서드
+    func willPresentSearchController(_ searchController: UISearchController) {
+        UIView.animate(withDuration: 0.3) {
+            self.view.backgroundColor = .white
+            self.navigationController?.navigationBar.topItem?.titleView = searchController.searchBar
+            self.navigationItem.titleView?.backgroundColor = .white
+            self.navigationItem.titleView?.frame = searchController.searchBar.frame
+            searchController.searchBar.showsCancelButton = true
+            UIView.animate(withDuration: 0.5, animations: {
+                self.weatherLabel.alpha = 0
+                self.settingButton.alpha = 0
+            }) { _ in
+                self.weatherLabel.isHidden = true
+                self.settingButton.isHidden = true
+            }
+        }
+    }
+    
+    // 검색창이 호출되고난 직후를 처리하는 메서드
+    func didPresentSearchController(_ searchController: UISearchController) {
+    }
+    
+    //검색창이 닫혔을때 실행되는 메서드
+    func didDismissSearchController(_ searchController: UISearchController) {
+        UIView.animate(withDuration: 0.1, animations: {
+            self.weatherLabel.alpha = 1
+            self.settingButton.alpha = 1
+        }) { _ in
+            self.weatherLabel.isHidden = false
+            self.settingButton.isHidden = false
+        }
+    }
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        // 검색 결과 업데이트 코드
+        _ = searchController.searchBar.text ?? ""
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchController.searchBar.showsCancelButton = false
     }
 
     /*
