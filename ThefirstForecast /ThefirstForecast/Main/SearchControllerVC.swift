@@ -74,6 +74,7 @@ class searchControllerVC: UIViewController, UITableViewDelegate, UITableViewData
             showNoResults()
         } else {
             // 검색어가 있는 경우 테이블 뷰에 검색 결과 표시
+            messageLabel.text = "\(searchText) : 결과 없음"
             tableView.reloadData()
             tableView.isHidden = false
             messageLabel.isHidden = true

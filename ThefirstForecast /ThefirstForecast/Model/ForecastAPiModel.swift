@@ -12,8 +12,8 @@ struct CoordinateModel : Decodable{
     let lat, lon : Double
 }
 struct Coordinate{
-    let lat : Double
-    let lon : Double
+    let lat : Double?
+    let lon : Double?
 }
 // MARK: - ForecastInfoModel
 struct ForecastInfoModel: Decodable {

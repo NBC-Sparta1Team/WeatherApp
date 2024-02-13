@@ -6,7 +6,7 @@
 
 import Foundation
 import UIKit
-
+import CoreLocation
 struct MainWeather {
     var location: String
     var windSpeed: String
@@ -17,26 +17,25 @@ struct MainWeather {
 }
 
 class MainVC: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
-    
-
+    var locationManager =  CLLocationManager()
+    var currentCoordinate  = Coordinate(lat: 0.0, lon: 0.0)
     var collectionView: UICollectionView!
     var searchController: UISearchController!
     var searchResultsController: searchControllerVC!
     let weatherLabel = UILabel()
     let settingButton = UIButton(type: .system)
     
-    var dummyData: [MainWeather] = [
-        MainWeather(location: "서울", windSpeed: "풍속: 5m/s", minTemperature: -5, maxTemperature: 3, averageTemperature: -1),
-        MainWeather(location: "부산", windSpeed: "풍속: 3m/s", minTemperature: 0, maxTemperature: 8, averageTemperature: 4),
-        MainWeather(location: "부산", windSpeed: "풍속: 3m/s", minTemperature: 0, maxTemperature: 8, averageTemperature: 4)
-    ]
-    
+    var coordinateArr : [Coordinate] = []
+    var forecastInfoArr : [ForecastInfoModel] = []
     var filteredData: [Weather] = [] // 필터링된 결과 저장 배열
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        getSearchData(input: "38613")
-//        getForecastData(from: Coordinate(lat: 35.8312, lon: 128.7385))
+        getCurrentLoaction()
+        coordinateArr.append(CurrentCoordinateModel.shared.currentCoordinate)
+        //        getSearchData(input: "38613")
+        
+        
         self.view.backgroundColor = .white
         
         // 콜렉션 뷰 레이아웃 설정
@@ -63,10 +62,10 @@ class MainVC: UIViewController, UICollectionViewDataSource, UICollectionViewDele
         self.view.addSubview(collectionView)
         
         //검색 컨트롤러 설정
-        searchController = UISearchController(searchResultsController: searchResultsController)
+        searchController = UISearchController()
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "도시 또는 공항 검색"
+        searchController.searchBar.placeholder = "도시 또는 우편번호 검색"
         navigationItem.searchController = searchController
         definesPresentationContext = true
         searchController.delegate = self
@@ -102,38 +101,52 @@ class MainVC: UIViewController, UICollectionViewDataSource, UICollectionViewDele
             settingButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -30)
         ])
     }
- 
-    // 셀 갯수
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dummyData.count
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        for coordinate in coordinateArr{
+            ForecastAPIManger.shared.getForecastData(from: coordinate) { forecastInfoModel in
+                DispatchQueue.main.async {
+                    self.forecastInfoArr.append(forecastInfoModel)
+                    self.collectionView.reloadData()
+                }
+                
+                
+            }
+        }
+        
+        
     }
-    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return forecastInfoArr.count
+    }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
         cell.backgroundColor = .lightGray
-        
         // 지역 이름 레이블 추가
         let locationLabel = UILabel(frame: CGRect(x: 10, y: 10, width: 150, height: 20))
-        locationLabel.text = dummyData[indexPath.row].location
+        locationLabel.text = forecastInfoArr[indexPath.row].name
         locationLabel.font = UIFont.boldSystemFont(ofSize: 16)
         cell.contentView.addSubview(locationLabel)
         
         // 풍속 레이블 추가
         let windSpeedLabel = UILabel(frame: CGRect(x: 10, y: 40, width: 150, height: 20))
-        windSpeedLabel.text = dummyData[indexPath.row].windSpeed
+        windSpeedLabel.text = "\(forecastInfoArr[indexPath.row].wind.speed)m/s"
         windSpeedLabel.font = UIFont.systemFont(ofSize: 14)
         cell.contentView.addSubview(windSpeedLabel)
         
         // 최저/최고 온도 레이블 추가
-        let temperatureLabel = UILabel(frame: CGRect(x: cell.contentView.bounds.width - 160, y: 10, width: 150, height: 20))
-        temperatureLabel.text = "최저: \(dummyData[indexPath.row].minTemperature)℃  최고: \(dummyData[indexPath.row].maxTemperature)℃"
+        let temperatureLabel = UILabel(frame: CGRect(x: cell.contentView.bounds.width - 200, y: 10, width: 200, height: 20))
+        let min = String(format: "%.1f", forecastInfoArr[indexPath.row].main.tempMin)
+        let max = String(format: "%.1f", forecastInfoArr[indexPath.row].main.tempMax)
+        print(max)
+        temperatureLabel.text = "최저: \(min)℃  최고: \(max)℃"
         temperatureLabel.textAlignment = .right
         temperatureLabel.font = UIFont.systemFont(ofSize: 14)
         cell.contentView.addSubview(temperatureLabel)
         
         // 평균 온도 레이블 추가
         let averageTemperatureLabel = UILabel(frame: CGRect(x: cell.contentView.bounds.width - 160, y: 40, width: 150, height: 20))
-        averageTemperatureLabel.text = "\(dummyData[indexPath.row].averageTemperature)℃"
+        averageTemperatureLabel.text = "\(forecastInfoArr[indexPath.row].main.temp)℃"
         averageTemperatureLabel.textAlignment = .right
         averageTemperatureLabel.font = UIFont.systemFont(ofSize: 14)
         cell.contentView.addSubview(averageTemperatureLabel)
@@ -177,13 +190,13 @@ class MainVC: UIViewController, UICollectionViewDataSource, UICollectionViewDele
     
     //검색창 호출과 동시에 실행되는 메서드
     func willPresentSearchController(_ searchController: UISearchController) {
-        UIView.animate(withDuration: 0.3) {
+        UIView.animate(withDuration: 0.0) {
             self.view.backgroundColor = .white
             self.navigationController?.navigationBar.topItem?.titleView = searchController.searchBar
             self.navigationItem.titleView?.backgroundColor = .white
             self.navigationItem.titleView?.frame = searchController.searchBar.frame
             searchController.searchBar.showsCancelButton = true
-            UIView.animate(withDuration: 0.5, animations: {
+            UIView.animate(withDuration: 0.0, animations: {
                 self.weatherLabel.alpha = 0
                 self.settingButton.alpha = 0
             }) { _ in
@@ -199,7 +212,7 @@ class MainVC: UIViewController, UICollectionViewDataSource, UICollectionViewDele
     
     //검색창이 닫혔을때 실행되는 메서드
     func didDismissSearchController(_ searchController: UISearchController) {
-        UIView.animate(withDuration: 0.1, animations: {
+        UIView.animate(withDuration: 0.0, animations: {
             self.weatherLabel.alpha = 1
             self.settingButton.alpha = 1
         }) { _ in
@@ -210,35 +223,45 @@ class MainVC: UIViewController, UICollectionViewDataSource, UICollectionViewDele
     
     func updateSearchResults(for searchController: UISearchController) {
         // 검색 결과 업데이트 코드
-        _ = searchController.searchBar.text ?? ""
+        //        print(searchController.searchBar.text ?? "")
+        
     }
-
+    
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchController.searchBar.showsCancelButton = false
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let text = searchController.searchBar.text else { return }
+        ForecastAPIManger.shared.SynthesizeGetCoodinateData(from: text) { forecastInfoModel,status  in
+            if status{
+                DispatchQueue.main.async {
+                    self.forecastInfoArr.append(forecastInfoModel!)
+                    self.collectionView.reloadData()
+                }
+            }else{
+                DispatchQueue.main.async{
+                    self.searchResultsController.updateUI(with: text)
+                    self.present(self.searchResultsController, animated: true)
+                }
+            }
+            
+        }
+        
     }
-    */
-
+    
 }
-
-
-extension MainVC{
-    func getSearchData(input : String){ // Search했을 경우 사용 되는 날씨 정보 API
-        ForecastAPIManger.shared.SynthesizeGetCoodinateData(from: input) { ForecastInfoModel in
-            let foreCastDataFromSearch = ForecastInfoModel
-        }
+extension MainVC : CLLocationManagerDelegate{
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) { // 현재 사용자 위치 받아오기
+        let location = locations[locations.count - 1]
+        self.currentCoordinate = Coordinate(lat: location.coordinate.latitude, lon: location.coordinate.longitude)
+        coordinateArr[0] = currentCoordinate
+        //        collectionView.reloadData()
     }
-    func getForecastData(from coordinate : Coordinate){ //  좌표로 날씨 정보를 불러오는 API
-        ForecastAPIManger.shared.getForecastData(from: coordinate) { ForecastInfoModel in
-            let foreCastDataFromCoordinate = ForecastInfoModel
-        }
+    func getCurrentLoaction(){
+        locationManager = CLLocationManager()// CLLocationManager클래스의 인스턴스 locationManager를 생성
+        locationManager.delegate = self// 포그라운드일 때 위치 추적 권한 요청
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest// 배터리에 맞게 권장되는 최적의 정확도
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()// 위치 업데이트
     }
 }

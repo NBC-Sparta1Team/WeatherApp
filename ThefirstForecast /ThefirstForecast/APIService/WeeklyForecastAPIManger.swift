@@ -12,7 +12,9 @@ class WeeklyForecastAPIManger{
     func getWeeklyForecastData(from coordinate : Coordinate,completion : @escaping(WeeklyForecastModel)->Void){ // 6days/3Hour API
         let url = EndPoint.data(APItype: "forecast").url
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
-        components?.queryItems = [URLQueryItem(name: "lat", value: "\(coordinate.lat)"),URLQueryItem(name: "lon", value: "\(coordinate.lon)"),URLQueryItem(name: "appid", value: APIKey),URLQueryItem(name: "lang", value: "kr"),URLQueryItem(name: "units", value: "metric")]
+        guard let lat = coordinate.lat else {return}
+        guard let lon = coordinate.lon else {return}
+        components?.queryItems = [URLQueryItem(name: "lat", value: "\(lat)"),URLQueryItem(name: "lon", value: "\(lon)"),URLQueryItem(name: "appid", value: APIKey),URLQueryItem(name: "lang", value: "kr"),URLQueryItem(name: "units", value: "metric")]
         guard let requestURL = components?.url else { return}
         var request = URLRequest(url: requestURL)
         request.httpMethod = "GET"
