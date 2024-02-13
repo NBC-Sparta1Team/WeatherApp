@@ -8,6 +8,22 @@
 import UIKit
 
 class WindView: UIView {
+    private let windIcon : UIImageView = {
+        let image = UIImageView()
+        image.contentMode = .scaleAspectFit
+        image.image = UIImage(systemName: "wind")?.withRenderingMode(.alwaysOriginal) ?? UIImage()
+        image.tintColor = UIColor.white.withAlphaComponent(0.5)
+        return image
+    }()
+    
+    private let titleLabel : UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 13, weight: .bold)
+        label.textColor = UIColor.white.withAlphaComponent(0.5)
+        label.text = "바람"
+        return label
+    }()
+    
     private let windSpeedScale : UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 15, weight: .semibold)
@@ -140,6 +156,8 @@ class WindView: UIView {
         
     func addSubViewsInWindView() {
         addSubViews([
+            windIcon,
+            titleLabel,
             windSpeedScale,
             windLabel,
             windSpeedLabel,
@@ -160,7 +178,8 @@ class WindView: UIView {
     
     func autoLayoutWindView() {
         print("WindView.bounds in", #function, ": \(self.bounds)")
-
+        windIcon.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
         windSpeedScale.translatesAutoresizingMaskIntoConstraints = false
         windLabel.translatesAutoresizingMaskIntoConstraints = false
         windSpeedLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -177,11 +196,18 @@ class WindView: UIView {
         east.translatesAutoresizingMaskIntoConstraints = false
         self.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
+            windIcon.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+            windIcon.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
+            windIcon.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 1 / 10),
+            windIcon.widthAnchor.constraint(equalTo: windIcon.heightAnchor),
             
-            borderLine.centerYAnchor.constraint(equalTo: centerYAnchor),
-            borderLine.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
+            titleLabel.centerYAnchor.constraint(equalTo: windIcon.centerYAnchor),
+            titleLabel.leadingAnchor.constraint(equalTo: windIcon.trailingAnchor, constant: 7),
+            
+            borderLine.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 10),
+            borderLine.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
             borderLine.heightAnchor.constraint(equalToConstant: 1),
-            borderLine.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 4 / 7),
+            borderLine.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 5 / 9),
             
             windSpeedLabel.bottomAnchor.constraint(equalTo: borderLine.topAnchor, constant: -10),
             windSpeedLabel.centerXAnchor.constraint(equalTo: self.leadingAnchor, constant: 30),
@@ -216,13 +242,13 @@ class WindView: UIView {
             south.centerXAnchor.constraint(equalTo: compassScale.centerXAnchor),
             south.bottomAnchor.constraint(equalTo: compassScale.bottomAnchor, constant: -10),
             
-            compassScale.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            compassScale.centerYAnchor.constraint(equalTo: borderLine.centerYAnchor),
             compassScale.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
             compassScale.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1 / 3),
             compassScale.heightAnchor.constraint(equalTo: compassScale.widthAnchor),
             
-            magneticNeedle.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            magneticNeedle.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
+            magneticNeedle.centerYAnchor.constraint(equalTo: compassScale.centerYAnchor),
+            magneticNeedle.centerXAnchor.constraint(equalTo: compassScale.centerXAnchor),
             magneticNeedle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1 / 3),
             magneticNeedle.heightAnchor.constraint(equalTo: magneticNeedle.widthAnchor),
         ])
