@@ -48,23 +48,99 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
         weatherIcon.image = UIImage(systemName: model.icon)
         titleLabel.text = model.title
         weatherValue.text = "\(model.value)"
-//        weatherDescription.text = description
+        weatherDescription.text = setDescription(model: model)
         weatherIcon.tintColor = UIColor.white.withAlphaComponent(0.5)
     }
     
-//    func setDescription(model : FourForecastStatusModel) {
-//        switch model.title {
-//        case "체감온도" :
-//            switch Int(model.value) {
-//            case 20... :
-//                weatherDescription.text = feelsLike[0]
-//            case 10...20 :
-//                weatherDescription.text = feelsLike[0]
-//            }
-//        default:
-//            <#code#>
-//        }
-//    }
+    private func characterDeleteValue(value : String) -> String {
+        let characterDeleteValue = value.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+        return characterDeleteValue
+    }
+    
+    
+    
+    func setDescription(model : FourForecastStatusModel) -> String {
+        let characterDeleteValue = characterDeleteValue(value: model.value)
+        guard let value = Int(characterDeleteValue) else {
+            return "날씨 정보를 가져올 수 없습니다."
+        }
+        
+        switch model.title {
+        case "체감온도" :
+            return getFeelsLikeDescription(value: model.value)
+        case "강수량" :
+            return getRainDescription(value: model.value)
+        case "가시거리" :
+            return getVisibilityDescription(value: model.value)
+        case "습도" :
+            return getHumidityDescription(value: model.value)
+        default:
+            return "날씨 정보를 가져올 수 없습니다."
+        }
+    }
+    
+    private func getFeelsLikeDescription(value : String) -> String {
+        let feelsLikeValue = characterDeleteValue(value: value)
+        guard let temperature = Int(feelsLikeValue) else {
+            return "날씨 정보를 가져올 수 없습니다."
+        }
+        switch temperature {
+        case 21... :
+            return feelsLike[0]
+        case 11..<21 :
+            return feelsLike[1]
+        case 1..<11 :
+            return feelsLike[2]
+        default:
+            return feelsLike[3]
+        }
+    }
+    
+    private func getRainDescription(value : String) -> String {
+        let rainValue = characterDeleteValue(value: value)
+        guard let rainValue = Int(rainValue) else {
+            return "날씨 정보를 가져올 수 없습니다."
+        }
+        switch rainValue {
+        case 1... :
+            return rain[0]
+        default:
+            return rain[1]
+        }
+    }
+    
+    private func getVisibilityDescription(value : String) -> String {
+        let visibilityValue = characterDeleteValue(value: value)
+        guard let visibilityValue = Int(visibilityValue) else {
+            return "날씨 정보를 가져올 수 없습니다."
+        }
+        switch visibilityValue {
+        case 8001... :
+            return visibility[0]
+        case 5001..<8001 :
+            return visibility[1]
+        case 1001..<5001 :
+            return visibility[2]
+        default:
+            return visibility[3]
+        }
+    }
+    
+    private func getHumidityDescription(value : String) -> String {
+            let humidityValue = characterDeleteValue(value: value)
+            guard let humidityValue = Int(humidityValue) else {
+                return "날씨 정보를 가져올 수 없습니다."
+            }
+            switch humidityValue {
+            case 61... :
+                return humidity[0]
+            case 31..<61 :
+                return humidity[1]
+            default:
+                return humidity[2]
+            }
+        }
+
     
     private let feelsLike = [
         "더위를 느낄 수 있는 날씨입니다.",                   // 20°C초과
@@ -74,8 +150,8 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
     ]
     
     private let rain = [
-        "비가 오지 않습니다.",            // == 0mm
-        "비가 옵니다. 우산을 챙기세요."     // 0mm 초과
+        "비가 옵니다. 우산을 챙기세요.",    // 0mm 초과
+        "비가 오지 않습니다."            // == 0mm
     ]
     
     private let visibility = [
