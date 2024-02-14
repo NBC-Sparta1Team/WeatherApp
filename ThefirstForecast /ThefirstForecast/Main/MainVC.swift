@@ -57,6 +57,7 @@ class MainVC: UIViewController {
         super.viewDidLoad()
         getCurrentLoaction()
         getCoreData()
+//        CoreDataManager.shared.deleteAllData()
         self.view.addSubview(collectionView)
         self.view.backgroundColor = .white
         setNavigationBarButtonItem()

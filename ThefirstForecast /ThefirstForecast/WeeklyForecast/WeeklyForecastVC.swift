@@ -41,7 +41,7 @@ class WeeklyForecastVC: UIViewController {
     }
     
     private func setNavigationBarButtonItem(){
-        let weatherBarbuttonItem = UIBarButtonItem(title: "현재 위치 예보", style: .plain, target:self, action: nil) //날씨버튼
+        let weatherBarbuttonItem = UIBarButtonItem(title: "현재 위치 6일 예보", style: .plain, target:self, action: nil) //날씨버튼
         let settingButton = UIBarButtonItem(image: UIImage(systemName: "gear"), style: .plain, target: self, action: #selector(settingButtonTapped)) //설정버튼
         let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 30.0),NSAttributedString.Key.foregroundColor : UIColor.black] // 날씨 글자 Font크키와 색상변경을 위함
         weatherBarbuttonItem.setTitleTextAttributes(attributes, for: .normal)
