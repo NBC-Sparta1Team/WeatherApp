@@ -15,11 +15,17 @@ struct Coordinate{
     let lat : Double?
     let lon : Double?
 }
+struct FourForecastStatusModel{
+    let title : String
+    let value : String
+    let icon : String
+}
 // MARK: - ForecastInfoModel
 struct ForecastInfoModel: Decodable {
     let coord: Coord
     let weather: [Weather]
     let main: Main
+    let visibility : Int
     let wind: Wind
     let rain: Rain?
     let snow : Snow?
@@ -33,7 +39,8 @@ struct WeeklyForecastModel: Decodable {
 }
 // MARK: - Coord
 struct Coord: Decodable {
-    let lon, lat: Double
+    let lat : Double
+    let lon : Double
 }
 // MARK: - Weather
 struct Weather: Decodable {
@@ -61,7 +68,7 @@ struct Main: Decodable {
 struct Wind: Decodable {
     let speed: Double // 바람속도
     let deg: Int // 풍향,각도
-    
+    let gust : Double?
 }
 // MARK: - Rain
 struct Rain: Decodable {

@@ -19,3 +19,8 @@ struct OneDayAverageData{
     let description : String // 
     let icon : String
 }
+struct OneDay3HourDataModel {
+    let hour : String
+    let icon: String
+    let temp : Double
+}

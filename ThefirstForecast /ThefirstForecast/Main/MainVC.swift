@@ -127,6 +127,7 @@ extension MainVC : UISearchResultsUpdating, UISearchControllerDelegate, UISearch
                 DispatchQueue.main.async{
                     let vc = searchControllerVC()
                     vc.updateUI(with: text)
+                    
                     self.present(vc, animated: true)
                 }
             }
@@ -213,6 +214,21 @@ extension MainVC : UICollectionViewDataSource,UICollectionViewDelegate,UICollect
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize { //Header Size
         return CGSize(width: collectionView.frame.width - 20, height: 20)
+    }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if indexPath.section == 0{
+            let vc = ForecastInfoVC()
+            vc.forecastInfo = self.currentForecastInfo
+            
+            vc.fourForecastData.append(FourForecastStatusModel(title: "체감온도", value: "\(String(describing: self.currentForecastInfo?.main.feelsLike ?? 0.0))°", icon: "thermometer.medium"))
+            vc.fourForecastData.append(FourForecastStatusModel(title: "강수량", value: "\(String(describing: self.currentForecastInfo?.rain?.rain1H ?? 0.0))mm/h", icon: "drop.fill"))
+            vc.fourForecastData.append(FourForecastStatusModel(title: "가시거리", value: "\(String(describing: self.currentForecastInfo?.visibility ?? 0))m", icon: "eye.fill"))
+            vc.fourForecastData.append(FourForecastStatusModel(title: "습도", value: "\(String(describing: self.currentForecastInfo?.main.humidity ?? 0))%", icon: "humidity"))
+            vc.modalPresentationStyle = .fullScreen
+            self.present(vc, animated: true)
+        }else{
+            
+        }
     }
 }
 //MARK: - 현재위치 & 현재위치 날씨 정보 데이터

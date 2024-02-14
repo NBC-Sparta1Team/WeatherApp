@@ -112,7 +112,7 @@ class WindView: UIView {
     
     private let magneticNeedle : UIImageView = {
         let image = UIImageView()
-        image.image = UIImage(named: "magneticNeedle")
+        image.image = UIImage(named: "magneticNeedleBig")
         return image
     }()
     
@@ -212,10 +212,10 @@ class WindView: UIView {
             borderLine.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 5 / 9),
             
             windSpeedLabel.bottomAnchor.constraint(equalTo: borderLine.topAnchor, constant: -10),
-            windSpeedLabel.centerXAnchor.constraint(equalTo: self.leadingAnchor, constant: 30),
+            windSpeedLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 30),
             
             windLabel.bottomAnchor.constraint(equalTo: windSpeedLabel.bottomAnchor, constant: -5),
-            windLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 60),
+            windLabel.leadingAnchor.constraint(equalTo: windSpeedLabel.trailingAnchor, constant: 10),
             
             windSpeedScale.bottomAnchor.constraint(equalTo: windLabel.topAnchor, constant: -1),
             windSpeedScale.centerXAnchor.constraint(equalTo: windLabel.centerXAnchor),
@@ -265,6 +265,7 @@ class WindView: UIView {
         gustLabel.text = "돌풍"
         gustSpeedLabel.text = gustSpeed
         let windDegree = windDegree
+        print(windDegree)
         let cgFloat = CGFloat(windDegree) * .pi / 180
         magneticNeedle.transform = magneticNeedle.transform.rotated(by: cgFloat)
         switch windDegree {

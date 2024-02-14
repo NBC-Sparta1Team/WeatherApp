@@ -29,13 +29,23 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
         label.textColor = .white
         return label
     }()
-    
-    func setCollectionViewCell(time: String, icon: UIImage, temperature: String) {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         addSubViews()
         autoLayout()
-        timeLabel.text = time
-        weatherImage.image = icon
-        hourlyTemperatureLabel.text = temperature
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    public func setCollectionViewCell(model : OneDay3HourDataModel) {
+        print(model)
+        timeLabel.text = model.hour + "시"
+        if let url = URL(string: "https://openweathermap.org/img/wn/\(model.icon)@2x.png"){
+            weatherImage.load(url: url)
+        }
+        let temp = String(format: "%.1f", model.temp)
+        hourlyTemperatureLabel.text = temp + "℃"
     }
     
     

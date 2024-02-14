@@ -9,37 +9,54 @@ import UIKit
 
 class ForecastInfoVC: UIViewController {
     // MARK: 각 View에 사용될 변수
-    // 1. CurrentWeatherView에 사용되는 변수들
-    private let location = "나의 위치"
-    private let dailyTemperature = "6°"
-    private let weatherMain = "바람"
-    private let maxTemperature = "최고 : 6°"
-    private let minTemperature = "최저 : 0°"
+    // 1. CurrentWeatherView에 사용되는 Data
+    var forecastInfo : ForecastInfoModel?
     
-    // 2. DailyWeatherCollectionViewCell에 사용되는 변수들
-    private let time = ["오전 0시", "오전 3시", "오전 6시", "오전 9시", "오전 12시", "오전 15시", "오전 18시", "오전 21시", "오전 24시"]
-    private let weather = ["cloud.sun.fill", "cloud.sun.rain.fill", "cloud.sleet.fill", "sun.max.fill", "sun.rain.fill", "rainbow", "cloud.sun.rain.fill", "cloud.sleet.fill", "sun.max.fill"]
-    private let temperature = [3, 2, 1, 2, 5, 7, 5, 4, 3]
+
+    // 2. DailyWeatherCollectionViewCell에 Data
+    var oneDay3HourDataList : [OneDay3HourDataModel] = []
     
     // 3. OtherInfoCollectionView에 사용되는 변수들
-    private let sectionIcon = ["thermometer.medium", "drop.fill", "eye.fill", "humidity"]
-    private let category = ["체감온도", "강수량", "가시거리", "습도"]
-    private let value = ["23°", "0mm", "30km", "60%"]
-    private let weatherDescription = ["습도로 인해 체감 온도가 실제 온도보다 더 높게 느껴집니다.", "이후 수요일에 2mm의 비가 예상됩니다.", "가시거리가 매우 좋습니다.", "현재 이슬점이 23°입니다."]
+    var fourForecastData : [FourForecastStatusModel] = []
+    
     
     // 4. WindView에 사용되는 변수들
     private let windSpeed = "3"
     private let gustSpeed = "13"
     private let windDegree = 110
-
-    
+    private lazy var buttonView : UIView = {
+        let stackView = UIView()
+        
+        return stackView
+    }()
+    private lazy var dismissButton : UIButton = {
+        var config = UIButton.Configuration.plain()
+        config.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 20)
+        config.image = UIImage(systemName: "arrowshape.down.circle")
+        let button = UIButton(configuration: config)
+        button.addTarget(self, action: #selector(tapDimissButton), for: .touchUpInside)
+        button.tintColor = .white
+        return button
+    }()
+    private lazy var plustButton : UIButton = {
+        var config = UIButton.Configuration.plain()
+        config.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 20)
+        config.image = UIImage(systemName: "plus")
+        let button = UIButton(configuration: config)
+        button.addTarget(self, action: #selector(tapPlusButton), for: .touchUpInside)
+        button.tintColor = .white
+        button.isHidden = true
+        return button
+    }()
     
     // MARK: ForecastInfoVC에 포함된 Views 선언
     // 배경
+    
     let backgroundImage : UIImageView = {
         let background = UIImageView()
         background.image = UIImage(named: "backgroundImage")
         background.contentMode = .scaleAspectFill
+        
         return background
     }()
     // 화면을 스크롤하고, Pull to Refresh하는 ScrollView와 모든 요소가 들어간 contentView
@@ -53,6 +70,7 @@ class ForecastInfoVC: UIViewController {
     private let contentView : UIView = {
         let view = UIView()
         view.backgroundColor = .clear
+        
         return view
     }()
     
@@ -75,18 +93,18 @@ class ForecastInfoVC: UIViewController {
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         
         // 직접 선언해보았으나, 적용 X
-//        let blurEffect = UIBlurEffect(style: .regular)
-//        let effectView = UIVisualEffectView(effect: blurEffect)
-//        effectView.layer.cornerRadius = 15
-//
-//        // clipsToBounds가 true일 때, EffectView에 cornerRadius 적용됨.
-//        effectView.clipsToBounds = true
-//        view.insertSubview(effectView, aboveSubview: thisView.backgroundView!)
-//        view.insertSubview(effectView, at: 1)
-//        effectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-//        // blur처리된 뷰를 한 겹 올리는 것
-//        collectionView.addSubview(effectView)
-//        effectView.frame = collectionView.bounds
+        //        let blurEffect = UIBlurEffect(style: .regular)
+        //        let effectView = UIVisualEffectView(effect: blurEffect)
+        //        effectView.layer.cornerRadius = 15
+        //
+        //        // clipsToBounds가 true일 때, EffectView에 cornerRadius 적용됨.
+        //        effectView.clipsToBounds = true
+        //        view.insertSubview(effectView, aboveSubview: thisView.backgroundView!)
+        //        view.insertSubview(effectView, at: 1)
+        //        effectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        //        // blur처리된 뷰를 한 겹 올리는 것
+        //        collectionView.addSubview(effectView)
+        //        effectView.frame = collectionView.bounds
         return collectionView
     }()
     
@@ -108,12 +126,15 @@ class ForecastInfoVC: UIViewController {
         view.backgroundColor = .clear
         return view
     }()
-
+    
     
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        get3HoursForecastData(coordinate: forecastInfo?.coord ?? Coord(lat: 0.0, lon: 0.0))
+        print(fourForecastData)
         print("#", #function)
         // 배경은 흰색, navigationBar 숨김
         self.view.backgroundColor = .white
@@ -127,24 +148,23 @@ class ForecastInfoVC: UIViewController {
         
         currentWeatherView.addSubViewsInCurrentWeatherView()
         currentWeatherView.autoLayoutCurrentWeatherView()
-        currentWeatherView.setCurrentWeatherLabels(
-            location: location,
-            dailyTemperature: dailyTemperature,
-            weather: weatherMain,
-            maxTemperature: maxTemperature,
-            minTemperature: minTemperature
-        )
+        if let weatherViewInfo = self.forecastInfo{
+            currentWeatherView.setCurrentWeatherLabels(model: weatherViewInfo )
+        }
         
         windView.setWindViewLabel(
-            windSpeed: windSpeed,
-            gustSpeed: gustSpeed,
-            windDegree: windDegree)
+            windSpeed: "\(forecastInfo?.wind.speed ?? 0)",
+            gustSpeed:"\(forecastInfo?.wind.gust ?? 0)",
+            windDegree:forecastInfo?.wind.deg ?? 0)
         
-//        setBlurOfDailyWeatherCollectionView(blurEffect: .regular, on: dailyWeatherCollectionView)
+        //        setBlurOfDailyWeatherCollectionView(blurEffect: .regular, on: dailyWeatherCollectionView)
         windView.setBlurOfWindView(blurEffect: .regular)
+        backgroundImage.isUserInteractionEnabled = true
+        currentWeatherView.bringSubviewToFront(buttonView)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         print("##", #function)
         print("dailyWeatherCollectionView.frame : \(dailyWeatherCollectionView.frame)")
         print("dailyWeatherCollectionView.bounds : \(dailyWeatherCollectionView.bounds)")
@@ -165,16 +185,23 @@ class ForecastInfoVC: UIViewController {
     }
     
     // view가 움직일 때마다 계속 호출되고 있음. 사용하면 안됨.
-//    override func viewDidLayoutSubviews() {
-//        super.viewDidLayoutSubviews()
-//        print("###", #function)
-//    }
-
-
+    //    override func viewDidLayoutSubviews() {
+    //        super.viewDidLayoutSubviews()
+    //        print("###", #function)
+    //    }
+    
+    
 }
 
 extension ForecastInfoVC {
-    
+    @objc func tapDimissButton(){
+        
+        print("tap")
+        dismiss(animated: true)
+    }
+    @objc func tapPlusButton(){
+        dismiss(animated: true)
+    }
     @objc func refreshFunction() {
         scrollView.refreshControl?.endRefreshing()
         // refresh에 수행할 동작
@@ -190,8 +217,8 @@ extension ForecastInfoVC {
         effectView.clipsToBounds = true
         
         // blur처리된 뷰를 한 겹 올리는 것
-//        thisView.addSubview(effectView)
-//        effectView.frame = thisView.bounds
+        //        thisView.addSubview(effectView)
+        //        effectView.frame = thisView.bounds
         
         thisView.insertSubview(effectView, at: 0)
         effectView.frame = CGRect(x: 0.0, y: 0.0, width: 353.0, height: 170.33333333333334)
@@ -208,11 +235,13 @@ extension ForecastInfoVC {
         scrollView.addSubview(contentView)
         
         // contentView에 모든 요소 addSubview.
+        contentView.addSubview(buttonView)
         contentView.addSubview(currentWeatherView)
         contentView.addSubview(dailyWeatherCollectionView)
         contentView.addSubview(otherInfoCollectionView)
         contentView.addSubview(windView)
-        
+        buttonView.addSubview(dismissButton)
+        buttonView.addSubview(plustButton)
         // collectionView delegata, dataSoure 지정, cell 등록
         dailyWeatherCollectionView.delegate = self
         dailyWeatherCollectionView.dataSource = self
@@ -236,7 +265,9 @@ extension ForecastInfoVC {
         dailyWeatherCollectionView.translatesAutoresizingMaskIntoConstraints = false
         otherInfoCollectionView.translatesAutoresizingMaskIntoConstraints = false
         windView.translatesAutoresizingMaskIntoConstraints = false
-
+        buttonView.translatesAutoresizingMaskIntoConstraints = false
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        plustButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             backgroundImage.topAnchor.constraint(equalTo: view.topAnchor),
             backgroundImage.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -254,8 +285,20 @@ extension ForecastInfoVC {
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             contentView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 1.4),
+            //MARK: - Button View
+            buttonView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            buttonView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            buttonView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
             
-            currentWeatherView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            dismissButton.topAnchor.constraint(equalTo: buttonView.topAnchor, constant: 5),
+            dismissButton.leadingAnchor.constraint(equalTo: buttonView.leadingAnchor, constant: 15),
+            dismissButton.bottomAnchor.constraint(equalTo: buttonView.bottomAnchor),
+            
+            plustButton.topAnchor.constraint(equalTo: buttonView.topAnchor, constant: 15),
+            plustButton.trailingAnchor.constraint(equalTo: buttonView.trailingAnchor, constant: -15),
+            plustButton.bottomAnchor.constraint(equalTo: buttonView.bottomAnchor, constant: -5),
+            
+            currentWeatherView.topAnchor.constraint(equalTo: buttonView.bottomAnchor),
             currentWeatherView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             currentWeatherView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
             currentWeatherView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 1 / 3), // ForecastInfoVC의 1/2.5 크기로 지정
@@ -279,49 +322,37 @@ extension ForecastInfoVC {
 }
 
 extension ForecastInfoVC : UICollectionViewDataSource {
-//    func numberOfSections(in collectionView: UICollectionView) -> Int {
-//        let numOfSection = 1
-//        if collectionView == dailyWeatherCollectionView {
-//            return numOfSection
-//        } else {
-//            return 1
-//        }
-//
-//    }
+    //    func numberOfSections(in collectionView: UICollectionView) -> Int {
+    //        let numOfSection = 1
+    //        if collectionView == dailyWeatherCollectionView {
+    //            return numOfSection
+    //        } else {
+    //            return 1
+    //        }
+    //
+    //    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == dailyWeatherCollectionView {
             print("Count cell")
-            return temperature.count
+            return oneDay3HourDataList.count
         } else {
-            return category.count
+            return fourForecastData.count
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == dailyWeatherCollectionView {
             let cell = dailyWeatherCollectionView.dequeueReusableCell(withReuseIdentifier: DailyWeatherCollectionViewCell.reuseIdentifier, for: indexPath) as? DailyWeatherCollectionViewCell
-            let time = time[indexPath.item]
-            let weather = weather[indexPath.item]
-            cell?.setCollectionViewCell(
-                time: time,
-                icon: UIImage(systemName: weather)?.withRenderingMode(.alwaysOriginal) ?? UIImage(),
-                temperature: "\(temperature[indexPath.item])°")
-            print("Set cell")
+            
+            cell?.setCollectionViewCell(model: oneDay3HourDataList[indexPath.item])
+            
             return cell ?? UICollectionViewCell()
         }
         else {
             let cell = otherInfoCollectionView.dequeueReusableCell(withReuseIdentifier: OtherInfoCollectionViewCell.reuseIdentifier, for: indexPath) as? OtherInfoCollectionViewCell
-            let sectionIcon = sectionIcon[indexPath.item]
-            let category = category[indexPath.item]
-            let value = value[indexPath.item]
-            let weatherDescription = weatherDescription[indexPath.item]
-            cell?.setOtherInfoCell(
-                icon: UIImage(systemName: sectionIcon) ?? UIImage(),
-                title: category,
-                value: value,
-                description: weatherDescription
-            )
+            cell?.setOtherInfoCell(model: fourForecastData[indexPath.item])
+            
             return cell ?? UICollectionViewCell()
         }
     }
@@ -348,8 +379,17 @@ extension ForecastInfoVC: UICollectionViewDelegateFlowLayout {
     }
 }
 
-extension UIView {
-    func addSubViews(_ views : [UIView]){
-        _ = views.map{self.addSubview($0)}
+
+extension ForecastInfoVC{
+    func get3HoursForecastData(coordinate : Coord){
+        WeeklyForecastAPIManger.shred.getOneDay3HourForecastData(coordinate: Coordinate(lat: coordinate.lat, lon: coordinate.lon)) { oneDay3HourData in
+            DispatchQueue.main.async {
+                self.oneDay3HourDataList = oneDay3HourData
+                self.dailyWeatherCollectionView.reloadData()
+                
+            }
+            
+        }
     }
+    
 }

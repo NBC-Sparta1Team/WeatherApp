@@ -39,6 +39,7 @@ class WeeklyForecastAPIManger{
     }
     func getWeeklyAverageData(from coordinate : Coordinate ,completion : @escaping([OneDayAverageData],String)->Void){ // 3hour/day 평균 날씨 정보
         var OneDayAverageDataList : [OneDayAverageData] = []
+        
         getOneDaySplitForecastData(coordinate: coordinate) { oneDaySplitForecastDataList,cityName  in
             for oneDayinfoData in oneDaySplitForecastDataList{
                 let date = oneDayinfoData[0].dtTxt.split(separator: " ").map{String($0)}.first!
@@ -76,5 +77,24 @@ class WeeklyForecastAPIManger{
             }
             completion(oneDaySplitForecastData,cityName)
         }
+    }
+    func getOneDay3HourForecastData(coordinate : Coordinate,completion :@escaping([OneDay3HourDataModel]) -> Void) { // 1day /3hout
+        getWeeklyForecastData(from: coordinate) { weeklyForecastData in
+            var dataList = [OneDay3HourDataModel]()
+            let dateArr = Set(weeklyForecastData.list.map{$0.dtTxt.split(separator: " ").map{String($0)}[0]}).sorted()
+            let date = dateArr.first!
+            let oneDay3HourForecastDataList = weeklyForecastData.list.filter { list in
+                list.dtTxt.split(separator: " ").map{String($0)}.first! == date
+            }
+            for oneDay3HourForecastData in oneDay3HourForecastDataList{
+                let temp = oneDay3HourForecastData.main.temp
+                let icon = oneDay3HourForecastData.weather.first!.icon
+                let hour = oneDay3HourForecastData.dtTxt.split(separator: " ").last!.split(separator: ":").first!
+                
+                dataList.append(OneDay3HourDataModel(hour: String(hour), icon: icon, temp: temp))
+            }
+            completion(dataList)
+        }
+        
     }
 }

@@ -38,16 +38,18 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    func setOtherInfoCell(icon: UIImage, title: String, value: String, description: String) {
+    func setOtherInfoCell(model : FourForecastStatusModel) {
+        
+        
         setBackgroundBlurOfInfoView(blurEffect: .regular)
         addSubViews()
         autoLayout()
         contentView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.15)
         contentView.layer.cornerRadius = 15
-        weatherIcon.image = icon
-        titleLabel.text = title
-        weatherValue.text = value
-        weatherDescription.text = description
+        weatherIcon.image = UIImage(systemName: model.icon)
+        titleLabel.text = model.title
+        weatherValue.text = "\(model.value)"
+//        weatherDescription.text = description
         weatherIcon.tintColor = UIColor.white.withAlphaComponent(0.5)
     }
     

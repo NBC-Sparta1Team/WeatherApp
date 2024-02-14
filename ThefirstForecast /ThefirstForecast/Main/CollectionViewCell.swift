@@ -73,10 +73,10 @@ class CollectionViewCell: UICollectionViewCell {
     }
     public func setCell(model : ForecastInfoModel){
         locationLabel.text = model.name
-        averageTemperatureLabel.text = "\(model.main.temp)℃"
+        averageTemperatureLabel.text = "\(model.main.temp)°"
         let min = String(format: "%.1f", model.main.tempMin)
         let max = String(format: "%.1f", model.main.tempMax)
-        temperatureLabel.text = "최저: \(min)℃  최고: \(max)℃"
+        temperatureLabel.text = "최저: \(min)°  최고: \(max)°"
         descriptionLabel.text = "\(model.weather.first!.description)"
     }
 }

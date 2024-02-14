@@ -44,7 +44,7 @@ class CurrentWeatherView : UIView {
         return label
     }()
     
-    private let maxTemperatureLabel : UILabel = {
+    private let temperatureMaxMinLabel : UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 21, weight: .regular)
         label.textColor = .white
@@ -56,17 +56,7 @@ class CurrentWeatherView : UIView {
         return label
     }()
     
-    private let minTemperatureLabel : UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 21, weight: .regular)
-        label.textColor = .white
-        label.layer.shadowColor = UIColor.black.cgColor
-        label.layer.shadowRadius = 10.0
-        label.layer.shadowOpacity = 0.5
-        label.layer.shadowOffset = CGSize(width: 1, height: 1)
-        label.layer.masksToBounds = false
-        return label
-    }()
+
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -89,8 +79,7 @@ class CurrentWeatherView : UIView {
             locationLabel,
             dailyTemperatureLabel,
             weatherLabel,
-            maxTemperatureLabel,
-            minTemperatureLabel,
+            temperatureMaxMinLabel
         ])
     }
     
@@ -98,32 +87,32 @@ class CurrentWeatherView : UIView {
         locationLabel.translatesAutoresizingMaskIntoConstraints = false
         dailyTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
         weatherLabel.translatesAutoresizingMaskIntoConstraints = false
-        maxTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
-        minTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
+        temperatureMaxMinLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             locationLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            locationLabel.topAnchor.constraint(equalTo: topAnchor, constant: 45),
+            locationLabel.topAnchor.constraint(equalTo: topAnchor, constant: 20),
             
             dailyTemperatureLabel.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 13),
-            dailyTemperatureLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: -5),
+            dailyTemperatureLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 5),
             
             weatherLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            weatherLabel.topAnchor.constraint(equalTo: dailyTemperatureLabel.bottomAnchor, constant: -5),
+            weatherLabel.topAnchor.constraint(equalTo: dailyTemperatureLabel.bottomAnchor, constant: 5),
             
-            maxTemperatureLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: -40),
-            maxTemperatureLabel.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: 5),
-            
-            minTemperatureLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: 40),
-            minTemperatureLabel.centerYAnchor.constraint(equalTo: maxTemperatureLabel.centerYAnchor),
+            temperatureMaxMinLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            temperatureMaxMinLabel.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: 5),
+            temperatureMaxMinLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20)
+
         ])
     }
     
-    func setCurrentWeatherLabels(location: String, dailyTemperature: String, weather: String, maxTemperature: String, minTemperature: String) {
-        locationLabel.text = location
-        dailyTemperatureLabel.text = dailyTemperature
-        weatherLabel.text = weather
-        maxTemperatureLabel.text = maxTemperature
-        minTemperatureLabel.text = minTemperature
+    func setCurrentWeatherLabels(model : ForecastInfoModel) {
+        locationLabel.text = model.name
+        dailyTemperatureLabel.text = "\(model.main.temp)℃"
+        weatherLabel.text = "\(model.weather.first!.description)"
+        let min = String(format: "최고 : %.1f", model.main.tempMin)
+        let max = String(format: "최저 : %.1f", model.main.tempMax)
+        temperatureMaxMinLabel.text = "\(min) \(max)"
+    
     }
 }

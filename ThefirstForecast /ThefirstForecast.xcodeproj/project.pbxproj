@@ -15,6 +15,7 @@
 		F8205F302B7C57CD00BA039D /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8205F2F2B7C57CD00BA039D /* CollectionViewCell.swift */; };
 		F8205F352B7C92D500BA039D /* CollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8205F342B7C92D500BA039D /* CollectionViewHeader.swift */; };
 		F8205F3B2B7CC69500BA039D /* APIKey.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F8205F3A2B7CC69500BA039D /* APIKey.xcconfig */; };
+		F8205F3F2B7CD4AE00BA039D /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8205F3E2B7CD4AE00BA039D /* UIView+Extension.swift */; };
 		F8235D032B7B2D7100E49073 /* CurrentCoordinateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8235D022B7B2D7100E49073 /* CurrentCoordinateModel.swift */; };
 		F8235D082B7B542B00E49073 /* UIImageView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8235D072B7B542B00E49073 /* UIImageView+Extension.swift */; };
 		F85006292B73ABE3007AB351 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85006282B73ABE3007AB351 /* CoreDataManager.swift */; };
@@ -45,6 +46,7 @@
 		F8205F2F2B7C57CD00BA039D /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		F8205F342B7C92D500BA039D /* CollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewHeader.swift; sourceTree = "<group>"; };
 		F8205F3A2B7CC69500BA039D /* APIKey.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = APIKey.xcconfig; sourceTree = "<group>"; };
+		F8205F3E2B7CD4AE00BA039D /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		F8235D022B7B2D7100E49073 /* CurrentCoordinateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentCoordinateModel.swift; sourceTree = "<group>"; };
 		F8235D072B7B542B00E49073 /* UIImageView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+Extension.swift"; sourceTree = "<group>"; };
 		F85006282B73ABE3007AB351 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				F8235D072B7B542B00E49073 /* UIImageView+Extension.swift */,
+				F8205F3E2B7CD4AE00BA039D /* UIView+Extension.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -280,6 +283,7 @@
 				3F1633972B747C2B00603161 /* OtherInfoCollectionViewCell.swift in Sources */,
 				F8235D082B7B542B00E49073 /* UIImageView+Extension.swift in Sources */,
 				F85006292B73ABE3007AB351 /* CoreDataManager.swift in Sources */,
+				F8205F3F2B7CD4AE00BA039D /* UIView+Extension.swift in Sources */,
 				F87859D22B72064A00D8E0B0 /* WeeklyDataModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
