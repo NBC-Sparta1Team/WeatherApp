@@ -89,22 +89,8 @@ class ForecastInfoVC: UIViewController {
         layout.minimumLineSpacing = 0
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.layer.cornerRadius = 15
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.15)
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        
-        // 직접 선언해보았으나, 적용 X
-        //        let blurEffect = UIBlurEffect(style: .regular)
-        //        let effectView = UIVisualEffectView(effect: blurEffect)
-        //        effectView.layer.cornerRadius = 15
-        //
-        //        // clipsToBounds가 true일 때, EffectView에 cornerRadius 적용됨.
-        //        effectView.clipsToBounds = true
-        //        view.insertSubview(effectView, aboveSubview: thisView.backgroundView!)
-        //        view.insertSubview(effectView, at: 1)
-        //        effectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        //        // blur처리된 뷰를 한 겹 올리는 것
-        //        collectionView.addSubview(effectView)
-        //        effectView.frame = collectionView.bounds
         return collectionView
     }()
     
@@ -121,10 +107,15 @@ class ForecastInfoVC: UIViewController {
     }()
     
     // 4.wind : 풍속(wind.speed), 돌풍(wind.gust), 풍향(wind.deg) 담고있는 view
-    private let windView : WindView = {
-        let view = WindView()
-        view.backgroundColor = .clear
-        return view
+    private let windView : UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 0
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.layer.cornerRadius = 15
+        collectionView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.15)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        return collectionView
     }()
     
     
@@ -146,25 +137,26 @@ class ForecastInfoVC: UIViewController {
         addSubviewsInForecaseInfoVC()
         autoLayoutInForecastInfoVC()
         
+        setBlurEffectView(blurEffect: .regular, on: dailyWeatherCollectionView)
+        setBlurEffectView(blurEffect: .regular, on: windView)
+        
         currentWeatherView.addSubViewsInCurrentWeatherView()
         currentWeatherView.autoLayoutCurrentWeatherView()
         if let weatherViewInfo = self.forecastInfo{
             currentWeatherView.setCurrentWeatherLabels(model: weatherViewInfo )
         }
         
-        windView.setWindViewLabel(
-            windSpeed: "\(forecastInfo?.wind.speed ?? 0)",
-            gustSpeed:"\(forecastInfo?.wind.gust ?? 0)",
-            windDegree:forecastInfo?.wind.deg ?? 0)
+        // MARK: # 뷰 바인딩 수정 필요(CoreData)
+//        windView.setWindViewLabel(
+//            windSpeed: "\(forecastInfo?.wind.speed ?? 0)",
+//            gustSpeed:"\(forecastInfo?.wind.gust ?? 0)",
+//            windDegree: forecastInfo?.wind.deg ?? 0)
         
-        //        setBlurOfDailyWeatherCollectionView(blurEffect: .regular, on: dailyWeatherCollectionView)
-        windView.setBlurOfWindView(blurEffect: .regular)
         backgroundImage.isUserInteractionEnabled = true
         currentWeatherView.bringSubviewToFront(buttonView)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         print("##", #function)
         print("dailyWeatherCollectionView.frame : \(dailyWeatherCollectionView.frame)")
         print("dailyWeatherCollectionView.bounds : \(dailyWeatherCollectionView.bounds)")
@@ -207,21 +199,20 @@ extension ForecastInfoVC {
         // refresh에 수행할 동작
     }
     
-    private func setBlurOfDailyWeatherCollectionView(blurEffect: UIBlurEffect.Style, on thisView: UICollectionView) {
+    private func setBlurEffectView(blurEffect: UIBlurEffect.Style, on thisView: UICollectionView) {
         print(#function)
         let blurEffect = UIBlurEffect(style: blurEffect)
         let effectView = UIVisualEffectView(effect: blurEffect)
         effectView.layer.cornerRadius = 15
         
         // clipsToBounds가 true일 때, superview를 벗어나는 영역을 잘라냄
-        effectView.clipsToBounds = true
+        thisView.clipsToBounds = true
         
-        // blur처리된 뷰를 한 겹 올리는 것
-        //        thisView.addSubview(effectView)
-        //        effectView.frame = thisView.bounds
+        // blur 처리된 effectView를 backgroundView로 한 겹 올리는 것
+        thisView.addSubview(effectView)
+        effectView.frame = thisView.bounds
+        thisView.backgroundView = effectView
         
-        thisView.insertSubview(effectView, at: 0)
-        effectView.frame = CGRect(x: 0.0, y: 0.0, width: 353.0, height: 170.33333333333334)
         print("thisView.bounds : \(thisView.bounds)")
     }
     
@@ -242,7 +233,8 @@ extension ForecastInfoVC {
         contentView.addSubview(windView)
         buttonView.addSubview(dismissButton)
         buttonView.addSubview(plustButton)
-        // collectionView delegata, dataSoure 지정, cell 등록
+        
+        // collectionView delegate, dataSoure 지정, cell 등록
         dailyWeatherCollectionView.delegate = self
         dailyWeatherCollectionView.dataSource = self
         dailyWeatherCollectionView.reloadData()
@@ -251,8 +243,13 @@ extension ForecastInfoVC {
         otherInfoCollectionView.dataSource = self
         otherInfoCollectionView.reloadData()
         
+        windView.delegate = self
+        windView.dataSource = self
+        windView.reloadData()
+        
         dailyWeatherCollectionView.register(DailyWeatherCollectionViewCell.self, forCellWithReuseIdentifier: DailyWeatherCollectionViewCell.reuseIdentifier)
         otherInfoCollectionView.register(OtherInfoCollectionViewCell.self, forCellWithReuseIdentifier: OtherInfoCollectionViewCell.reuseIdentifier)
+        windView.register(WindView.self, forCellWithReuseIdentifier: WindView.reuseIdentifier)
     }
     
     // Forecast에 들어갈 view들의 layout 설정
@@ -265,6 +262,7 @@ extension ForecastInfoVC {
         dailyWeatherCollectionView.translatesAutoresizingMaskIntoConstraints = false
         otherInfoCollectionView.translatesAutoresizingMaskIntoConstraints = false
         windView.translatesAutoresizingMaskIntoConstraints = false
+        
         buttonView.translatesAutoresizingMaskIntoConstraints = false
         dismissButton.translatesAutoresizingMaskIntoConstraints = false
         plustButton.translatesAutoresizingMaskIntoConstraints = false
@@ -336,8 +334,10 @@ extension ForecastInfoVC : UICollectionViewDataSource {
         if collectionView == dailyWeatherCollectionView {
             print("Count cell")
             return oneDay3HourDataList.count
-        } else {
+        } else if collectionView == otherInfoCollectionView {
             return fourForecastData.count
+        } else {
+            return 1
         }
     }
     
@@ -349,10 +349,22 @@ extension ForecastInfoVC : UICollectionViewDataSource {
             
             return cell ?? UICollectionViewCell()
         }
-        else {
+        else if collectionView == otherInfoCollectionView {
             let cell = otherInfoCollectionView.dequeueReusableCell(withReuseIdentifier: OtherInfoCollectionViewCell.reuseIdentifier, for: indexPath) as? OtherInfoCollectionViewCell
             cell?.setOtherInfoCell(model: fourForecastData[indexPath.item])
             
+            return cell ?? UICollectionViewCell()
+        } else {
+            // MARK: # 뷰 바인딩 수정 필요(기존)
+            let cell = windView.dequeueReusableCell(withReuseIdentifier: WindView.reuseIdentifier, for: indexPath) as? WindView
+//            let windSpeed = windSpeed[indexPath.item]
+//            let gustSpeed = gustSpeed[indexPath.item]
+//            let windDegree = windDegree[indexPath.item]
+            cell?.setWindViewLabel(
+                windSpeed: "\(forecastInfo?.wind.speed ?? 0)",
+                gustSpeed: "\(forecastInfo?.wind.gust ?? 0)",
+                windDegree: forecastInfo?.wind.deg ?? 0
+            )
             return cell ?? UICollectionViewCell()
         }
     }
@@ -371,9 +383,14 @@ extension ForecastInfoVC: UICollectionViewDelegateFlowLayout {
             let height = collectionView.frame.height
             print("Fix cell size")
             return CGSize(width: width, height: height)
-        } else {
+        } else if collectionView == otherInfoCollectionView {
             let width = collectionView.frame.width / 2 - 5
             let height = collectionView.frame.height / 2 - 5
+            return CGSize(width: width, height: height)
+        } else {
+            let width = collectionView.frame.width
+            let height = collectionView.frame.height
+            print("Fix cell size")
             return CGSize(width: width, height: height)
         }
     }
