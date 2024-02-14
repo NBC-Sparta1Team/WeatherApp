@@ -16,26 +16,23 @@ struct MainWeather {
     var backgroundImage: UIImage?
 }
 
-class MainVC: UIViewController, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
+class MainVC: UIViewController {
     var locationManager =  CLLocationManager()
     var currentCoordinate  = Coordinate(lat: 0.0, lon: 0.0)
-    
-    var searchController: UISearchController!
-    var searchResultsController: searchControllerVC!
-    let weatherLabel = UILabel()
-    let settingButton = UIButton(type: .system)
-    
     var coordinateArr : [Coordinate] = []
     var forecastInfoArr : [ForecastInfoModel] = []
+    var currentForecastInfo : ForecastInfoModel?
     
+    
+    private var searchController : UISearchController = {
+        return UISearchController(searchResultsController: nil)
+    }()
     // 콜렉션 뷰 레이아웃 설정
     private let layout : UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 15
-        layout.minimumInteritemSpacing = 20
         layout.sectionInset = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
-        
         // 각 셀 크기 설정
         return layout
     }()
@@ -48,27 +45,45 @@ class MainVC: UIViewController, UISearchResultsUpdating, UISearchControllerDeleg
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.identi)
+        collectionView.register(CollectionViewHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CollectionViewHeader.identi)
         return collectionView
     }()
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        
-    }
+    private lazy var searchCotainerView : UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     override func viewDidLoad() {
         super.viewDidLoad()
         getCurrentLoaction()
-        
-        self.view.backgroundColor = .white
-        
-        
-        
-        // 검색 결과 표시용 VC 초기화
-        searchResultsController = searchControllerVC()
-        
-        
+        getCoreData()
         self.view.addSubview(collectionView)
+        self.view.backgroundColor = .white
+        setNavigationBarButtonItem()
+        setSearchController()
+        setAutoLayout()
         
+        
+    }
+    private func setAutoLayout(){
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor,constant: 10),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor,constant : -10),
+            collectionView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor,constant: -10)
+        ])
+    }
+    private func setNavigationBarButtonItem(){
+        let weatherBarbuttonItem = UIBarButtonItem(title: "날씨", style: .plain, target:self, action: nil) //날씨버튼
+        let settingButton = UIBarButtonItem(image: UIImage(systemName: "gear"), style: .plain, target: self, action: #selector(settingButtonTapped)) //설정버튼
+        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 30.0),NSAttributedString.Key.foregroundColor : UIColor.black] // 날씨 글자 Font크키와 색상변경을 위함
+        weatherBarbuttonItem.setTitleTextAttributes(attributes, for: .normal)
+        settingButton.tintColor = .black // Button Color
+        
+        navigationItem.leftBarButtonItem = weatherBarbuttonItem
+        navigationItem.rightBarButtonItem = settingButton
+    }
+    private func setSearchController(){
         //검색 컨트롤러 설정
         searchController = UISearchController()
         searchController.searchResultsUpdater = self
@@ -78,40 +93,48 @@ class MainVC: UIViewController, UISearchResultsUpdating, UISearchControllerDeleg
         definesPresentationContext = true
         searchController.delegate = self
         searchController.searchBar.delegate = self
-        
-        // "날씨" 라벨 추가
-        weatherLabel.text = "날씨"
-        weatherLabel.font = UIFont.systemFont(ofSize: 30, weight: .bold)
-        weatherLabel.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(weatherLabel)
-        
-        // 섭화씨 전환 버튼 추가
-        settingButton.isEnabled = true
-        settingButton.setImage(UIImage(systemName: "gear"), for: .normal)
-        settingButton.tintColor = .black
-        settingButton.translatesAutoresizingMaskIntoConstraints = false
-        settingButton.addTarget(self, action: #selector(settingButtonTapped), for: .touchUpInside)
-        settingButton.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
-        self.view.addSubview(settingButton)
-        
-        
-        // UI위치 설정
-        NSLayoutConstraint.activate([
-            weatherLabel.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant:-110),
-            weatherLabel.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
-            
-            collectionView.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: -140),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
-            settingButton.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: -110),
-            settingButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -30)
-        ])
     }
     
-    
-    
+    private func getCoreData(){
+        let coreDataList = CoreDataManager.shared.readMapData()
+        for data in coreDataList{
+            ForecastAPIManger.shared.getForecastData(from: Coordinate(lat: data.lat, lon: data.lon)) { forecastInfoModel in
+                DispatchQueue.main.sync {
+                    self.forecastInfoArr.append(forecastInfoModel)
+                    self.collectionView.reloadData()
+                }
+            }
+        }
+    }
+}
+//MARK: - SearchController
+extension MainVC : UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate{
+    func updateSearchResults(for searchController: UISearchController) {
+        
+    }
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let text = searchController.searchBar.text else { return }
+        ForecastAPIManger.shared.SynthesizeGetCoodinateData(from: text) { forecastInfoModel,status  in
+            if status{
+                DispatchQueue.main.async {
+                    self.forecastInfoArr.append(forecastInfoModel!)
+                    self.collectionView.reloadData()
+                    print("SeacrchClieck")
+                    CoreDataManager.shared.createMapData(lat: forecastInfoModel!.coord.lat, lon: forecastInfoModel!.coord.lon)
+                }
+            }else{
+                DispatchQueue.main.async{
+                    let vc = searchControllerVC()
+                    vc.updateUI(with: text)
+                    self.present(vc, animated: true)
+                }
+            }
+            
+        }
+    }
+}
+//MARK: - Button Action
+extension MainVC {
     @objc func settingButtonTapped() {
         let alertController = UIAlertController(title: "온도 단위 선택", message: "원하는 단위를 선택하세요.", preferredStyle: .actionSheet)
         
@@ -140,105 +163,69 @@ class MainVC: UIViewController, UISearchResultsUpdating, UISearchControllerDeleg
         
         present(alertController, animated: true, completion: nil)
     }
-    
-    // MARK: - UISearchControllerDelegate
-    
-    //검색창 호출과 동시에 실행되는 메서드
-    func willPresentSearchController(_ searchController: UISearchController) {
-        UIView.animate(withDuration: 0.0) {
-            self.view.backgroundColor = .white
-            self.navigationController?.navigationBar.topItem?.titleView = searchController.searchBar
-            self.navigationItem.titleView?.backgroundColor = .white
-            self.navigationItem.titleView?.frame = searchController.searchBar.frame
-            searchController.searchBar.showsCancelButton = true
-            UIView.animate(withDuration: 0.0, animations: {
-                self.weatherLabel.alpha = 0
-                self.settingButton.alpha = 0
-            }) { _ in
-                self.weatherLabel.isHidden = true
-                self.settingButton.isHidden = true
-            }
-        }
-    }
-    
-    // 검색창이 호출되고난 직후를 처리하는 메서드
-    func didPresentSearchController(_ searchController: UISearchController) {
-    }
-    
-    //검색창이 닫혔을때 실행되는 메서드
-    func didDismissSearchController(_ searchController: UISearchController) {
-        UIView.animate(withDuration: 0.0, animations: {
-            self.weatherLabel.alpha = 1
-            self.settingButton.alpha = 1
-        }) { _ in
-            self.weatherLabel.isHidden = false
-            self.settingButton.isHidden = false
-        }
-    }
-    
-    func updateSearchResults(for searchController: UISearchController) {
-        // 검색 결과 업데이트 코드
-        //        print(searchController.searchBar.text ?? "")
-        
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchController.searchBar.showsCancelButton = false
-    }
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        guard let text = searchController.searchBar.text else { return }
-        ForecastAPIManger.shared.SynthesizeGetCoodinateData(from: text) { forecastInfoModel,status  in
-            if status{
-                DispatchQueue.main.async {
-                    self.forecastInfoArr.append(forecastInfoModel!)
-                    self.collectionView.reloadData()
-                }
-            }else{
-                DispatchQueue.main.async{
-                    self.searchResultsController.updateUI(with: text)
-                    self.present(self.searchResultsController, animated: true)
-                }
-            }
-            
-        }
-        
-    }
 }
 extension MainVC : UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout{
+    //MARK: - CollectionView CEll
+    func numberOfSections(in collectionView: UICollectionView) -> Int { //섹션 개수
+        return 2
+    }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return forecastInfoArr.count
+        if section == 0{ // 0 번째 섹션 의 Ceel의 개수는 1개
+            return 1
+        } else{ // 검색해서 추가한 날씨 정보 개수
+            return forecastInfoArr.count
+        }
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identi, for: indexPath) as? CollectionViewCell else {return UICollectionViewCell()}
-        
-        cell.setCell(model: forecastInfoArr[indexPath.row])
-        return cell
+        if indexPath.section == 0{
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identi, for: indexPath) as? CollectionViewCell else {return UICollectionViewCell()}
+            if let currentForecastData = self.currentForecastInfo{
+                cell.setCell(model: currentForecastData)
+            }
+            return cell
+            
+        }else{
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identi, for: indexPath) as? CollectionViewCell else {return UICollectionViewCell()}
+            
+            cell.setCell(model: forecastInfoArr[indexPath.item])
+            return cell
+        }
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width - 20, height: 100)
+        return CGSize(width: collectionView.frame.width - 20, height: 100) // Cell Size
+    }
+    //MARK: - CollectionView Header
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if kind == UICollectionView.elementKindSectionHeader {
+            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CollectionViewHeader.identi, for: indexPath) as? CollectionViewHeader else { return CollectionViewHeader()}
+            if indexPath.section == 0{
+                header.setLabel(text: "현재 위치")
+            }else{
+                header.setLabel(text: "추가한 위치")
+            }
+            return header
+            
+        }
+        return UICollectionReusableView()
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize { //Header Size
+        return CGSize(width: collectionView.frame.width - 20, height: 20)
     }
 }
+//MARK: - 현재위치 & 현재위치 날씨 정보 데이터
 extension MainVC : CLLocationManagerDelegate{
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) { // 현재 사용자 위치 받아오기
         let location = locations[locations.count - 1]
         CurrentCoordinateModel.shared.currentCoordinate = Coordinate(lat: location.coordinate.latitude, lon: location.coordinate.longitude)
-        if forecastInfoArr.isEmpty {
-            ForecastAPIManger.shared.getForecastData(from: CurrentCoordinateModel.shared.currentCoordinate) { forecastInfoModel in
-                DispatchQueue.main.async {
-                    self.forecastInfoArr.append(forecastInfoModel)
-                    self.collectionView.reloadData()
-                }
+        ForecastAPIManger.shared.getForecastData(from: CurrentCoordinateModel.shared.currentCoordinate) { forecastInfoModel in
+            DispatchQueue.main.async {
+                self.currentForecastInfo = forecastInfoModel
+                self.collectionView.reloadData()
             }
-        }else{
-            ForecastAPIManger.shared.getForecastData(from: CurrentCoordinateModel.shared.currentCoordinate) { forecastInfoModel in
-                DispatchQueue.main.async {
-                    self.forecastInfoArr[0] = forecastInfoModel
-                    self.collectionView.reloadData()
-                }
-            }
+            
         }
-        
     }
     func getCurrentLoaction(){
         locationManager = CLLocationManager()// CLLocationManager클래스의 인스턴스 locationManager를 생성

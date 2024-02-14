@@ -14,25 +14,21 @@ class CoreDataManager {
     // 싱글톤 패턴 적용
     static var shared = CoreDataManager()
     
-    private let persistentContainer: NSPersistentContainer
-    
-    private init() {
-        persistentContainer = NSPersistentContainer(name: "Thefirstorecast")
-        persistentContainer.loadPersistentStores { (_, error) in
-            if let error = error {
-                fatalError("Failed to lad persistent storess: \(error)")
-            }
-        }
+    var persistentContainer: NSPersistentContainer? {
+        (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer
     }
+    var context : NSManagedObjectContext {
+        return self.persistentContainer!.viewContext
+    }
+    
+    let request = MapData.fetchRequest()
     
     
     // Mapdata 생성하는 메서드
     func createMapData(lat: Double, lon: Double) {
-        let context = persistentContainer.viewContext
-        
-        let mapData = MapData(context: context)
-        mapData.lat = lat
-        mapData.lon = lon
+        let newMapData = MapData(context: context)
+        newMapData.lat = lat
+        newMapData.lon = lon
         
         do {
             try context.save()
@@ -45,22 +41,19 @@ class CoreDataManager {
     }
     
     // MapData 읽는 메서드
-    func readMapData() -> [NSManagedObject] {
-        let context = persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<MapData> = MapData.fetchRequest()
-        
+    func readMapData() -> [MapData] {
+        var mapData = [MapData]()
         do {
-            let mapData = try context.fetch(fetchRequest)
-            return mapData
-        } catch {
-            print("맵 데이터 로드 실패: \(error.localizedDescription)")
-            return []
+            let data = try context.fetch(request)
+            mapData = data
+        }catch{
+            print("Error readdata :\(error)")
         }
+        return mapData
     }
     
-    // MapData 삭제 메서드
+     
     func deleteMapData(at indexPath: IndexPath) {
-        let context = persistentContainer.viewContext
         let mapData = readMapData()
         let dataToDelete = mapData[indexPath.row]
         context.delete(dataToDelete)
@@ -73,4 +66,20 @@ class CoreDataManager {
             print("맵 데이터 삭제 실패: \(error.localizedDescription)")
         }
     }
+    func deleteAllData() {
+           let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "MapData")
+           
+           do {
+               let objects = try context.fetch(fetchRequest)
+               for object in objects {
+                   if let managedObject = object as? NSManagedObject {
+                       context.delete(managedObject)
+                   }
+               }
+               
+               try context.save()
+           } catch let error {
+               print("Error deleting all data: \(error.localizedDescription)")
+           }
+       }
 }

@@ -9,8 +9,6 @@ import UIKit
 import CoreLocation
 class WeeklyForecastVC: UIViewController {
     var weeklyTableView: UITableView!
-    var weeklyWeatherLabel: UILabel!
-    let weeklySettingButton = UIButton(type: .system)
     var locationManager =  CLLocationManager()
     
     var weatherForecasts: [OneDayAverageData] = []
@@ -18,23 +16,10 @@ class WeeklyForecastVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         getCurrentLoaction()
+        setNavigationBarButtonItem()
         self.view.backgroundColor = .white
         
-        // 在 view 上方添加 titleLabel
-        weeklyWeatherLabel = UILabel()
-        weeklyWeatherLabel.translatesAutoresizingMaskIntoConstraints = false
-        weeklyWeatherLabel.font = UIFont.systemFont(ofSize: 30, weight: .bold)
-              
-                view.addSubview(weeklyWeatherLabel)
-        
-        // 섭화씨 전환 버튼 추가
-        weeklySettingButton.isEnabled = true
-        weeklySettingButton.setImage(UIImage(systemName: "gear"), for: .normal)
-        weeklySettingButton.tintColor = .black
-        weeklySettingButton.translatesAutoresizingMaskIntoConstraints = false
-        weeklySettingButton.addTarget(self, action: #selector(settingButtonTapped), for: .touchUpInside)
-        weeklySettingButton.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
-                self.view.addSubview(weeklySettingButton)
+      
         
         
         weeklyTableView = UITableView(frame: view.bounds, style: .plain)
@@ -48,50 +33,46 @@ class WeeklyForecastVC: UIViewController {
         view.addSubview(weeklyTableView)
         
         weeklyTableView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-        weeklyWeatherLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,constant: -60),
-        weeklyWeatherLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-        
-        weeklySettingButton.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: -60),
-        weeklySettingButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -30),
-                        
-            
-        weeklyTableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 170),
-        weeklyTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-        weeklyTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        weeklyTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
-        ])
+  
         
         
         weeklyTableView.reloadData()
         
     }
     
-
-       
+    private func setNavigationBarButtonItem(){
+        let weatherBarbuttonItem = UIBarButtonItem(title: "현재 위치 예보", style: .plain, target:self, action: nil) //날씨버튼
+        let settingButton = UIBarButtonItem(image: UIImage(systemName: "gear"), style: .plain, target: self, action: #selector(settingButtonTapped)) //설정버튼
+        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 30.0),NSAttributedString.Key.foregroundColor : UIColor.black] // 날씨 글자 Font크키와 색상변경을 위함
+        weatherBarbuttonItem.setTitleTextAttributes(attributes, for: .normal)
+        settingButton.tintColor = .black // Button Color
+        
+        navigationItem.leftBarButtonItem = weatherBarbuttonItem
+        navigationItem.rightBarButtonItem = settingButton
+    }
+    
     
     @objc func settingButtonTapped() {
-            let alertController = UIAlertController(title: "온도 단위 선택", message: "원하는 단위를 선택하세요.", preferredStyle: .actionSheet)
-            
-            let celsiusAction = UIAlertAction(title: "섭씨", style: .default) { action in
-                // 섭씨 선택 시 처리할 동작 추가
-                print("섭씨 선택")
-            }
-            
-            let fahrenheitAction = UIAlertAction(title: "화씨", style: .default) { action in
-                // 화씨 선택 시 처리할 동작 추가
-                print("화씨 선택")
-            }
-            
-            let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
-            
-            alertController.addAction(celsiusAction)
-            alertController.addAction(fahrenheitAction)
-            alertController.addAction(cancelAction)
-            present(alertController, animated: true, completion: nil)
+        let alertController = UIAlertController(title: "온도 단위 선택", message: "원하는 단위를 선택하세요.", preferredStyle: .actionSheet)
+        
+        let celsiusAction = UIAlertAction(title: "섭씨", style: .default) { action in
+            // 섭씨 선택 시 처리할 동작 추가
+            print("섭씨 선택")
         }
-
+        
+        let fahrenheitAction = UIAlertAction(title: "화씨", style: .default) { action in
+            // 화씨 선택 시 처리할 동작 추가
+            print("화씨 선택")
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        alertController.addAction(celsiusAction)
+        alertController.addAction(fahrenheitAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
 }
 
 extension WeeklyForecastVC: UITableViewDataSource {
@@ -110,7 +91,7 @@ extension WeeklyForecastVC: UITableViewDataSource {
         if let url = URL(string: "https://openweathermap.org/img/wn/\(weatherForecasts[indexPath.row].icon)@2x.png"){
             cell.weatherIconImageView.load(url: url)
         }
-    
+        
         
         
         return cell
@@ -129,13 +110,12 @@ extension WeeklyForecastVC: UITableViewDelegate {
 extension WeeklyForecastVC : CLLocationManagerDelegate{
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations[locations.count-1]
-        print("t")
         CurrentCoordinateModel.shared.currentCoordinate = Coordinate(lat: location.coordinate.latitude, lon: location.coordinate.longitude)
         WeeklyForecastAPIManger.shred.getWeeklyAverageData(from: CurrentCoordinateModel.shared.currentCoordinate) { oneDayAverageData,cityName in
             DispatchQueue.main.async {
                 self.weatherForecasts = oneDayAverageData
+                
                 self.weeklyTableView.reloadData()
-                self.weeklyWeatherLabel.text = cityName
             }
         }
     }
