@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		3F16334A2B70D43500603161 /* DailyWeatherCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1633492B70D43500603161 /* DailyWeatherCollectionViewCell.swift */; };
+		3F1633932B73C3B400603161 /* CurrentWeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1633922B73C3B400603161 /* CurrentWeatherView.swift */; };
+		3F1633952B73CECD00603161 /* WindView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1633942B73CECD00603161 /* WindView.swift */; };
+		3F1633972B747C2B00603161 /* OtherInfoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1633962B747C2B00603161 /* OtherInfoCollectionViewCell.swift */; };
+		F8205F392B7CC3E200BA039D /* APIKey.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F8205F382B7CC3E200BA039D /* APIKey.xcconfig */; };
 		7F64B0372B73975100309C5E /* SearchControllerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F64B0362B73975100309C5E /* SearchControllerVC.swift */; };
 		F8205F302B7C57CD00BA039D /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8205F2F2B7C57CD00BA039D /* CollectionViewCell.swift */; };
 		F8205F352B7C92D500BA039D /* CollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8205F342B7C92D500BA039D /* CollectionViewHeader.swift */; };
@@ -35,6 +39,10 @@
 
 /* Begin PBXFileReference section */
 		3F1633492B70D43500603161 /* DailyWeatherCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyWeatherCollectionViewCell.swift; sourceTree = "<group>"; };
+		3F1633922B73C3B400603161 /* CurrentWeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentWeatherView.swift; sourceTree = "<group>"; };
+		3F1633942B73CECD00603161 /* WindView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindView.swift; sourceTree = "<group>"; };
+		3F1633962B747C2B00603161 /* OtherInfoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherInfoCollectionViewCell.swift; sourceTree = "<group>"; };
+		F8205F382B7CC3E200BA039D /* APIKey.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = APIKey.xcconfig; sourceTree = "<group>"; };
 		7F64B0362B73975100309C5E /* SearchControllerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchControllerVC.swift; sourceTree = "<group>"; };
 		F8205F2F2B7C57CD00BA039D /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		F8205F342B7C92D500BA039D /* CollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewHeader.swift; sourceTree = "<group>"; };
@@ -58,6 +66,7 @@
 		F88C535E2B70C9CB000624A2 /* MainVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainVC.swift; sourceTree = "<group>"; };
 		F88C53602B70C9E4000624A2 /* WeeklyForecastVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyForecastVC.swift; sourceTree = "<group>"; };
 		F88C53622B70C9FF000624A2 /* ForecastInfoVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastInfoVC.swift; sourceTree = "<group>"; };
+		F88C536B2B70D006000624A2 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
 		F88C536B2B70D006000624A2 /* ForecastAPIManger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastAPIManger.swift; sourceTree = "<group>"; };
 		F8A975162B7C4B0E00EC7505 /* APIKey.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = APIKey.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -163,7 +172,10 @@
 			isa = PBXGroup;
 			children = (
 				F88C53622B70C9FF000624A2 /* ForecastInfoVC.swift */,
+				3F1633922B73C3B400603161 /* CurrentWeatherView.swift */,
 				3F1633492B70D43500603161 /* DailyWeatherCollectionViewCell.swift */,
+				3F1633962B747C2B00603161 /* OtherInfoCollectionViewCell.swift */,
+				3F1633942B73CECD00603161 /* WindView.swift */,
 			);
 			path = ForecastInfo;
 			sourceTree = "<group>";
@@ -248,6 +260,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F1633952B73CECD00603161 /* WindView.swift in Sources */,
 				3F16334A2B70D43500603161 /* DailyWeatherCollectionViewCell.swift in Sources */,
 				F8205F352B7C92D500BA039D /* CollectionViewHeader.swift in Sources */,
 				F850062B2B73ACAE007AB351 /* WeeklyForecastModel.swift in Sources */,
@@ -255,6 +268,7 @@
 				F8235D032B7B2D7100E49073 /* CurrentCoordinateModel.swift in Sources */,
 				F88C53612B70C9E4000624A2 /* WeeklyForecastVC.swift in Sources */,
 				F88C534C2B70C8B0000624A2 /* TabBarController.swift in Sources */,
+				3F1633932B73C3B400603161 /* CurrentWeatherView.swift in Sources */,
 				F850062D2B73ACCC007AB351 /* WeeklyForecastTableViewCell.swift in Sources */,
 				F88C535F2B70C9CB000624A2 /* MainVC.swift in Sources */,
 				F87859D62B724C2600D8E0B0 /* APIURL.swift in Sources */,
@@ -266,6 +280,7 @@
 				F88C536C2B70D006000624A2 /* ForecastAPIManger.swift in Sources */,
 				F87859D02B71DF6100D8E0B0 /* ForecastAPiModel.swift in Sources */,
 				F88C534A2B70C8B0000624A2 /* SceneDelegate.swift in Sources */,
+				3F1633972B747C2B00603161 /* OtherInfoCollectionViewCell.swift in Sources */,
 				F8235D082B7B542B00E49073 /* UIImageView+Extension.swift in Sources */,
 				F85006292B73ABE3007AB351 /* CoreDataManager.swift in Sources */,
 				F87859D22B72064A00D8E0B0 /* WeeklyDataModel.swift in Sources */,
@@ -414,7 +429,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4G47XHXXQX;
+				DEVELOPMENT_TEAM = 76R226FG59;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ThefirstForecast/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -442,7 +457,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4G47XHXXQX;
+				DEVELOPMENT_TEAM = 76R226FG59;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ThefirstForecast/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
