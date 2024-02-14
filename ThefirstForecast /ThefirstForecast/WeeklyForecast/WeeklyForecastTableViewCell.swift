@@ -84,24 +84,25 @@ class WeeklyForecastTableViewCell: UITableViewCell {
         
         // Add constraints
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        dateLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15).isActive = true
+        dateLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20).isActive = true
         dateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
         minTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
-        minTemperatureLabel.topAnchor.constraint(equalTo: averageTemperatureLabel.bottomAnchor, constant: 10).isActive = true
+        minTemperatureLabel.topAnchor.constraint(equalTo: weatherIconImageView.bottomAnchor, constant: 5).isActive = true
         minTemperatureLabel.trailingAnchor.constraint(equalTo: maxTemperatureLabel.leadingAnchor, constant: -5).isActive = true
         maxTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
-        maxTemperatureLabel.topAnchor.constraint(equalTo: averageTemperatureLabel.bottomAnchor, constant: 10).isActive = true
+        maxTemperatureLabel.topAnchor.constraint(equalTo: weatherIconImageView.bottomAnchor, constant: 5).isActive = true
         maxTemperatureLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
         averageTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
-        averageTemperatureLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15).isActive = true
-        averageTemperatureLabel.leadingAnchor.constraint(equalTo: weatherIconImageView.trailingAnchor, constant: 5).isActive = true
+        averageTemperatureLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20).isActive = true
         averageTemperatureLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
         precipitationLabel.translatesAutoresizingMaskIntoConstraints = false
-        precipitationLabel.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 10).isActive = true
+        precipitationLabel.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 15).isActive = true
         precipitationLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
         weatherIconImageView.translatesAutoresizingMaskIntoConstraints = false
-        weatherIconImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15).isActive = true
-        weatherIconImageView.trailingAnchor.constraint(equalTo: averageTemperatureLabel.leadingAnchor, constant: -5).isActive = true
+        weatherIconImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant:15).isActive = true
+        weatherIconImageView.trailingAnchor.constraint(equalTo: averageTemperatureLabel.leadingAnchor, constant: -10).isActive = true
+        weatherIconImageView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        weatherIconImageView.widthAnchor.constraint(equalToConstant: 40).isActive = true
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {

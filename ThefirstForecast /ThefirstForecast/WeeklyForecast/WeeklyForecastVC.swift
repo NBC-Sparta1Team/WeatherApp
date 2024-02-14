@@ -12,11 +12,11 @@ class WeeklyForecastVC: UIViewController {
     var weeklyWeatherLabel: UILabel!
     let weeklySettingButton = UIButton(type: .system)
     
-    var weatherForecasts: [WeatherForecast] = []
+    
+    var weatherForecasts: [OneDayAverageData] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        getWeeklyAverageData(coordiante: Coordinate(lat: 35.8312, lon: 128.7385))
         self.view.backgroundColor = .white
         
         // 在 view 上方添加 titleLabel
@@ -63,9 +63,18 @@ class WeeklyForecastVC: UIViewController {
             
         ])
         
-        weatherForecasts = dummyWeatherForecasts
         
         weeklyTableView.reloadData()
+        
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        getWeeklyAverageData(coordiante: CurrentCoordinateModel.shared.currentCoordinate)
+    }
+    
+    
+    
+
        
     }
     
@@ -100,14 +109,15 @@ extension WeeklyForecastVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "WeeklyForecastTableViewCell", for: indexPath)
         as! WeeklyForecastTableViewCell
-        
-        let forecast = weatherForecasts[indexPath.row]
-        cell.dateLabel.text = forecast.date
-            cell.minTemperatureLabel.text = "\(forecast.minTemperature) °"
-            cell.maxTemperatureLabel.text = "\(forecast.maxTemperature) °"
-            cell.averageTemperatureLabel.text = "\(forecast.averageTemperature) °"
-            cell.precipitationLabel.text = "\(forecast.precipitation) 1m/s"
-            cell.weatherIconImageView.image = forecast.weatherIcon
+        cell.dateLabel.text = weatherForecasts[indexPath.row].date
+        cell.minTemperatureLabel.text = "최저 : \(String(format: "%.1f", weatherForecasts[indexPath.row].tempMin))"
+        cell.maxTemperatureLabel.text = "최고 : \(String(format: "%.1f", weatherForecasts[indexPath.row].tempMax)) °"
+        cell.averageTemperatureLabel.text = "\(String(format: "%.1f", weatherForecasts[indexPath.row].temp)) °"
+        cell.precipitationLabel.text = "강수량 : \(String(format: "%.3f", weatherForecasts[indexPath.row].rainfall)) m/s"
+        if let url = URL(string: "https://openweathermap.org/img/wn/\(weatherForecasts[indexPath.row].icon)@2x.png"){
+            cell.weatherIconImageView.load(url: url)
+        }
+    
         
         
         return cell
@@ -115,10 +125,10 @@ extension WeeklyForecastVC: UITableViewDataSource {
 }
 
 extension WeeklyForecastVC: UITableViewDelegate {
- //畫幾次
+    //畫幾次
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-            return 100
-        }
+        return 100
+    }
 }
 
 
@@ -126,7 +136,10 @@ extension WeeklyForecastVC: UITableViewDelegate {
 extension WeeklyForecastVC {
     func getWeeklyAverageData(coordiante : Coordinate){
         WeeklyForecastAPIManger.shred.getWeeklyAverageData(from: coordiante) { oneDayAverageData in
-            let oneDayAverageDataList = oneDayAverageData
+            DispatchQueue.main.async {
+                self.weatherForecasts = oneDayAverageData
+                self.weeklyTableView.reloadData()
+            }
         }
     }
 }
