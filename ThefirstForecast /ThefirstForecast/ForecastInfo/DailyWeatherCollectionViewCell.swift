@@ -27,7 +27,7 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
         label.font = .systemFont(ofSize: 17, weight: .regular)
         return label
     }()
-    
+        
     func setCollectionViewCell(time: String, wind: String, temperature: String) {
         addSubViews()
         autoLayout()

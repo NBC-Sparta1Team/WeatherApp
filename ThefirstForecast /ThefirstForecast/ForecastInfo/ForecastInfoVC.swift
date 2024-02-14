@@ -210,7 +210,7 @@ extension UIView {
 }
 extension ForecastInfoVC {
     func get3HourData(coordinate : Coordinate,date : String){
-        WeeklyForecastAPIManger.shred.getOneDaySplitForecastData(coordinate: coordinate) {  weeklyForecastData in
+        WeeklyForecastAPIManger.shred.getOneDaySplitForecastData(coordinate: coordinate) {  weeklyForecastData,cityName in
             let the3HourData = weeklyForecastData.filter{$0.contains { list in
                 list.dtTxt.split(separator: " ").first! == date
             }}

@@ -6,24 +6,24 @@
 //
 
 import UIKit
-
+import CoreLocation
 class WeeklyForecastVC: UIViewController {
     var weeklyTableView: UITableView!
     var weeklyWeatherLabel: UILabel!
     let weeklySettingButton = UIButton(type: .system)
-    
+    var locationManager =  CLLocationManager()
     
     var weatherForecasts: [OneDayAverageData] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        getCurrentLoaction()
         self.view.backgroundColor = .white
         
         // 在 view 上方添加 titleLabel
         weeklyWeatherLabel = UILabel()
         weeklyWeatherLabel.translatesAutoresizingMaskIntoConstraints = false
         weeklyWeatherLabel.font = UIFont.systemFont(ofSize: 30, weight: .bold)
-        weeklyWeatherLabel.text = "현재 위치 예보"
               
                 view.addSubview(weeklyWeatherLabel)
         
@@ -67,16 +67,9 @@ class WeeklyForecastVC: UIViewController {
         weeklyTableView.reloadData()
         
     }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        getWeeklyAverageData(coordiante: CurrentCoordinateModel.shared.currentCoordinate)
-    }
-    
-    
     
 
        
-    }
     
     @objc func settingButtonTapped() {
             let alertController = UIAlertController(title: "온도 단위 선택", message: "원하는 단위를 선택하세요.", preferredStyle: .actionSheet)
@@ -98,8 +91,8 @@ class WeeklyForecastVC: UIViewController {
             alertController.addAction(cancelAction)
             present(alertController, animated: true, completion: nil)
         }
-}
 
+}
 
 extension WeeklyForecastVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -133,14 +126,25 @@ extension WeeklyForecastVC: UITableViewDelegate {
 
 
 
-extension WeeklyForecastVC {
-    func getWeeklyAverageData(coordiante : Coordinate){
-        WeeklyForecastAPIManger.shred.getWeeklyAverageData(from: coordiante) { oneDayAverageData in
+extension WeeklyForecastVC : CLLocationManagerDelegate{
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations[locations.count-1]
+        print("t")
+        CurrentCoordinateModel.shared.currentCoordinate = Coordinate(lat: location.coordinate.latitude, lon: location.coordinate.longitude)
+        WeeklyForecastAPIManger.shred.getWeeklyAverageData(from: CurrentCoordinateModel.shared.currentCoordinate) { oneDayAverageData,cityName in
             DispatchQueue.main.async {
                 self.weatherForecasts = oneDayAverageData
                 self.weeklyTableView.reloadData()
+                self.weeklyWeatherLabel.text = cityName
             }
         }
+    }
+    func getCurrentLoaction(){
+        locationManager = CLLocationManager()// CLLocationManager클래스의 인스턴스 locationManager를 생성
+        locationManager.delegate = self// 포그라운드일 때 위치 추적 권한 요청
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest// 배터리에 맞게 권장되는 최적의 정확도
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()// 위치 업데이트
     }
 }
 

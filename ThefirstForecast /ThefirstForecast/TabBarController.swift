@@ -32,6 +32,7 @@ extension TabBarController : CLLocationManagerDelegate{
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) { // 현재 사용자 위치 받아오기
         let location = locations[locations.count - 1]
         CurrentCoordinateModel.shared.currentCoordinate = Coordinate(lat: location.coordinate.latitude, lon: location.coordinate.longitude)
+        
     }
     func getCurrentLoaction(){
         locationManager = CLLocationManager()// CLLocationManager클래스의 인스턴스 locationManager를 생성

@@ -65,17 +65,20 @@ struct Wind: Decodable {
 }
 // MARK: - Rain
 struct Rain: Decodable {
-    let rain3H: Double
-    
+    let rain3H: Double?
+    let rain1H: Double?
     enum CodingKeys: String, CodingKey {
+        case rain1H = "1h"
         case rain3H = "3h"
+        
     }
 }
 //MARK: - Snow
 struct Snow : Decodable {
-    let snow3H: Double
-
+    let snow3H: Double?
+    let snow1H: Double?
     enum CodingKeys: String, CodingKey {
+        case snow1H = "1h"
         case snow3H = "3h"
     }
 }

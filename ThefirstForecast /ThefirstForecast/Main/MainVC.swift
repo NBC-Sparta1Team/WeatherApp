@@ -16,10 +16,10 @@ struct MainWeather {
     var backgroundImage: UIImage?
 }
 
-class MainVC: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
+class MainVC: UIViewController, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
     var locationManager =  CLLocationManager()
     var currentCoordinate  = Coordinate(lat: 0.0, lon: 0.0)
-    var collectionView: UICollectionView!
+    
     var searchController: UISearchController!
     var searchResultsController: searchControllerVC!
     let weatherLabel = UILabel()
@@ -27,26 +27,9 @@ class MainVC: UIViewController, UICollectionViewDataSource, UICollectionViewDele
     
     var coordinateArr : [Coordinate] = []
     var forecastInfoArr : [ForecastInfoModel] = []
-    var filteredData: [Weather] = [] // 필터링된 결과 저장 배열
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        getCurrentLoaction()
-        coordinateArr.append(CurrentCoordinateModel.shared.currentCoordinate)
-        //        getSearchData(input: "38613")
-        for (idx,coordinate) in coordinateArr.enumerated(){
-            ForecastAPIManger.shared.getForecastData(from: coordinate) { forecastInfoModel in
-                DispatchQueue.main.async {
-                    self.forecastInfoArr.append(forecastInfoModel)
-                    self.collectionView.reloadData()
-                    
-                }
-            }
-        }
-        
-        self.view.backgroundColor = .white
-        
-        // 콜렉션 뷰 레이아웃 설정
+    // 콜렉션 뷰 레이아웃 설정
+    private let layout : UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 15
@@ -54,19 +37,36 @@ class MainVC: UIViewController, UICollectionViewDataSource, UICollectionViewDele
         layout.sectionInset = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
         
         // 각 셀 크기 설정
-        let cellWidth = (view.frame.width - 1.5 * 20)
-        layout.itemSize = CGSize(width: cellWidth, height: 80)
-        
-        // 검색 결과 표시용 VC 초기화
-        searchResultsController = searchControllerVC()
-        
+        return layout
+    }()
+    
+    private lazy var collectionView : UICollectionView = {
         //콜렉션 뷰 초기화 및 설정
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .clear
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+        collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.identi)
+        return collectionView
+    }()
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        
+    }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        getCurrentLoaction()
+        
+        self.view.backgroundColor = .white
+        
+        
+        
+        // 검색 결과 표시용 VC 초기화
+        searchResultsController = searchControllerVC()
+        
+        
         self.view.addSubview(collectionView)
         
         //검색 컨트롤러 설정
@@ -109,52 +109,8 @@ class MainVC: UIViewController, UICollectionViewDataSource, UICollectionViewDele
             settingButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -30)
         ])
     }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        
-        
-    }
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return forecastInfoArr.count
-    }
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
-        cell.backgroundColor = .lightGray
-        // 지역 이름 레이블 추가
-        let locationLabel = UILabel(frame: CGRect(x: 10, y: 10, width: 150, height: 20))
-        locationLabel.text = forecastInfoArr[indexPath.row].name
-        locationLabel.font = UIFont.boldSystemFont(ofSize: 16)
-        cell.contentView.addSubview(locationLabel)
-        
-        // 풍속 레이블 추가
-        let windSpeedLabel = UILabel(frame: CGRect(x: 10, y: 40, width: 150, height: 20))
-        windSpeedLabel.text = "\(forecastInfoArr[indexPath.row].wind.speed)m/s"
-        windSpeedLabel.font = UIFont.systemFont(ofSize: 14)
-        cell.contentView.addSubview(windSpeedLabel)
-        
-        // 최저/최고 온도 레이블 추가
-        let temperatureLabel = UILabel(frame: CGRect(x: cell.contentView.bounds.width - 200, y: 10, width: 200, height: 20))
-        let min = String(format: "%.1f", forecastInfoArr[indexPath.row].main.tempMin)
-        let max = String(format: "%.1f", forecastInfoArr[indexPath.row].main.tempMax)
-        print(max)
-        temperatureLabel.text = "최저: \(min)℃  최고: \(max)℃"
-        temperatureLabel.textAlignment = .right
-        temperatureLabel.font = UIFont.systemFont(ofSize: 14)
-        cell.contentView.addSubview(temperatureLabel)
-        
-        // 평균 온도 레이블 추가
-        let averageTemperatureLabel = UILabel(frame: CGRect(x: cell.contentView.bounds.width - 160, y: 40, width: 150, height: 20))
-        averageTemperatureLabel.text = "\(forecastInfoArr[indexPath.row].main.temp)℃"
-        averageTemperatureLabel.textAlignment = .right
-        averageTemperatureLabel.font = UIFont.systemFont(ofSize: 14)
-        cell.contentView.addSubview(averageTemperatureLabel)
-        
-        cell.layer.cornerRadius = 10
-        cell.layer.masksToBounds = true
-        
-        return cell
-    }
+    
+    
     
     @objc func settingButtonTapped() {
         let alertController = UIAlertController(title: "온도 단위 선택", message: "원하는 단위를 선택하세요.", preferredStyle: .actionSheet)
@@ -247,14 +203,42 @@ class MainVC: UIViewController, UICollectionViewDataSource, UICollectionViewDele
         }
         
     }
+}
+extension MainVC : UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout{
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return forecastInfoArr.count
+    }
     
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identi, for: indexPath) as? CollectionViewCell else {return UICollectionViewCell()}
+        
+        cell.setCell(model: forecastInfoArr[indexPath.row])
+        return cell
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.frame.width - 20, height: 100)
+    }
 }
 extension MainVC : CLLocationManagerDelegate{
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) { // 현재 사용자 위치 받아오기
         let location = locations[locations.count - 1]
-        self.currentCoordinate = Coordinate(lat: location.coordinate.latitude, lon: location.coordinate.longitude)
+        CurrentCoordinateModel.shared.currentCoordinate = Coordinate(lat: location.coordinate.latitude, lon: location.coordinate.longitude)
+        if forecastInfoArr.isEmpty {
+            ForecastAPIManger.shared.getForecastData(from: CurrentCoordinateModel.shared.currentCoordinate) { forecastInfoModel in
+                DispatchQueue.main.async {
+                    self.forecastInfoArr.append(forecastInfoModel)
+                    self.collectionView.reloadData()
+                }
+            }
+        }else{
+            ForecastAPIManger.shared.getForecastData(from: CurrentCoordinateModel.shared.currentCoordinate) { forecastInfoModel in
+                DispatchQueue.main.async {
+                    self.forecastInfoArr[0] = forecastInfoModel
+                    self.collectionView.reloadData()
+                }
+            }
+        }
         
-        //        collectionView.reloadData()
     }
     func getCurrentLoaction(){
         locationManager = CLLocationManager()// CLLocationManager클래스의 인스턴스 locationManager를 생성

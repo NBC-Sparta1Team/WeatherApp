@@ -98,7 +98,6 @@ class ForecastAPIManger{
     func getForecastData(from coordinate : Coordinate,completion : @escaping(ForecastInfoModel)->Void){ //좌표 -> 날씨 데이터 API
         guard let lat = coordinate.lat else {return}
         guard let lon = coordinate.lon else {return}
-        print(lat)
         let url = EndPoint.data(APItype: "weather").url
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
         components?.queryItems = [URLQueryItem(name: "lat", value: "\(lat)"),URLQueryItem(name: "lon", value: "\(lon)"),URLQueryItem(name: "appid", value: APIKey),URLQueryItem(name: "lang", value: "kr"),URLQueryItem(name: "units", value: "metric")]
@@ -120,7 +119,7 @@ class ForecastAPIManger{
                 print("Decoding Error getForecastData : \(String(describing: error.localizedDescription))")
             }
             if let httpResponse = response as? HTTPURLResponse {
-                print("HTTP Status Code : \(httpResponse.statusCode)")
+                print("HTTP Status Code getForecastData : \(httpResponse.statusCode)")
             }
         }.resume()
     }

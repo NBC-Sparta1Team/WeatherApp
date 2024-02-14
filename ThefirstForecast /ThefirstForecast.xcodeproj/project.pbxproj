@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		3F16334A2B70D43500603161 /* DailyWeatherCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1633492B70D43500603161 /* DailyWeatherCollectionViewCell.swift */; };
 		7F64B0372B73975100309C5E /* SearchControllerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F64B0362B73975100309C5E /* SearchControllerVC.swift */; };
+		F8205F302B7C57CD00BA039D /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8205F2F2B7C57CD00BA039D /* CollectionViewCell.swift */; };
 		F8235D032B7B2D7100E49073 /* CurrentCoordinateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8235D022B7B2D7100E49073 /* CurrentCoordinateModel.swift */; };
-		F8235D052B7B505500E49073 /* APIKey.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F8235D042B7B505500E49073 /* APIKey.xcconfig */; };
 		F8235D082B7B542B00E49073 /* UIImageView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8235D072B7B542B00E49073 /* UIImageView+Extension.swift */; };
 		F85006292B73ABE3007AB351 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85006282B73ABE3007AB351 /* CoreDataManager.swift */; };
 		F850062B2B73ACAE007AB351 /* WeeklyForecastModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F850062A2B73ACAE007AB351 /* WeeklyForecastModel.swift */; };
@@ -29,13 +29,14 @@
 		F88C53612B70C9E4000624A2 /* WeeklyForecastVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C53602B70C9E4000624A2 /* WeeklyForecastVC.swift */; };
 		F88C53632B70C9FF000624A2 /* ForecastInfoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C53622B70C9FF000624A2 /* ForecastInfoVC.swift */; };
 		F88C536C2B70D006000624A2 /* ForecastAPIManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C536B2B70D006000624A2 /* ForecastAPIManger.swift */; };
+		F8A975172B7C4B0E00EC7505 /* APIKey.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F8A975162B7C4B0E00EC7505 /* APIKey.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		3F1633492B70D43500603161 /* DailyWeatherCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyWeatherCollectionViewCell.swift; sourceTree = "<group>"; };
 		7F64B0362B73975100309C5E /* SearchControllerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchControllerVC.swift; sourceTree = "<group>"; };
+		F8205F2F2B7C57CD00BA039D /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		F8235D022B7B2D7100E49073 /* CurrentCoordinateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentCoordinateModel.swift; sourceTree = "<group>"; };
-		F8235D042B7B505500E49073 /* APIKey.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = APIKey.xcconfig; sourceTree = "<group>"; };
 		F8235D072B7B542B00E49073 /* UIImageView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+Extension.swift"; sourceTree = "<group>"; };
 		F85006282B73ABE3007AB351 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		F850062A2B73ACAE007AB351 /* WeeklyForecastModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyForecastModel.swift; sourceTree = "<group>"; };
@@ -56,6 +57,7 @@
 		F88C53602B70C9E4000624A2 /* WeeklyForecastVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyForecastVC.swift; sourceTree = "<group>"; };
 		F88C53622B70C9FF000624A2 /* ForecastInfoVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastInfoVC.swift; sourceTree = "<group>"; };
 		F88C536B2B70D006000624A2 /* ForecastAPIManger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastAPIManger.swift; sourceTree = "<group>"; };
+		F8A975162B7C4B0E00EC7505 /* APIKey.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = APIKey.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,7 +102,7 @@
 		F88C533B2B70C8B0000624A2 = {
 			isa = PBXGroup;
 			children = (
-				F8235D042B7B505500E49073 /* APIKey.xcconfig */,
+				F8A975162B7C4B0E00EC7505 /* APIKey.xcconfig */,
 				F88C53462B70C8B0000624A2 /* ThefirstForecast */,
 				F88C53452B70C8B0000624A2 /* Products */,
 			);
@@ -117,6 +119,7 @@
 		F88C53462B70C8B0000624A2 /* ThefirstForecast */ = {
 			isa = PBXGroup;
 			children = (
+				F88C534B2B70C8B0000624A2 /* TabBarController.swift */,
 				F8235D062B7B541B00E49073 /* Extension */,
 				F85006272B73AAF3007AB351 /* CoreData */,
 				F87859CE2B71DF3B00D8E0B0 /* Model */,
@@ -124,7 +127,6 @@
 				F88C53532B70C8B1000624A2 /* Assets.xcassets */,
 				F88C53552B70C8B1000624A2 /* LaunchScreen.storyboard */,
 				F88C53582B70C8B1000624A2 /* Info.plist */,
-				F88C534B2B70C8B0000624A2 /* TabBarController.swift */,
 				F88C53652B70CC06000624A2 /* WeeklyForecast */,
 				F88C53642B70CBFE000624A2 /* Main */,
 				F88C53662B70CC16000624A2 /* ForecastInfo */,
@@ -138,6 +140,7 @@
 			children = (
 				F88C535E2B70C9CB000624A2 /* MainVC.swift */,
 				7F64B0362B73975100309C5E /* SearchControllerVC.swift */,
+				F8205F2F2B7C57CD00BA039D /* CollectionViewCell.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -238,7 +241,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F88C53572B70C8B1000624A2 /* LaunchScreen.storyboard in Resources */,
-				F8235D052B7B505500E49073 /* APIKey.xcconfig in Resources */,
+				F8A975172B7C4B0E00EC7505 /* APIKey.xcconfig in Resources */,
 				F88C53542B70C8B1000624A2 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -260,6 +263,7 @@
 				F88C535F2B70C9CB000624A2 /* MainVC.swift in Sources */,
 				F87859D62B724C2600D8E0B0 /* APIURL.swift in Sources */,
 				F88C53632B70C9FF000624A2 /* ForecastInfoVC.swift in Sources */,
+				F8205F302B7C57CD00BA039D /* CollectionViewCell.swift in Sources */,
 				F88C53522B70C8B0000624A2 /* ThefirstForecast.xcdatamodeld in Sources */,
 				7F64B0372B73975100309C5E /* SearchControllerVC.swift in Sources */,
 				F88C53482B70C8B0000624A2 /* AppDelegate.swift in Sources */,
@@ -288,7 +292,7 @@
 /* Begin XCBuildConfiguration section */
 		F88C53592B70C8B1000624A2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F8235D042B7B505500E49073 /* APIKey.xcconfig */;
+			baseConfigurationReference = F8A975162B7C4B0E00EC7505 /* APIKey.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -352,7 +356,7 @@
 		};
 		F88C535A2B70C8B1000624A2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F8235D042B7B505500E49073 /* APIKey.xcconfig */;
+			baseConfigurationReference = F8A975162B7C4B0E00EC7505 /* APIKey.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

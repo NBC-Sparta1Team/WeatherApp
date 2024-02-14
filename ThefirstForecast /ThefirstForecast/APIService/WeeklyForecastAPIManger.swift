@@ -33,13 +33,13 @@ class WeeklyForecastAPIManger{
                 print("Decoding Error : \(String(describing: error.localizedDescription))")
             }
             if let httpResponse = response as? HTTPURLResponse {
-                print("HTTP Status Code : \(httpResponse.statusCode)")
+                print("HTTP Status Code getWeeklyForecastData : \(httpResponse.statusCode)")
             }
         }.resume()
     }
-    func getWeeklyAverageData(from coordinate : Coordinate ,completion : @escaping([OneDayAverageData])->Void){ // 3hour/day 평균 날씨 정보
+    func getWeeklyAverageData(from coordinate : Coordinate ,completion : @escaping([OneDayAverageData],String)->Void){ // 3hour/day 평균 날씨 정보
         var OneDayAverageDataList : [OneDayAverageData] = []
-        getOneDaySplitForecastData(coordinate: coordinate) { oneDaySplitForecastDataList in
+        getOneDaySplitForecastData(coordinate: coordinate) { oneDaySplitForecastDataList,cityName  in
             for oneDayinfoData in oneDaySplitForecastDataList{
                 let date = oneDayinfoData[0].dtTxt.split(separator: " ").map{String($0)}.first!
                 let oneDaytInfoDatCount = Double(oneDayinfoData.count)
@@ -60,11 +60,12 @@ class WeeklyForecastAPIManger{
                 rainFall /= oneDaytInfoDatCount
                 OneDayAverageDataList.append(OneDayAverageData(date: date, temp: temp, tempMax: tempMax, tempMin: tempMin, feelsLike: feelsLike, humidty: Int(humidty), windSpeed: windSpeed, windDeg: windDeg, rainfall: rainFall, description: description, icon: icon))
             }
-            completion(OneDayAverageDataList)
+            completion(OneDayAverageDataList,cityName)
         }
     }
-    func getOneDaySplitForecastData(coordinate : Coordinate, completion : @escaping([[List]]) -> Void) { // Day별로 데이터 분리
+    func getOneDaySplitForecastData(coordinate : Coordinate, completion : @escaping([[List]],String) -> Void) { // Day별로 데이터 분리
         getWeeklyForecastData(from: coordinate) { weeklyForecastData in
+            let cityName = weeklyForecastData.city.name
             var oneDaySplitForecastData = [[List]]()
             let dateArr = Set(weeklyForecastData.list.map{$0.dtTxt.split(separator: " ").map{String($0)}[0]})
             for date in dateArr.sorted(){
@@ -73,7 +74,7 @@ class WeeklyForecastAPIManger{
                 }
                 oneDaySplitForecastData.append(tempWeeklyForecastData)
             }
-            completion(oneDaySplitForecastData)
+            completion(oneDaySplitForecastData,cityName)
         }
     }
 }
