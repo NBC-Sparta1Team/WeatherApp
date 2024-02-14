@@ -122,7 +122,7 @@ class WindView: UIView {
         super.layoutSubviews()
         print(#function)
         borderLine.backgroundColor = UIColor.white.withAlphaComponent(0.5)
-        setBackgroundBlurOfWindView(blurEffect: .regular)
+        setBlurOfWindView(blurEffect: .regular)
         addSubViewsInWindView()
         autoLayoutWindView()
     }
@@ -130,6 +130,8 @@ class WindView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         print(#function, "UIView")
+//        addSubViewsInWindView()
+//        autoLayoutWindView()
     }
     
     // superview가 없어서 그런지 가장 마지막에 layoutSubviews 이후에 크기가 지정됨
@@ -139,7 +141,7 @@ class WindView: UIView {
         fatalError("init(coder: ) has not been implemented")
     }
     
-    private func setBackgroundBlurOfWindView(blurEffect: UIBlurEffect.Style) {
+    func setBlurOfWindView(blurEffect: UIBlurEffect.Style) {
         let blurEffect = UIBlurEffect(style: blurEffect)
         let effectView = UIVisualEffectView(effect: blurEffect)
         effectView.frame = self.bounds
@@ -303,6 +305,5 @@ class WindView: UIView {
         default:
             windDirection.text = "알 수 없음"
         }
-        print(#function)
     }
 }

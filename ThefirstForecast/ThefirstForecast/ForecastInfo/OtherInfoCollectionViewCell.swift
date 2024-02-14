@@ -55,7 +55,6 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
         let blurEffect = UIBlurEffect(style: blurEffect)
         let effectView = UIVisualEffectView(effect: blurEffect)
         effectView.frame = self.bounds
-        print("otherInfoCell.bounds in", #function, ": \(self.bounds)")
         effectView.layer.cornerRadius = 15
         self.layer.cornerRadius = 15
         

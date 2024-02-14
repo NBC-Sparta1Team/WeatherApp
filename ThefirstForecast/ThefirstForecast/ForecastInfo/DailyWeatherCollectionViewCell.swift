@@ -38,6 +38,9 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
         hourlyTemperatureLabel.text = temperature
     }
     
+    
+    
+    
     private func addSubViews() {
         self.contentView.addSubViews([
         timeLabel,

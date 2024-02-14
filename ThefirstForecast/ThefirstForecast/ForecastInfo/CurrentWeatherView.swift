@@ -92,7 +92,6 @@ class CurrentWeatherView : UIView {
             maxTemperatureLabel,
             minTemperatureLabel,
         ])
-        print(#function)
     }
     
     func autoLayoutCurrentWeatherView() {
@@ -118,7 +117,6 @@ class CurrentWeatherView : UIView {
             minTemperatureLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: 40),
             minTemperatureLabel.centerYAnchor.constraint(equalTo: maxTemperatureLabel.centerYAnchor),
         ])
-        print(#function)
     }
     
     func setCurrentWeatherLabels(location: String, dailyTemperature: String, weather: String, maxTemperature: String, minTemperature: String) {
@@ -127,6 +125,5 @@ class CurrentWeatherView : UIView {
         weatherLabel.text = weather
         maxTemperatureLabel.text = maxTemperature
         minTemperatureLabel.text = minTemperature
-        print(#function)
     }
 }
