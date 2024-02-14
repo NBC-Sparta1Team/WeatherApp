@@ -34,7 +34,15 @@ class MainVC: UIViewController, UICollectionViewDataSource, UICollectionViewDele
         getCurrentLoaction()
         coordinateArr.append(CurrentCoordinateModel.shared.currentCoordinate)
         //        getSearchData(input: "38613")
-        
+        for (idx,coordinate) in coordinateArr.enumerated(){
+            ForecastAPIManger.shared.getForecastData(from: coordinate) { forecastInfoModel in
+                DispatchQueue.main.async {
+                    self.forecastInfoArr.append(forecastInfoModel)
+                    self.collectionView.reloadData()
+                    
+                }
+            }
+        }
         
         self.view.backgroundColor = .white
         
@@ -103,16 +111,7 @@ class MainVC: UIViewController, UICollectionViewDataSource, UICollectionViewDele
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        for coordinate in coordinateArr{
-            ForecastAPIManger.shared.getForecastData(from: coordinate) { forecastInfoModel in
-                DispatchQueue.main.async {
-                    self.forecastInfoArr.append(forecastInfoModel)
-                    self.collectionView.reloadData()
-                }
-                
-                
-            }
-        }
+
         
         
     }
@@ -254,7 +253,7 @@ extension MainVC : CLLocationManagerDelegate{
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) { // 현재 사용자 위치 받아오기
         let location = locations[locations.count - 1]
         self.currentCoordinate = Coordinate(lat: location.coordinate.latitude, lon: location.coordinate.longitude)
-        coordinateArr[0] = currentCoordinate
+        
         //        collectionView.reloadData()
     }
     func getCurrentLoaction(){
