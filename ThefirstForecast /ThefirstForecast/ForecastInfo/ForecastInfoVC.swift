@@ -78,7 +78,7 @@ class ForecastInfoVC: UIViewController {
 //        let blurEffect = UIBlurEffect(style: .regular)
 //        let effectView = UIVisualEffectView(effect: blurEffect)
 //        effectView.layer.cornerRadius = 15
-//        
+//
 //        // clipsToBounds가 true일 때, EffectView에 cornerRadius 적용됨.
 //        effectView.clipsToBounds = true
 //        view.insertSubview(effectView, aboveSubview: thisView.backgroundView!)
@@ -116,7 +116,6 @@ class ForecastInfoVC: UIViewController {
         super.viewDidLoad()
         print("#", #function)
         // 배경은 흰색, navigationBar 숨김
-        get3HourData(coordinate: Coordinate(lat: 35.8312, lon: 128.7385), date: "2024-02-08")
         self.view.backgroundColor = .white
         self.navigationController?.navigationBar.isHidden = true
         
@@ -287,7 +286,7 @@ extension ForecastInfoVC : UICollectionViewDataSource {
 //        } else {
 //            return 1
 //        }
-//                
+//
 //    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -352,14 +351,5 @@ extension ForecastInfoVC: UICollectionViewDelegateFlowLayout {
 extension UIView {
     func addSubViews(_ views : [UIView]){
         _ = views.map{self.addSubview($0)}
-    }
-}
-extension ForecastInfoVC {
-    func get3HourData(coordinate : Coordinate,date : String){
-        WeeklyForecastAPIManger.shred.getOneDaySplitForecastData(coordinate: coordinate) {  weeklyForecastData,cityName in
-            let the3HourData = weeklyForecastData.filter{$0.contains { list in
-                list.dtTxt.split(separator: " ").first! == date
-            }}
-        }
     }
 }

@@ -29,7 +29,8 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
         label.textColor = .white
         return label
     }()
-    func setCollectionViewCell(time: String, wind: String, temperature: String) {
+    
+    func setCollectionViewCell(time: String, icon: UIImage, temperature: String) {
         addSubViews()
         autoLayout()
         timeLabel.text = time
