@@ -6,13 +6,15 @@
 //
 
 import UIKit
-
+protocol AddActionSendDelegate : AnyObject {
+    func sendForecastInfo(data : ForecastInfoModel )
+}
 class ForecastInfoVC: UIViewController {
     // MARK: 각 View에 사용될 변수
+    var addActionDelegate : AddActionSendDelegate?
     // 1. CurrentWeatherView에 사용되는 Data
     var forecastInfo : ForecastInfoModel?
     
-
     // 2. DailyWeatherCollectionViewCell에 Data
     var oneDay3HourDataList : [OneDay3HourDataModel] = []
     
@@ -20,10 +22,8 @@ class ForecastInfoVC: UIViewController {
     var fourForecastData : [FourForecastStatusModel] = []
     
     
-    // 4. WindView에 사용되는 변수들
-    private let windSpeed = "3"
-    private let gustSpeed = "13"
-    private let windDegree = 110
+    // 4. WindView에 사용되는 Data
+    var windy : Wind?
     private lazy var buttonView : UIView = {
         let stackView = UIView()
         
@@ -118,14 +118,11 @@ class ForecastInfoVC: UIViewController {
         return collectionView
     }()
     
-    
-    
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         get3HoursForecastData(coordinate: forecastInfo?.coord ?? Coord(lat: 0.0, lon: 0.0))
-        print(fourForecastData)
         print("#", #function)
         // 배경은 흰색, navigationBar 숨김
         self.view.backgroundColor = .white
@@ -146,6 +143,10 @@ class ForecastInfoVC: UIViewController {
             currentWeatherView.setCurrentWeatherLabels(model: weatherViewInfo )
         }
         
+//         windView.setWindViewLabel(
+//             windSpeed: windy?.speed ?? 0,
+//             gustSpeed:windy?.gust ?? 0,
+//             windDegree:windy?.deg ?? 0)
         // MARK: # 뷰 바인딩 수정 필요(CoreData)
 //        windView.setWindViewLabel(
 //            windSpeed: "\(forecastInfo?.wind.speed ?? 0)",
@@ -187,16 +188,19 @@ class ForecastInfoVC: UIViewController {
 
 extension ForecastInfoVC {
     @objc func tapDimissButton(){
-        
-        print("tap")
         dismiss(animated: true)
     }
     @objc func tapPlusButton(){
+        CoreDataManager.shared.createMapData(lat: (forecastInfo?.coord.lat)!, lon: (forecastInfo?.coord.lon)!)
+        addActionDelegate?.sendForecastInfo(data: forecastInfo!)
         dismiss(animated: true)
     }
     @objc func refreshFunction() {
         scrollView.refreshControl?.endRefreshing()
         // refresh에 수행할 동작
+    }
+    public func plustButtonShow(){
+        plustButton.isHidden = false
     }
     
     private func setBlurEffectView(blurEffect: UIBlurEffect.Style, on thisView: UICollectionView) {

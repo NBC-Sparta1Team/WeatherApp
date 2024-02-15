@@ -108,11 +108,12 @@ class CurrentWeatherView : UIView {
     
     func setCurrentWeatherLabels(model : ForecastInfoModel) {
         locationLabel.text = model.name
-        dailyTemperatureLabel.text = "\(model.main.temp)℃"
+        let temp = "\(Int(model.main.temp))"
+        dailyTemperatureLabel.text = temp + "°C"
         weatherLabel.text = "\(model.weather.first!.description)"
         let min = String(format: "최고 : %.1f", model.main.tempMin)
         let max = String(format: "최저 : %.1f", model.main.tempMax)
-        temperatureMaxMinLabel.text = "\(min) \(max)"
+        temperatureMaxMinLabel.text = "\(min)°C \(max)°C"
     
     }
 }

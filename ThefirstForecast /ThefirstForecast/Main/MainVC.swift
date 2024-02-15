@@ -17,12 +17,12 @@ struct MainWeather {
 }
 
 class MainVC: UIViewController {
+    
     var locationManager =  CLLocationManager()
     var currentCoordinate  = Coordinate(lat: 0.0, lon: 0.0)
     var coordinateArr : [Coordinate] = []
     var forecastInfoArr : [ForecastInfoModel] = []
     var currentForecastInfo : ForecastInfoModel?
-    
     
     private var searchController : UISearchController = {
         return UISearchController(searchResultsController: nil)
@@ -37,7 +37,7 @@ class MainVC: UIViewController {
         return layout
     }()
     
-    private lazy var collectionView : UICollectionView = {
+    private lazy var mainCollectionView : UICollectionView = {
         //콜렉션 뷰 초기화 및 설정
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -57,21 +57,19 @@ class MainVC: UIViewController {
         super.viewDidLoad()
         getCurrentLoaction()
         getCoreData()
-//        CoreDataManager.shared.deleteAllData()
-        self.view.addSubview(collectionView)
+        CoreDataManager.shared.deleteAllData()
+        self.view.addSubview(mainCollectionView)
         self.view.backgroundColor = .white
         setNavigationBarButtonItem()
         setSearchController()
         setAutoLayout()
-        
-        
     }
     private func setAutoLayout(){
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 10),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor,constant: 10),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor,constant : -10),
-            collectionView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor,constant: -10)
+            mainCollectionView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            mainCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor,constant: 10),
+            mainCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor,constant : -10),
+            mainCollectionView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor,constant: -10)
         ])
     }
     private func setNavigationBarButtonItem(){
@@ -102,7 +100,7 @@ class MainVC: UIViewController {
             ForecastAPIManger.shared.getForecastData(from: Coordinate(lat: data.lat, lon: data.lon)) { forecastInfoModel in
                 DispatchQueue.main.sync {
                     self.forecastInfoArr.append(forecastInfoModel)
-                    self.collectionView.reloadData()
+                    self.mainCollectionView.reloadData()
                 }
             }
         }
@@ -115,14 +113,23 @@ extension MainVC : UISearchResultsUpdating, UISearchControllerDelegate, UISearch
     }
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let text = searchController.searchBar.text else { return }
+        let vc = ForecastInfoVC()
+        vc.addActionDelegate = self
         ForecastAPIManger.shared.SynthesizeGetCoodinateData(from: text) { forecastInfoModel,status  in
             if status{
                 DispatchQueue.main.async {
-                    self.forecastInfoArr.append(forecastInfoModel!)
-                    self.collectionView.reloadData()
-                    print("SeacrchClieck")
-                    CoreDataManager.shared.createMapData(lat: forecastInfoModel!.coord.lat, lon: forecastInfoModel!.coord.lon)
+                    vc.forecastInfo = forecastInfoModel
+                    vc.fourForecastData.append(FourForecastStatusModel(title: "체감온도", value: "\(String(describing: forecastInfoModel?.main.feelsLike ?? 0))°", icon: "thermometer.medium"))
+                    vc.fourForecastData.append(FourForecastStatusModel(title: "강수량", value: "\(String(describing: forecastInfoModel?.rain?.rain1H ?? 0.0))mm/h", icon: "drop.fill"))
+                    vc.fourForecastData.append(FourForecastStatusModel(title: "가시거리", value: "\(String(describing: forecastInfoModel?.visibility ?? 0))m", icon: "eye.fill"))
+                    vc.fourForecastData.append(FourForecastStatusModel(title: "습도", value: "\(String(describing: forecastInfoModel?.main.humidity ?? 0))%", icon: "humidity"))
+                    vc.windy = forecastInfoModel?.wind
+                    vc.modalPresentationStyle = .fullScreen
+                    vc.plustButtonShow()
+                    self.present(vc, animated: true)
                 }
+                
+                
             }else{
                 DispatchQueue.main.async{
                     let vc = searchControllerVC()
@@ -165,6 +172,7 @@ extension MainVC {
         
         present(alertController, animated: true, completion: nil)
     }
+   
 }
 extension MainVC : UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout{
     //MARK: - CollectionView CEll
@@ -190,7 +198,6 @@ extension MainVC : UICollectionViewDataSource,UICollectionViewDelegate,UICollect
             
         }else{
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identi, for: indexPath) as? CollectionViewCell else {return UICollectionViewCell()}
-            
             cell.setCell(model: forecastInfoArr[indexPath.item])
             return cell
         }
@@ -225,9 +232,19 @@ extension MainVC : UICollectionViewDataSource,UICollectionViewDelegate,UICollect
             vc.fourForecastData.append(FourForecastStatusModel(title: "가시거리", value: "\(String(describing: self.currentForecastInfo?.visibility ?? 0))m", icon: "eye.fill"))
             vc.fourForecastData.append(FourForecastStatusModel(title: "습도", value: "\(String(describing: self.currentForecastInfo?.main.humidity ?? 0))%", icon: "humidity"))
             vc.modalPresentationStyle = .fullScreen
+            vc.addActionDelegate = self
             self.present(vc, animated: true)
         }else{
-            
+            let vc = ForecastInfoVC()
+            let foreCastInfoData = forecastInfoArr[indexPath.item]
+            vc.forecastInfo = foreCastInfoData
+            vc.fourForecastData.append(FourForecastStatusModel(title: "체감온도", value: "\(String(describing: foreCastInfoData.main.feelsLike))°", icon: "thermometer.medium"))
+            vc.fourForecastData.append(FourForecastStatusModel(title: "강수량", value: "\(String(describing: foreCastInfoData.rain?.rain1H ?? 0.0))mm/h", icon: "drop.fill"))
+            vc.fourForecastData.append(FourForecastStatusModel(title: "가시거리", value: "\(String(describing: foreCastInfoData.visibility))m", icon: "eye.fill"))
+            vc.fourForecastData.append(FourForecastStatusModel(title: "습도", value: "\(String(describing: foreCastInfoData.main.humidity))%", icon: "humidity"))
+            vc.windy = foreCastInfoData.wind
+            vc.modalPresentationStyle = .fullScreen
+            self.present(vc, animated: true)
         }
     }
 }
@@ -239,7 +256,7 @@ extension MainVC : CLLocationManagerDelegate{
         ForecastAPIManger.shared.getForecastData(from: CurrentCoordinateModel.shared.currentCoordinate) { forecastInfoModel in
             DispatchQueue.main.async {
                 self.currentForecastInfo = forecastInfoModel
-                self.collectionView.reloadData()
+                self.mainCollectionView.reloadData()
             }
             
         }
@@ -251,4 +268,11 @@ extension MainVC : CLLocationManagerDelegate{
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()// 위치 업데이트
     }
+}
+extension MainVC :  AddActionSendDelegate {
+    func sendForecastInfo(data: ForecastInfoModel) {
+        self.forecastInfoArr.append(data)
+        self.mainCollectionView.reloadData()
+    }
+    
 }
