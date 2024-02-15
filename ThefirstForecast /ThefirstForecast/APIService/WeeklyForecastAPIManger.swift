@@ -9,8 +9,8 @@ import Foundation
 class WeeklyForecastAPIManger{
     static let shred = WeeklyForecastAPIManger()
     let APIKey = Bundle.main.infoDictionary?["OpenWeatherMap_KEY"] as? String
-    func getWeeklyForecastData(from coordinate : Coordinate,completion : @escaping(WeeklyForecastModel)->Void){ // 6days/3Hour API
-        let url = EndPoint.data(APItype: "forecast").url
+    func getWeeklyForecastData(from coordinate : Coordinate,completion : @escaping(WeeklyForecastModel)->Void){ // 현재 기준으로 5days/3Hour API
+        let url = EndPoint.data(APItype: "forecast").url //Url
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
         guard let lat = coordinate.lat else {return}
         guard let lon = coordinate.lon else {return}
@@ -37,7 +37,21 @@ class WeeklyForecastAPIManger{
             }
         }.resume()
     }
-    func getWeeklyAverageData(from coordinate : Coordinate ,completion : @escaping([OneDayAverageData],City)->Void){ // 3hour/day 평균 날씨 정보
+    func getOneDaySplitForecastData(coordinate : Coordinate, completion : @escaping([[List]],City) -> Void) { // Day별로 데이터 분리
+        getWeeklyForecastData(from: coordinate) { weeklyForecastData in
+            let cityName = weeklyForecastData.city
+            var oneDaySplitForecastData = [[List]]()
+            let dateArr = Set(weeklyForecastData.list.map{$0.dtTxt.split(separator: " ").map{String($0)}[0]})
+            for date in dateArr.sorted(){
+                let tempWeeklyForecastData = weeklyForecastData.list.filter { list in
+                    list.dtTxt.split(separator: " ").map{String($0)}.first! == date
+                }
+                oneDaySplitForecastData.append(tempWeeklyForecastData)
+            }
+            completion(oneDaySplitForecastData,cityName)
+        }
+    }
+    func getWeeklyAverageData(from coordinate : Coordinate ,completion : @escaping([OneDayAverageData],City)->Void){ // 3hour/day 평균 날씨 정보 - 주간 예보를 위함
         var OneDayAverageDataList : [OneDayAverageData] = []
         
         getOneDaySplitForecastData(coordinate: coordinate) { oneDaySplitForecastDataList,city  in
@@ -68,21 +82,8 @@ class WeeklyForecastAPIManger{
             completion(OneDayAverageDataList,city)
         }
     }
-    func getOneDaySplitForecastData(coordinate : Coordinate, completion : @escaping([[List]],City) -> Void) { // Day별로 데이터 분리
-        getWeeklyForecastData(from: coordinate) { weeklyForecastData in
-            let cityName = weeklyForecastData.city
-            var oneDaySplitForecastData = [[List]]()
-            let dateArr = Set(weeklyForecastData.list.map{$0.dtTxt.split(separator: " ").map{String($0)}[0]})
-            for date in dateArr.sorted(){
-                let tempWeeklyForecastData = weeklyForecastData.list.filter { list in
-                    list.dtTxt.split(separator: " ").map{String($0)}.first! == date
-                }
-                oneDaySplitForecastData.append(tempWeeklyForecastData)
-            }
-            completion(oneDaySplitForecastData,cityName)
-        }
-    }
-    func getOneDay3HourForecastToday(coordinate : Coordinate,completion :@escaping([OneDay3HourDataModel]) -> Void) { // 1day /3hour
+ 
+    func getOneDay3HourForecastToday(coordinate : Coordinate,completion :@escaping([OneDay3HourDataModel]) -> Void) { // 1day /3hour : Today
         getWeeklyForecastData(from: coordinate) { weeklyForecastData in
             var dataList = [OneDay3HourDataModel]()
             let dateArr = Set(weeklyForecastData.list.map{$0.dtTxt.split(separator: " ").map{String($0)}[0]}).sorted()
@@ -101,7 +102,7 @@ class WeeklyForecastAPIManger{
         }
         
     }
-    func getSelectDate3HourForecastData(coordinate : Coordinate,date : String,completion :@escaping([OneDay3HourDataModel]) -> Void) { // 1day /3hour
+    func getSelectDate3HourForecastData(coordinate : Coordinate,date : String,completion :@escaping([OneDay3HourDataModel]) -> Void) { // 1day /3hour list
         getWeeklyForecastData(from: coordinate) { weeklyForecastData in
             var dataList = [OneDay3HourDataModel]()
             let oneDay3HourForecastDataList = weeklyForecastData.list.filter { list in

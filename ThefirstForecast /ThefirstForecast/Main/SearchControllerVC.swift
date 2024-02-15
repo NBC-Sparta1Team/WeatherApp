@@ -99,11 +99,5 @@ class searchControllerVC: UIViewController, UITableViewDelegate, UITableViewData
         return cell
     }
     
-    // MARK: - 테이블뷰 델리게이트
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // 검색창에서 해당 검색어를 선택했을 때의 동작 구현
-        // 바깥 콜렉션 뷰에 업데이트 등
-    }
 }
 

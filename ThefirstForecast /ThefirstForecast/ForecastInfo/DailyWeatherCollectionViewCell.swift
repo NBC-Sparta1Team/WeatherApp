@@ -9,7 +9,7 @@ import UIKit
 
 class DailyWeatherCollectionViewCell: UICollectionViewCell {
     static let reuseIdentifier = "dailyWeatherCollectionViewCell"
-    
+
     private let timeLabel : UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 17, weight: .medium)
@@ -38,18 +38,6 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    public func setCollectionViewCell(model : OneDay3HourDataModel) {
-        timeLabel.text = model.hour + "시"
-        if let url = URL(string: "https://openweathermap.org/img/wn/\(model.icon)@2x.png"){
-            weatherImage.load(url: url)
-        }
-        let temp = TempStateData.shared.state ? "\(Int(model.temp))°C" : model.temp.setFahrenheit()
-        hourlyTemperatureLabel.text = temp
-    }
-    
-    
-    
-    
     private func addSubViews() {
         self.contentView.addSubViews([
         timeLabel,
@@ -57,7 +45,6 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
         hourlyTemperatureLabel
         ])
     }
-    
     private func autoLayout() {
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
         weatherImage.translatesAutoresizingMaskIntoConstraints = false
@@ -75,4 +62,14 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
             hourlyTemperatureLabel.centerYAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -(contentView.bounds.height / 6)),
         ])
     }
+    public func setCollectionViewCell(model : OneDay3HourDataModel) {
+        timeLabel.text = model.hour + "시"
+        if let url = URL(string: "https://openweathermap.org/img/wn/\(model.icon)@2x.png"){
+            weatherImage.load(url: url)
+        }
+        let temp = TempStateData.shared.state ? "\(Int(model.temp))°C" : model.temp.setFahrenheit()
+        hourlyTemperatureLabel.text = temp
+    }
+    
+    
 }

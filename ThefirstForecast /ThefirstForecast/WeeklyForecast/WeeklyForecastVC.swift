@@ -21,19 +21,8 @@ class WeeklyForecastVC: UIViewController {
         super.viewDidLoad()
         getCurrentLoaction()
         setNavigationBarButtonItem()
+        setWeeklyTableView()
         self.view.backgroundColor = .white
-        
-        
-        
-        
-        weeklyTableView = UITableView(frame: view.bounds, style: .plain)
-        
-        weeklyTableView.backgroundColor = .white
-        weeklyTableView.dataSource = self
-        weeklyTableView.delegate = self
-        weeklyTableView.separatorStyle = .none
-        weeklyTableView.showsVerticalScrollIndicator = false
-        weeklyTableView.register(WeeklyForecastTableViewCell.self, forCellReuseIdentifier: "WeeklyForecastTableViewCell")
         view.addSubview(currentCityLabel)
         view.addSubview(weeklyTableView)
         currentCityLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -47,19 +36,22 @@ class WeeklyForecastVC: UIViewController {
             weeklyTableView.rightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.rightAnchor, constant: -10),
             weeklyTableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
         ])
-        
-        
-        weeklyTableView.reloadData()
-        
     }
-    
+    private func setWeeklyTableView(){
+        weeklyTableView = UITableView(frame: view.bounds, style: .plain)
+        weeklyTableView.backgroundColor = .white
+        weeklyTableView.dataSource = self
+        weeklyTableView.delegate = self
+        weeklyTableView.separatorStyle = .none
+        weeklyTableView.showsVerticalScrollIndicator = false
+        weeklyTableView.register(WeeklyForecastTableViewCell.self, forCellReuseIdentifier: "WeeklyForecastTableViewCell")
+    }
     private func setNavigationBarButtonItem(){
         let weatherBarbuttonItem = UIBarButtonItem(title: "주간 예보", style: .plain, target:self, action: nil) //날씨버튼
         let settingButton = UIBarButtonItem(image: UIImage(systemName: "gear"), style: .plain, target: self, action: #selector(settingButtonTapped)) //설정버튼
         let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 30.0),NSAttributedString.Key.foregroundColor : UIColor.black] // 날씨 글자 Font크키와 색상변경을 위함
         weatherBarbuttonItem.setTitleTextAttributes(attributes, for: .normal)
         settingButton.tintColor = .black // Button Color
-        
         navigationItem.leftBarButtonItem = weatherBarbuttonItem
         navigationItem.rightBarButtonItem = settingButton
     }
@@ -67,21 +59,17 @@ class WeeklyForecastVC: UIViewController {
     
     @objc func settingButtonTapped() {
         let alertController = UIAlertController(title: "온도 단위 선택", message: "원하는 단위를 선택하세요.", preferredStyle: .actionSheet)
-        
         let celsiusAction = UIAlertAction(title: "섭씨", style: .default) { _ in
             TempStateData.shared.state = true
             self.weeklyTableView.reloadData()
             print("섭씨 선택")
         }
-        
         let fahrenheitAction = UIAlertAction(title: "화씨", style: .default) { _ in
             TempStateData.shared.state = false
             self.weeklyTableView.reloadData()
             print("화씨 선택")
         }
-        
         let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
-        
         alertController.addAction(celsiusAction)
         alertController.addAction(fahrenheitAction)
         alertController.addAction(cancelAction)

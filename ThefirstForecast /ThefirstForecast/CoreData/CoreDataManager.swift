@@ -13,7 +13,6 @@ import UIKit
 class CoreDataManager {
     // 싱글톤 패턴 적용
     static var shared = CoreDataManager()
-    
     var persistentContainer: NSPersistentContainer? {
         (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer
     }
@@ -22,8 +21,6 @@ class CoreDataManager {
     }
     
     let request = MapData.fetchRequest()
-    
-    
     // Mapdata 생성하는 메서드
     func createMapData(lat: Double, lon: Double) {
         let newMapData = MapData(context: context)
@@ -39,7 +36,6 @@ class CoreDataManager {
         }
         
     }
-    
     // MapData 읽는 메서드
     func readMapData() -> [MapData] {
         var mapData = [MapData]()
@@ -51,8 +47,6 @@ class CoreDataManager {
         }
         return mapData
     }
-    
-     
     func deleteMapData(at indexPath: IndexPath) {
         let mapData = readMapData()
         let dataToDelete = mapData[indexPath.row]
@@ -76,7 +70,6 @@ class CoreDataManager {
                        context.delete(managedObject)
                    }
                }
-               
                try context.save()
            } catch let error {
                print("Error deleting all data: \(error.localizedDescription)")

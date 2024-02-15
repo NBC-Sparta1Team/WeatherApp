@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CollectionViewCell: UICollectionViewCell {
+class MainCollectionViewCell: UICollectionViewCell {
     static let identi = "CollectionViewCell"
     
     // 지역 이름 레이블 추가

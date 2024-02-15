@@ -45,7 +45,6 @@ class WeeklyForecastTableViewCell: UITableViewCell {
         return label
     }()
     let weatherIconImageView = UIImageView()
-    
     override func layoutSubviews() {
         super.layoutSubviews()
         contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 5, left: 15, bottom: 5, right: 15))
@@ -53,22 +52,13 @@ class WeeklyForecastTableViewCell: UITableViewCell {
         contentView.layer.masksToBounds = true
         contentView.layer.borderWidth = 1
         contentView.layer.borderColor = UIColor.lightGray.cgColor
-        
         contentView.backgroundColor = UIColor(named: "backgroundColor")
     }
-    
-    
-    
-    
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureSubviews()
-        // Initialization code
         contentView.layer.cornerRadius = 10
-        //        contentView.backgroundColor = .lightGray
     }
-    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         configureSubviews()
@@ -81,10 +71,6 @@ class WeeklyForecastTableViewCell: UITableViewCell {
         contentView.addSubview(averageTemperatureLabel)
         contentView.addSubview(precipitationLabel)
         contentView.addSubview(weatherIconImageView)
-        
-        
-        
-        
         // Add constraints
         NSLayoutConstraint.activate([
             averageTemperatureLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15),
@@ -113,10 +99,8 @@ class WeeklyForecastTableViewCell: UITableViewCell {
    
         
     }
-    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        
         // Configure the view for the selected state
     }
 }

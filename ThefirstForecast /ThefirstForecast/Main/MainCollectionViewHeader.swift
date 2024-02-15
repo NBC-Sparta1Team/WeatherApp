@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CollectionViewHeader: UICollectionReusableView {
+class MainCollectionViewHeader: UICollectionReusableView {
     static let identi = "CollectionViewHeaderid"
     private lazy var headerNameLabel : UILabel = {
         let label = UILabel()
