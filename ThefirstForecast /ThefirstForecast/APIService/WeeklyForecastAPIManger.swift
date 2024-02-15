@@ -37,11 +37,13 @@ class WeeklyForecastAPIManger{
             }
         }.resume()
     }
-    func getWeeklyAverageData(from coordinate : Coordinate ,completion : @escaping([OneDayAverageData],String)->Void){ // 3hour/day 평균 날씨 정보
+    func getWeeklyAverageData(from coordinate : Coordinate ,completion : @escaping([OneDayAverageData],City)->Void){ // 3hour/day 평균 날씨 정보
         var OneDayAverageDataList : [OneDayAverageData] = []
         
-        getOneDaySplitForecastData(coordinate: coordinate) { oneDaySplitForecastDataList,cityName  in
+        getOneDaySplitForecastData(coordinate: coordinate) { oneDaySplitForecastDataList,city  in
+            
             for oneDayinfoData in oneDaySplitForecastDataList{
+                
                 let date = oneDayinfoData[0].dtTxt.split(separator: " ").map{String($0)}.first!
                 let oneDaytInfoDatCount = Double(oneDayinfoData.count)
                 let temp = oneDayinfoData.map{$0.main.temp}.reduce(0, +) / oneDaytInfoDatCount
@@ -50,23 +52,25 @@ class WeeklyForecastAPIManger{
                 let feelsLike = oneDayinfoData.map{$0.main.feelsLike}.reduce(0,+) / oneDaytInfoDatCount
                 let humidty = oneDayinfoData.map{Double($0.main.humidity)}.reduce(0,+) / oneDaytInfoDatCount
                 let windSpeed = oneDayinfoData.map{$0.wind.speed}.reduce(0,+) / oneDaytInfoDatCount
+                let windGust = oneDayinfoData.map{Double($0.wind.gust ?? 0)}.reduce(0,+) / oneDaytInfoDatCount
                 let windDeg = oneDayinfoData.map{Double($0.wind.deg)}.reduce(0,+) / oneDaytInfoDatCount
-                let description = oneDayinfoData[0].weather[0].description
-                let icon = oneDayinfoData[0].weather[0].icon
+                let visibility = oneDayinfoData.map{Double($0.visibility)}.reduce(0,+) / oneDaytInfoDatCount
+                let wind = Wind(speed: windSpeed, deg: Int(windDeg), gust: windGust)
+                let weather = oneDayinfoData.first!.weather
                 var rainFall = 0.0
                 for threeHourDayInfo in oneDayinfoData{
                     let threeHoureRainFall = threeHourDayInfo.rain?.rain3H == nil ? 0.0 : threeHourDayInfo.rain?.rain3H
                     rainFall+=threeHoureRainFall!
                 }
                 rainFall /= oneDaytInfoDatCount
-                OneDayAverageDataList.append(OneDayAverageData(date: date, temp: temp, tempMax: tempMax, tempMin: tempMin, feelsLike: feelsLike, humidty: Int(humidty), windSpeed: windSpeed, windDeg: windDeg, rainfall: rainFall, description: description, icon: icon))
+                OneDayAverageDataList.append(OneDayAverageData(date: date, temp: temp, tempMax: tempMax, tempMin: tempMin, feelsLike: feelsLike, humidty: Int(humidty),wind: wind ,rainfall: rainFall, visibility: Int(visibility),weather: weather))
             }
-            completion(OneDayAverageDataList,cityName)
+            completion(OneDayAverageDataList,city)
         }
     }
-    func getOneDaySplitForecastData(coordinate : Coordinate, completion : @escaping([[List]],String) -> Void) { // Day별로 데이터 분리
+    func getOneDaySplitForecastData(coordinate : Coordinate, completion : @escaping([[List]],City) -> Void) { // Day별로 데이터 분리
         getWeeklyForecastData(from: coordinate) { weeklyForecastData in
-            let cityName = weeklyForecastData.city.name
+            let cityName = weeklyForecastData.city
             var oneDaySplitForecastData = [[List]]()
             let dateArr = Set(weeklyForecastData.list.map{$0.dtTxt.split(separator: " ").map{String($0)}[0]})
             for date in dateArr.sorted(){

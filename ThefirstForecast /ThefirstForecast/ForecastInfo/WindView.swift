@@ -257,13 +257,13 @@ class WindView: UIView {
         print(#function)
     }
     
-    func setWindViewLabel(windSpeed: String, gustSpeed: String, windDegree: Int) {
+    func setWindViewLabel(windSpeed: Double, gustSpeed: Double, windDegree: Int) {
         windSpeedScale.text = "m/s"
         windLabel.text = "바람"
-        windSpeedLabel.text = windSpeed
+        windSpeedLabel.text = String(format: "%.2f", windSpeed)
         gustScale.text = "m/s"
         gustLabel.text = "돌풍"
-        gustSpeedLabel.text = gustSpeed
+        gustSpeedLabel.text = String(format: "%.2f", gustSpeed)
         let windDegree = windDegree
         print(windDegree)
         let cgFloat = CGFloat(windDegree) * .pi / 180

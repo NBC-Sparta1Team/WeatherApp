@@ -11,13 +11,13 @@ class ForecastAPIManger{
     let APIKey = Bundle.main.infoDictionary?["OpenWeatherMap_KEY"] as? String
     func convertName(eng : String) -> String{
         switch eng{
-        case "서울","서울특별시" : return "Seoul"
+        case "서울특별시","서울" : return "Seoul"
         case "광주광역시","광주" : return "Gwangju"
-        case "대구광역시","대구": return "Daegu"
-        case "대전광역시" : return  "Daejeon"
-        case "부산광역시" : return  "Busan"
-        case "울산광역시" : return  "Ulsan"
-        case "인천광역시" : return  "Incheon"
+        case "대구광역시","대구" : return "Daegu"
+        case "대전광역시","대전" : return  "Daejeon"
+        case "부산광역시","부산" : return  "Busan"
+        case "울산광역시","울산" : return  "Ulsan"
+        case "인천광역시","인천" : return  "Incheon"
         case "강원도" : return  "Gangwon-do"
         case "경기도" : return  "Gyeonggi-do"
         case "경상북도" : return "Gyeongsangbuk-do"
@@ -30,12 +30,12 @@ class ForecastAPIManger{
             return eng
         }
     }
-    func getCoordinate(fromCityDoName cityDoName : String, completion : @escaping(Coordinate) -> Void){ // 도시이름 -> 좌표 API
-        let url = EndPoint.geo(APItype: "direct").url
+    func getCoordinate(fromCityDoName cityDoName : String, completion : @escaping(ForecastInfoModel?,Bool) -> Void){ // 도시이름 -> 좌표 API
+        let url = EndPoint.data(APItype: "weather").url
         
         let cityDoName = self.convertName(eng: cityDoName) // 특별시,광역시, ~도
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
-        components?.queryItems = [URLQueryItem(name: "q", value: "\(cityDoName),kr"),URLQueryItem(name: "limit", value: "5"),URLQueryItem(name: "appid", value: APIKey)]
+        components?.queryItems = [URLQueryItem(name: "q", value: "\(cityDoName),kr"),URLQueryItem(name: "appid", value: APIKey),URLQueryItem(name: "lang", value: "kr"),URLQueryItem(name: "units", value: "metric")]
         guard let requestURL = components?.url else { return}
         var request = URLRequest(url: requestURL)
         request.httpMethod = "GET"
@@ -49,17 +49,12 @@ class ForecastAPIManger{
                 return
             }
             do{
+                let forecastData : ForecastInfoModel = try JSONDecoder().decode(ForecastInfoModel.self, from: data)
                 
-                let coordianteData : [CoordinateModel] = try JSONDecoder().decode([CoordinateModel].self, from: data)
-                if coordianteData.isEmpty{
-                    completion(Coordinate(lat: nil, lon: nil))
-                    
-                }else{
-                    completion(Coordinate(lat: coordianteData.first?.lat, lon: coordianteData.first?.lon))
-                }
-                
+                completion(forecastData,true)
             }catch{
                 print("Decoding Error getCoordinate : \(String(describing: error.localizedDescription))")
+                completion(nil,false)
             }
             if let httpResponse = response as? HTTPURLResponse {
                 print("HTTP Status Code: \(httpResponse.statusCode)")
@@ -131,14 +126,8 @@ class ForecastAPIManger{
                 }
             }
         }else{
-            getCoordinate(fromCityDoName: input) { getCoordinateData in
-                if getCoordinateData.lat == nil &&  getCoordinateData.lon == nil{
-                    completion(nil,false)
-                }else{
-                    self.getForecastData(from: getCoordinateData) { getForecastData in
-                        completion(getForecastData,true)
-                    }
-                }
+            getCoordinate(fromCityDoName: input) { getForecastData,status  in
+                completion(getForecastData,status)
             }
         }
     }

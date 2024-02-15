@@ -39,7 +39,7 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
     }()
     
     func setOtherInfoCell(model : FourForecastStatusModel) {
-        
+        print(model)
         
         setBackgroundBlurOfInfoView(blurEffect: .regular)
         addSubViews()
