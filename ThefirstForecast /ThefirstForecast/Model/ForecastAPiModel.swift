@@ -17,7 +17,7 @@ struct Coordinate{
 }
 struct FourForecastStatusModel{
     let title : String
-    let value : String
+    let value : Int
     let icon : String
 }
 // MARK: - ForecastInfoModel

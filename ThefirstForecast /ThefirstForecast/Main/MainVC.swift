@@ -119,10 +119,10 @@ extension MainVC : UISearchResultsUpdating, UISearchControllerDelegate, UISearch
             if status{
                 DispatchQueue.main.async {
                     vc.forecastInfo = forecastInfoModel
-                    vc.fourForecastData.append(FourForecastStatusModel(title: "체감온도", value: "\(String(describing: forecastInfoModel?.main.feelsLike ?? 0))°", icon: "thermometer.medium"))
-                    vc.fourForecastData.append(FourForecastStatusModel(title: "강수량", value: "\(String(describing: forecastInfoModel?.rain?.rain1H ?? 0.0))mm/h", icon: "drop.fill"))
-                    vc.fourForecastData.append(FourForecastStatusModel(title: "가시거리", value: "\(String(describing: forecastInfoModel?.visibility ?? 0))m", icon: "eye.fill"))
-                    vc.fourForecastData.append(FourForecastStatusModel(title: "습도", value: "\(String(describing: forecastInfoModel?.main.humidity ?? 0))%", icon: "humidity"))
+                    vc.fourForecastData.append(FourForecastStatusModel(title: "체감온도", value: Int(forecastInfoModel?.main.feelsLike ?? 0), icon: "thermometer.medium"))
+                    vc.fourForecastData.append(FourForecastStatusModel(title: "강수량", value: Int(forecastInfoModel?.rain?.rain1H ?? 0), icon: "drop.fill"))
+                    vc.fourForecastData.append(FourForecastStatusModel(title: "가시거리", value: forecastInfoModel?.visibility ?? 0, icon: "eye.fill"))
+                    vc.fourForecastData.append(FourForecastStatusModel(title: "습도", value: forecastInfoModel?.main.humidity ?? 0, icon: "humidity"))
                     vc.windy = forecastInfoModel?.wind
                     vc.modalPresentationStyle = .fullScreen
                     vc.plustButtonShow()
@@ -148,12 +148,14 @@ extension MainVC {
         let alertController = UIAlertController(title: "온도 단위 선택", message: "원하는 단위를 선택하세요.", preferredStyle: .actionSheet)
         
         let celsiusAction = UIAlertAction(title: "섭씨", style: .default) { action in
-            // 섭씨 선택 시 처리할 동작 추가
+            TempStateData.shared.state = true
+            self.mainCollectionView.reloadData()
             print("섭씨 선택")
         }
         
         let fahrenheitAction = UIAlertAction(title: "화씨", style: .default) { action in
-            // 화씨 선택 시 처리할 동작 추가
+            TempStateData.shared.state = false
+            self.mainCollectionView.reloadData()
             print("화씨 선택")
         }
         
@@ -227,10 +229,10 @@ extension MainVC : UICollectionViewDataSource,UICollectionViewDelegate,UICollect
             let vc = ForecastInfoVC()
             vc.forecastInfo = self.currentForecastInfo
             
-            vc.fourForecastData.append(FourForecastStatusModel(title: "체감온도", value: "\(String(describing: self.currentForecastInfo?.main.feelsLike ?? 0.0))°", icon: "thermometer.medium"))
-            vc.fourForecastData.append(FourForecastStatusModel(title: "강수량", value: "\(String(describing: self.currentForecastInfo?.rain?.rain1H ?? 0.0))mm/h", icon: "drop.fill"))
-            vc.fourForecastData.append(FourForecastStatusModel(title: "가시거리", value: "\(String(describing: self.currentForecastInfo?.visibility ?? 0))m", icon: "eye.fill"))
-            vc.fourForecastData.append(FourForecastStatusModel(title: "습도", value: "\(String(describing: self.currentForecastInfo?.main.humidity ?? 0))%", icon: "humidity"))
+            vc.fourForecastData.append(FourForecastStatusModel(title: "체감온도", value: Int(self.currentForecastInfo?.main.feelsLike ?? 0), icon: "thermometer.medium"))
+            vc.fourForecastData.append(FourForecastStatusModel(title: "강수량", value: Int(self.currentForecastInfo?.rain?.rain1H ?? 0), icon: "drop.fill"))
+            vc.fourForecastData.append(FourForecastStatusModel(title: "가시거리", value: self.currentForecastInfo?.visibility ?? 0, icon: "eye.fill"))
+            vc.fourForecastData.append(FourForecastStatusModel(title: "습도", value: self.currentForecastInfo?.main.humidity ?? 0, icon: "humidity"))
             vc.modalPresentationStyle = .fullScreen
             vc.addActionDelegate = self
             self.present(vc, animated: true)
@@ -238,10 +240,10 @@ extension MainVC : UICollectionViewDataSource,UICollectionViewDelegate,UICollect
             let vc = ForecastInfoVC()
             let foreCastInfoData = forecastInfoArr[indexPath.item]
             vc.forecastInfo = foreCastInfoData
-            vc.fourForecastData.append(FourForecastStatusModel(title: "체감온도", value: "\(String(describing: foreCastInfoData.main.feelsLike))°", icon: "thermometer.medium"))
-            vc.fourForecastData.append(FourForecastStatusModel(title: "강수량", value: "\(String(describing: foreCastInfoData.rain?.rain1H ?? 0.0))mm/h", icon: "drop.fill"))
-            vc.fourForecastData.append(FourForecastStatusModel(title: "가시거리", value: "\(String(describing: foreCastInfoData.visibility))m", icon: "eye.fill"))
-            vc.fourForecastData.append(FourForecastStatusModel(title: "습도", value: "\(String(describing: foreCastInfoData.main.humidity))%", icon: "humidity"))
+            vc.fourForecastData.append(FourForecastStatusModel(title: "체감온도", value: Int(foreCastInfoData.main.feelsLike), icon: "thermometer.medium"))
+            vc.fourForecastData.append(FourForecastStatusModel(title: "강수량", value: Int(foreCastInfoData.rain?.rain1H ?? 0), icon: "drop.fill"))
+            vc.fourForecastData.append(FourForecastStatusModel(title: "가시거리", value: foreCastInfoData.visibility, icon: "eye.fill"))
+            vc.fourForecastData.append(FourForecastStatusModel(title: "습도", value: foreCastInfoData.main.humidity, icon: "humidity"))
             vc.windy = foreCastInfoData.wind
             vc.modalPresentationStyle = .fullScreen
             self.present(vc, animated: true)

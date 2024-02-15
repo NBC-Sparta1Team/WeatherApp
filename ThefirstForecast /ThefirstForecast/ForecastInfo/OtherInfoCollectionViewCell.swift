@@ -38,7 +38,7 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    // MARK: description 추가
+    
     func setOtherInfoCell(model : FourForecastStatusModel) {
         setBackgroundBlurOfInfoView(blurEffect: .regular)
         addSubViews()
@@ -47,9 +47,20 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
         contentView.layer.cornerRadius = 15
         weatherIcon.image = UIImage(systemName: model.icon)
         titleLabel.text = model.title
-        weatherValue.text = "\(model.value)"
-//        weatherValue.text = setIntValue(model: model)
-        weatherDescription.text = setDescription(model: model)
+        switch model.title{
+        case "체감온도" :
+            weatherValue.text = TempStateData.shared.state ? "\(model.value)°C" : Double(model.value).setFahrenheit()
+        case "강수량" :
+            weatherValue.text = "\(model.value)mm/s"
+        case "가시거리" :
+            weatherValue.text = "\(model.value)m"
+        case "습도" :
+            weatherValue.text = "\(model.value)%"
+        default:
+            print("잘못된 날씨 Title")
+        }
+        
+        weatherDescription.text = setDescription(model: model) // description 추가
         weatherIcon.tintColor = UIColor.white.withAlphaComponent(0.5)
     }
     
@@ -58,22 +69,11 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
         return characterDeleteValue
     }
     
-    private func setIntValue(model : FourForecastStatusModel) -> String {
-        let characterDeleteValue = model.value.components(separatedBy: CharacterSet(charactersIn: "0123456789.").inverted).joined()
-        guard let value = Int(characterDeleteValue) else {
-            return "0"
-        }
-        return "\(value)"
-    }
-    
+
     
     
     private func setDescription(model : FourForecastStatusModel) -> String {
-        let characterDeleteValue = characterDeleteValue(value: model.value)
-        guard let value = Int(characterDeleteValue) else {
-            return "날씨 정보를 가져올 수 없습니다."
-        }
-        
+
         switch model.title {
         case "체감온도" :
             return getFeelsLikeDescription(value: model.value)
@@ -88,12 +88,8 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    private func getFeelsLikeDescription(value : String) -> String {
-        let feelsLikeValue = value.replacingOccurrences(of: "°", with: "")
-        guard let temperature = Double(feelsLikeValue) else {
-            return "날씨 정보를 가져올 수 없습니다."
-        }
-        switch temperature {
+    private func getFeelsLikeDescription(value : Int) -> String {
+        switch value {
         case 21... :
             return feelsLike[0]
         case 10..<21 :
@@ -105,12 +101,8 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    private func getRainDescription(value : String) -> String {
-        let rainValue = characterDeleteValue(value: value)
-        guard let rainValue = Int(rainValue) else {
-            return "날씨 정보를 가져올 수 없습니다."
-        }
-        switch rainValue {
+    private func getRainDescription(value : Int) -> String {
+        switch value {
         case 1... :
             return rain[0]
         default:
@@ -118,12 +110,8 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    private func getVisibilityDescription(value : String) -> String {
-        let visibilityValue = characterDeleteValue(value: value)
-        guard let visibilityValue = Int(visibilityValue) else {
-            return "날씨 정보를 가져올 수 없습니다."
-        }
-        switch visibilityValue {
+    private func getVisibilityDescription(value : Int) -> String {
+        switch value {
         case 8001... :
             return visibility[0]
         case 5001..<8001 :
@@ -135,12 +123,8 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    private func getHumidityDescription(value : String) -> String {
-            let humidityValue = characterDeleteValue(value: value)
-            guard let humidityValue = Int(humidityValue) else {
-                return "날씨 정보를 가져올 수 없습니다."
-            }
-            switch humidityValue {
+    private func getHumidityDescription(value : Int) -> String {
+            switch value {
             case 61... :
                 return humidity[0]
             case 31..<61 :

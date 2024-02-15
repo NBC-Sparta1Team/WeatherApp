@@ -47,8 +47,8 @@ class WeeklyForecastAPIManger{
                 let date = oneDayinfoData[0].dtTxt.split(separator: " ").map{String($0)}.first!
                 let oneDaytInfoDatCount = Double(oneDayinfoData.count)
                 let temp = oneDayinfoData.map{$0.main.temp}.reduce(0, +) / oneDaytInfoDatCount
-                let tempMax = oneDayinfoData.map{$0.main.tempMax}.reduce(0, +) / oneDaytInfoDatCount
-                let tempMin = oneDayinfoData.map{$0.main.tempMin}.reduce(0, +) / oneDaytInfoDatCount
+                let tempMax = oneDayinfoData.map{$0.main.temp}.max()
+                let tempMin = oneDayinfoData.map{$0.main.temp}.min()
                 let feelsLike = oneDayinfoData.map{$0.main.feelsLike}.reduce(0,+) / oneDaytInfoDatCount
                 let humidty = oneDayinfoData.map{Double($0.main.humidity)}.reduce(0,+) / oneDaytInfoDatCount
                 let windSpeed = oneDayinfoData.map{$0.wind.speed}.reduce(0,+) / oneDaytInfoDatCount
@@ -63,7 +63,7 @@ class WeeklyForecastAPIManger{
                     rainFall+=threeHoureRainFall!
                 }
                 rainFall /= oneDaytInfoDatCount
-                OneDayAverageDataList.append(OneDayAverageData(date: date, temp: temp, tempMax: tempMax, tempMin: tempMin, feelsLike: feelsLike, humidty: Int(humidty),wind: wind ,rainfall: rainFall, visibility: Int(visibility),weather: weather))
+                OneDayAverageDataList.append(OneDayAverageData(date: date, temp: temp, tempMax: tempMax ?? 0.0, tempMin: tempMin ?? 0.0, feelsLike: feelsLike, humidty: Int(humidty),wind: wind ,rainfall: rainFall, visibility: Int(visibility),weather: weather))
             }
             completion(OneDayAverageDataList,city)
         }
@@ -82,11 +82,28 @@ class WeeklyForecastAPIManger{
             completion(oneDaySplitForecastData,cityName)
         }
     }
-    func getOneDay3HourForecastData(coordinate : Coordinate,completion :@escaping([OneDay3HourDataModel]) -> Void) { // 1day /3hout
+    func getOneDay3HourForecastToday(coordinate : Coordinate,completion :@escaping([OneDay3HourDataModel]) -> Void) { // 1day /3hour
         getWeeklyForecastData(from: coordinate) { weeklyForecastData in
             var dataList = [OneDay3HourDataModel]()
             let dateArr = Set(weeklyForecastData.list.map{$0.dtTxt.split(separator: " ").map{String($0)}[0]}).sorted()
             let date = dateArr.first!
+            let oneDay3HourForecastDataList = weeklyForecastData.list.filter { list in
+                list.dtTxt.split(separator: " ").map{String($0)}.first! == date
+            }
+            for oneDay3HourForecastData in oneDay3HourForecastDataList{
+                let temp = oneDay3HourForecastData.main.temp
+                let icon = oneDay3HourForecastData.weather.first!.icon
+                let hour = oneDay3HourForecastData.dtTxt.split(separator: " ").last!.split(separator: ":").first!
+                
+                dataList.append(OneDay3HourDataModel(hour: String(hour), icon: icon, temp: temp))
+            }
+            completion(dataList)
+        }
+        
+    }
+    func getSelectDate3HourForecastData(coordinate : Coordinate,date : String,completion :@escaping([OneDay3HourDataModel]) -> Void) { // 1day /3hour
+        getWeeklyForecastData(from: coordinate) { weeklyForecastData in
+            var dataList = [OneDay3HourDataModel]()
             let oneDay3HourForecastDataList = weeklyForecastData.list.filter { list in
                 list.dtTxt.split(separator: " ").map{String($0)}.first! == date
             }
