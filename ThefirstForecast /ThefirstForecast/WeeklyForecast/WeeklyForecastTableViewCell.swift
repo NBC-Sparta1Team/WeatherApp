@@ -8,52 +8,54 @@
 import UIKit
 
 class WeeklyForecastTableViewCell: UITableViewCell {
-    
+   
     let dateLabel : UILabel = {
-       let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 20)
+        let label = UILabel()
+        label.font = UIFont.boldSystemFont(ofSize: 15)
+        label.textColor = UIColor(named: "textColor")
         return label
     }()
     
-
+    
     let minTemperatureLabel: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 9)
+        label.font = UIFont.boldSystemFont(ofSize: 15)
+        label.textColor = UIColor(named: "textColor")
         return label
     }()
     
     let maxTemperatureLabel : UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 9)
+        label.font = UIFont.boldSystemFont(ofSize: 15)
+        label.textColor = UIColor(named: "textColor")
         return label
     }()
     
     let averageTemperatureLabel : UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 20)
+        label.font = UIFont.boldSystemFont(ofSize: 20)
+        label.textColor = UIColor(named: "textColor")
         return label
     }()
     
     let precipitationLabel : UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 9)
+        label.font = UIFont.systemFont(ofSize: 15)
+        label.textColor = UIColor(named: "textColor")
         return label
     }()
     let weatherIconImageView = UIImageView()
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 25, bottom: 20, right: 25))
-               contentView.layer.cornerRadius = 8
-               contentView.layer.masksToBounds = true
+        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 5, left: 15, bottom: 5, right: 15))
+        contentView.layer.cornerRadius = 8
+        contentView.layer.masksToBounds = true
+        contentView.layer.borderWidth = 1
+        contentView.layer.borderColor = UIColor.lightGray.cgColor
         
-        
-       
-       }
+        contentView.backgroundColor = UIColor(named: "backgroundColor")
+    }
     
     
     
@@ -63,7 +65,8 @@ class WeeklyForecastTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureSubviews()
         // Initialization code
-        contentView.backgroundColor = .lightGray
+        contentView.layer.cornerRadius = 10
+        //        contentView.backgroundColor = .lightGray
     }
     
     required init?(coder: NSCoder) {
@@ -79,35 +82,41 @@ class WeeklyForecastTableViewCell: UITableViewCell {
         contentView.addSubview(precipitationLabel)
         contentView.addSubview(weatherIconImageView)
         
-      
-           
+        
+        
         
         // Add constraints
+        NSLayoutConstraint.activate([
+            averageTemperatureLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15),
+            averageTemperatureLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
+            precipitationLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+            precipitationLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15),
+            dateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
+            dateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15),
+            minTemperatureLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15),
+            maxTemperatureLabel.trailingAnchor.constraint(equalTo: minTemperatureLabel.leadingAnchor, constant: -5),
+            maxTemperatureLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15),
+            minTemperatureLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            weatherIconImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant:15),
+            weatherIconImageView.leadingAnchor.constraint(equalTo: averageTemperatureLabel.trailingAnchor, constant: 10),
+            weatherIconImageView.heightAnchor.constraint(equalToConstant: 40),
+            weatherIconImageView.widthAnchor.constraint(equalToConstant: 40)
+        ])
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        dateLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20).isActive = true
-        dateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
-        minTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
-        minTemperatureLabel.topAnchor.constraint(equalTo: weatherIconImageView.bottomAnchor, constant: 5).isActive = true
-        minTemperatureLabel.trailingAnchor.constraint(equalTo: maxTemperatureLabel.leadingAnchor, constant: -5).isActive = true
         maxTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
-        maxTemperatureLabel.topAnchor.constraint(equalTo: weatherIconImageView.bottomAnchor, constant: 5).isActive = true
-        maxTemperatureLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
+        minTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
         averageTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
-        averageTemperatureLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20).isActive = true
-        averageTemperatureLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
         precipitationLabel.translatesAutoresizingMaskIntoConstraints = false
-        precipitationLabel.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 15).isActive = true
-        precipitationLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
         weatherIconImageView.translatesAutoresizingMaskIntoConstraints = false
-        weatherIconImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant:15).isActive = true
-        weatherIconImageView.trailingAnchor.constraint(equalTo: averageTemperatureLabel.leadingAnchor, constant: -10).isActive = true
-        weatherIconImageView.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        weatherIconImageView.widthAnchor.constraint(equalToConstant: 40).isActive = true
+     
+        
+   
+        
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
 }

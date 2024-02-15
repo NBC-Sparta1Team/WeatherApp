@@ -43,8 +43,8 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
         if let url = URL(string: "https://openweathermap.org/img/wn/\(model.icon)@2x.png"){
             weatherImage.load(url: url)
         }
-        let temp = String(format: "%d", Int(model.temp))
-        hourlyTemperatureLabel.text = temp + "°"
+        let temp = TempStateData.shared.state ? "\(Int(model.temp))°C" : model.temp.setFahrenheit()
+        hourlyTemperatureLabel.text = temp
     }
     
     

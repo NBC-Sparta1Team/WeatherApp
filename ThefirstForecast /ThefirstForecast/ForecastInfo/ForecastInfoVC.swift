@@ -17,13 +17,17 @@ class ForecastInfoVC: UIViewController {
     
     // 2. DailyWeatherCollectionViewCell에 Data
     var oneDay3HourDataList : [OneDay3HourDataModel] = []
-    
+    // 주가예보일경우
+    var presentView = 0 // 0 : main , 1: WeeklyForecast
+    var selectDate = ""
     // 3. OtherInfoCollectionView에 사용되는 변수들
     var fourForecastData : [FourForecastStatusModel] = []
     
-    
     // 4. WindView에 사용되는 Data
     var windy : Wind?
+    
+    
+    
     private lazy var buttonView : UIView = {
         let stackView = UIView()
         
@@ -122,8 +126,13 @@ class ForecastInfoVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        get3HoursForecastData(coordinate: forecastInfo?.coord ?? Coord(lat: 0.0, lon: 0.0))
-        print("#", #function)
+        if presentView != 0 {
+            getSelect3HoursForecastData(coordinate: forecastInfo?.coord ?? Coord(lat: 0.0, lon: 0.0), date: selectDate)
+        }else{
+            get3HoursForecastData(coordinate: forecastInfo?.coord ?? Coord(lat: 0.0, lon: 0.0))
+        }
+        
+        
         // 배경은 흰색, navigationBar 숨김
         self.view.backgroundColor = .white
         self.navigationController?.navigationBar.isHidden = true
@@ -156,26 +165,26 @@ class ForecastInfoVC: UIViewController {
         backgroundImage.isUserInteractionEnabled = true
         currentWeatherView.bringSubviewToFront(buttonView)
     }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        print("##", #function)
-        print("dailyWeatherCollectionView.frame : \(dailyWeatherCollectionView.frame)")
-        print("dailyWeatherCollectionView.bounds : \(dailyWeatherCollectionView.bounds)")
-    }
-    
-    override func viewIsAppearing(_ animated: Bool) {
-        super.viewIsAppearing(animated)
-        print("###", #function)
-        print("dailyWeatherCollectionView.frame : \(dailyWeatherCollectionView.frame)")
-        print("dailyWeatherCollectionView.bounds : \(dailyWeatherCollectionView.bounds)")
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        print("####", #function)
-        print("dailyWeatherCollectionView.frame : \(dailyWeatherCollectionView.frame)")
-        print("dailyWeatherCollectionView.bounds : \(dailyWeatherCollectionView.bounds)")
-    }
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        print("##", #function)
+//        print("dailyWeatherCollectionView.frame : \(dailyWeatherCollectionView.frame)")
+//        print("dailyWeatherCollectionView.bounds : \(dailyWeatherCollectionView.bounds)")
+//    }
+//    
+//    override func viewIsAppearing(_ animated: Bool) {
+//        super.viewIsAppearing(animated)
+//        print("###", #function)
+//        print("dailyWeatherCollectionView.frame : \(dailyWeatherCollectionView.frame)")
+//        print("dailyWeatherCollectionView.bounds : \(dailyWeatherCollectionView.bounds)")
+//    }
+//    
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        print("####", #function)
+//        print("dailyWeatherCollectionView.frame : \(dailyWeatherCollectionView.frame)")
+//        print("dailyWeatherCollectionView.bounds : \(dailyWeatherCollectionView.bounds)")
+//    }
     
     // view가 움직일 때마다 계속 호출되고 있음. 사용하면 안됨.
     //    override func viewDidLayoutSubviews() {
@@ -365,8 +374,8 @@ extension ForecastInfoVC : UICollectionViewDataSource {
 //            let gustSpeed = gustSpeed[indexPath.item]
 //            let windDegree = windDegree[indexPath.item]
             cell?.setWindViewLabel(
-                windSpeed: "\(forecastInfo?.wind.speed ?? 0)",
-                gustSpeed: "\(forecastInfo?.wind.gust ?? 0)",
+                windSpeed: Int(forecastInfo?.wind.speed ?? 0),
+                gustSpeed: Int(forecastInfo?.wind.gust ?? 0),
                 windDegree: forecastInfo?.wind.deg ?? 0
             )
             return cell ?? UICollectionViewCell()
@@ -385,7 +394,7 @@ extension ForecastInfoVC: UICollectionViewDelegateFlowLayout {
         if collectionView == dailyWeatherCollectionView {
             let width = collectionView.frame.width / 4.5
             let height = collectionView.frame.height
-            print("Fix cell size")
+//            print("Fix cell size")
             return CGSize(width: width, height: height)
         } else if collectionView == otherInfoCollectionView {
             let width = collectionView.frame.width / 2 - 5
@@ -394,7 +403,7 @@ extension ForecastInfoVC: UICollectionViewDelegateFlowLayout {
         } else {
             let width = collectionView.frame.width
             let height = collectionView.frame.height
-            print("Fix cell size")
+//            print("Fix cell size")
             return CGSize(width: width, height: height)
         }
     }
@@ -403,7 +412,7 @@ extension ForecastInfoVC: UICollectionViewDelegateFlowLayout {
 
 extension ForecastInfoVC{
     func get3HoursForecastData(coordinate : Coord){
-        WeeklyForecastAPIManger.shred.getOneDay3HourForecastData(coordinate: Coordinate(lat: coordinate.lat, lon: coordinate.lon)) { oneDay3HourData in
+        WeeklyForecastAPIManger.shred.getOneDay3HourForecastToday(coordinate: Coordinate(lat: coordinate.lat, lon: coordinate.lon)) { oneDay3HourData in
             DispatchQueue.main.async {
                 self.oneDay3HourDataList = oneDay3HourData
                 self.dailyWeatherCollectionView.reloadData()
@@ -412,5 +421,12 @@ extension ForecastInfoVC{
             
         }
     }
-    
+    func getSelect3HoursForecastData(coordinate : Coord,date : String){
+        WeeklyForecastAPIManger.shred.getSelectDate3HourForecastData(coordinate: Coordinate(lat: coordinate.lat, lon: coordinate.lon), date: date) { selectOneDay3HourData in
+            DispatchQueue.main.async {
+                self.oneDay3HourDataList = selectOneDay3HourData
+                self.dailyWeatherCollectionView.reloadData()
+            }
+        }
+    }
 }

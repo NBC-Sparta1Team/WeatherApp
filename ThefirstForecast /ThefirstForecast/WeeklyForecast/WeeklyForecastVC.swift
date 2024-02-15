@@ -10,7 +10,11 @@ import CoreLocation
 class WeeklyForecastVC: UIViewController {
     var weeklyTableView: UITableView!
     var locationManager =  CLLocationManager()
-    
+    var currentCityLabel : UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 20)
+        return label
+    }()
     var weatherForecasts: [OneDayAverageData] = []
     var city : City?
     override func viewDidLoad() {
@@ -19,7 +23,7 @@ class WeeklyForecastVC: UIViewController {
         setNavigationBarButtonItem()
         self.view.backgroundColor = .white
         
-      
+        
         
         
         weeklyTableView = UITableView(frame: view.bounds, style: .plain)
@@ -30,10 +34,19 @@ class WeeklyForecastVC: UIViewController {
         weeklyTableView.separatorStyle = .none
         weeklyTableView.showsVerticalScrollIndicator = false
         weeklyTableView.register(WeeklyForecastTableViewCell.self, forCellReuseIdentifier: "WeeklyForecastTableViewCell")
+        view.addSubview(currentCityLabel)
         view.addSubview(weeklyTableView)
-        
+        currentCityLabel.translatesAutoresizingMaskIntoConstraints = false
         weeklyTableView.translatesAutoresizingMaskIntoConstraints = false
-  
+        NSLayoutConstraint.activate([
+            currentCityLabel.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            currentCityLabel.leftAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leftAnchor, constant: 10),
+            currentCityLabel.rightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.rightAnchor, constant: -10),
+            weeklyTableView.topAnchor.constraint(equalTo: currentCityLabel.bottomAnchor, constant: 10),
+            weeklyTableView.leftAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leftAnchor, constant: 10),
+            weeklyTableView.rightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.rightAnchor, constant: -10),
+            weeklyTableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+        ])
         
         
         weeklyTableView.reloadData()
@@ -55,13 +68,15 @@ class WeeklyForecastVC: UIViewController {
     @objc func settingButtonTapped() {
         let alertController = UIAlertController(title: "온도 단위 선택", message: "원하는 단위를 선택하세요.", preferredStyle: .actionSheet)
         
-        let celsiusAction = UIAlertAction(title: "섭씨", style: .default) { action in
-            // 섭씨 선택 시 처리할 동작 추가
+        let celsiusAction = UIAlertAction(title: "섭씨", style: .default) { _ in
+            TempStateData.shared.state = true
+            self.weeklyTableView.reloadData()
             print("섭씨 선택")
         }
         
-        let fahrenheitAction = UIAlertAction(title: "화씨", style: .default) { action in
-            // 화씨 선택 시 처리할 동작 추가
+        let fahrenheitAction = UIAlertAction(title: "화씨", style: .default) { _ in
+            TempStateData.shared.state = false
+            self.weeklyTableView.reloadData()
             print("화씨 선택")
         }
         
@@ -83,12 +98,15 @@ extension WeeklyForecastVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "WeeklyForecastTableViewCell", for: indexPath)
         as! WeeklyForecastTableViewCell
-        cell.dateLabel.text = weatherForecasts[indexPath.row].date
+        cell.dateLabel.text = weatherForecasts[indexPath.row].date.replacingOccurrences(of: "-", with: ".")
         cell.selectionStyle = .none
-        cell.minTemperatureLabel.text = "최저 : \(String(format: "%.1f", weatherForecasts[indexPath.row].tempMin))°"
-        cell.maxTemperatureLabel.text = "최고 : \(String(format: "%.1f", weatherForecasts[indexPath.row].tempMax)) °"
-        cell.averageTemperatureLabel.text = "\(String(format: "%.1f", weatherForecasts[indexPath.row].temp)) °"
-        cell.precipitationLabel.text = "강수량 : \(String(format: "%.3f", weatherForecasts[indexPath.row].rainfall)) m/s"
+        let temp = TempStateData.shared.state ? "\(Int(weatherForecasts[indexPath.row].temp))°C" : weatherForecasts[indexPath.row].temp.setFahrenheit()
+        let max = TempStateData.shared.state ? "\(Int(weatherForecasts[indexPath.row].tempMax))°C" : weatherForecasts[indexPath.row].tempMax.setFahrenheit()
+        let min = TempStateData.shared.state ? "\(Int(weatherForecasts[indexPath.row].tempMin))°C" : weatherForecasts[indexPath.row].tempMin.setFahrenheit()
+        cell.averageTemperatureLabel.text = "\(temp)"
+        cell.minTemperatureLabel.text = "최저 : \(min)"
+        cell.maxTemperatureLabel.text = "최고 : \(max)"
+        cell.precipitationLabel.text = "강수량 : \(Int(weatherForecasts[indexPath.row].rainfall)) m/s"
         if let url = URL(string: "https://openweathermap.org/img/wn/\(weatherForecasts[indexPath.row].weather.first!.icon)@2x.png"){
             cell.weatherIconImageView.load(url: url)
         }
@@ -100,17 +118,20 @@ extension WeeklyForecastVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = ForecastInfoVC()
         let data = weatherForecasts[indexPath.row]
+        
         let main = Main(temp: data.temp, feelsLike: data.feelsLike, tempMin: data.tempMin, tempMax: data.tempMax, humidity: data.humidty)
         let wind = data.wind
         let rain = Rain(rain3H: nil, rain1H: data.rainfall)
         
         vc.forecastInfo = ForecastInfoModel(coord: self.city!.coord, weather: data.weather, main:main , visibility: data.visibility, wind: wind, rain: rain , name: self.city!.name)
-        vc.fourForecastData.append(FourForecastStatusModel(title: "체감온도", value: "\(String(describing: main.feelsLike))°", icon: "thermometer.medium"))
-        vc.fourForecastData.append(FourForecastStatusModel(title: "강수량", value: "\(String(describing: data.rainfall ))mm/h", icon: "drop.fill"))
-        vc.fourForecastData.append(FourForecastStatusModel(title: "가시거리", value: "\(String(describing: data.visibility))m", icon: "eye.fill"))
-        vc.fourForecastData.append(FourForecastStatusModel(title: "습도", value: "\(String(describing: data.humidty))%", icon: "humidity"))
+        vc.fourForecastData.append(FourForecastStatusModel(title: "체감온도", value: Int(main.feelsLike), icon: "thermometer.medium"))
+        vc.fourForecastData.append(FourForecastStatusModel(title: "강수량", value: Int(data.rainfall), icon: "drop.fill"))
+        vc.fourForecastData.append(FourForecastStatusModel(title: "가시거리", value: data.visibility, icon: "eye.fill"))
+        vc.fourForecastData.append(FourForecastStatusModel(title: "습도", value: data.humidty, icon: "humidity"))
         vc.windy = wind
         vc.modalPresentationStyle = .fullScreen
+        vc.presentView = 1
+        vc.selectDate = data.date
         self.present(vc,animated: true)
     }
 }
@@ -128,8 +149,10 @@ extension WeeklyForecastVC : CLLocationManagerDelegate{
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations[locations.count-1]
         CurrentCoordinateModel.shared.currentCoordinate = Coordinate(lat: location.coordinate.latitude, lon: location.coordinate.longitude)
+        
         WeeklyForecastAPIManger.shred.getWeeklyAverageData(from: CurrentCoordinateModel.shared.currentCoordinate) { oneDayAverageData,cityInfo in
             DispatchQueue.main.async {
+                self.currentCityLabel.text = cityInfo.name
                 self.weatherForecasts = oneDayAverageData
                 self.city = cityInfo
                 self.weeklyTableView.reloadData()

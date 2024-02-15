@@ -108,11 +108,12 @@ class CurrentWeatherView : UIView {
     
     func setCurrentWeatherLabels(model : ForecastInfoModel) {
         locationLabel.text = model.name
-        dailyTemperatureLabel.text = "\(Int(model.main.temp))°"
+        let temp = TempStateData.shared.state ? "\(Int(model.main.temp))°C" : model.main.temp.setFahrenheit()
+        let max = TempStateData.shared.state ? "\(Int(model.main.tempMax))°C" : model.main.tempMax.setFahrenheit()
+        let min = TempStateData.shared.state ? "\(Int(model.main.tempMin))°C" : model.main.tempMin.setFahrenheit()
+        dailyTemperatureLabel.text = "\(temp)°C"
         weatherLabel.text = "\(model.weather.first!.description)"
-        let min = String(format: "최고 : %d°", Int(model.main.tempMin))
-        let max = String(format: "최저 : %d°", Int(model.main.tempMax))
-        temperatureMaxMinLabel.text = "\(min) \(max)"
+        temperatureMaxMinLabel.text = "최저 : \(min) 최고 \(max)"
     
     }
 }

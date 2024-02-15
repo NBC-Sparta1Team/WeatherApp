@@ -11,7 +11,6 @@ import CoreLocation
 class TabBarController: UITabBarController {
     let firstVC = UINavigationController.init(rootViewController: MainVC())
     let secondVC = UINavigationController.init(rootViewController: WeeklyForecastVC())
-    let thirdVC = ForecastInfoVC()
     var locationManager =  CLLocationManager()    
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,11 +23,9 @@ class TabBarController: UITabBarController {
         self.navigationController?.navigationBar.isHidden = true
     }
     private func setTabBar(){
-        self.viewControllers = [firstVC,secondVC,thirdVC]
+        self.viewControllers = [firstVC,secondVC]
         firstVC.tabBarItem = UITabBarItem(title: "홈", image: UIImage(named: "HomeImg"), tag: 1)
         secondVC.tabBarItem = UITabBarItem(title: "주간 예보", image: UIImage(named: "WeeklyForecastImg"), tag: 2)
-        thirdVC.tabBarItem = UITabBarItem(title: "날씨 정보", image: UIImage(systemName: "cloud"), tag: 3)
-       
     }
 
 }
