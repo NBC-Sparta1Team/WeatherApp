@@ -48,6 +48,7 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
         weatherIcon.image = UIImage(systemName: model.icon)
         titleLabel.text = model.title
         weatherValue.text = "\(model.value)"
+//        weatherValue.text = setIntValue(model: model)
         weatherDescription.text = setDescription(model: model)
         weatherIcon.tintColor = UIColor.white.withAlphaComponent(0.5)
     }
@@ -57,9 +58,17 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
         return characterDeleteValue
     }
     
+    private func setIntValue(model : FourForecastStatusModel) -> String {
+        let characterDeleteValue = model.value.components(separatedBy: CharacterSet(charactersIn: "0123456789.").inverted).joined()
+        guard let value = Int(characterDeleteValue) else {
+            return "0"
+        }
+        return "\(value)"
+    }
     
     
-    func setDescription(model : FourForecastStatusModel) -> String {
+    
+    private func setDescription(model : FourForecastStatusModel) -> String {
         let characterDeleteValue = characterDeleteValue(value: model.value)
         guard let value = Int(characterDeleteValue) else {
             return "날씨 정보를 가져올 수 없습니다."
@@ -80,16 +89,16 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
     }
     
     private func getFeelsLikeDescription(value : String) -> String {
-        let feelsLikeValue = characterDeleteValue(value: value)
-        guard let temperature = Int(feelsLikeValue) else {
+        let feelsLikeValue = value.replacingOccurrences(of: "°", with: "")
+        guard let temperature = Double(feelsLikeValue) else {
             return "날씨 정보를 가져올 수 없습니다."
         }
         switch temperature {
         case 21... :
             return feelsLike[0]
-        case 11..<21 :
+        case 10..<21 :
             return feelsLike[1]
-        case 1..<11 :
+        case 1..<10 :
             return feelsLike[2]
         default:
             return feelsLike[3]
