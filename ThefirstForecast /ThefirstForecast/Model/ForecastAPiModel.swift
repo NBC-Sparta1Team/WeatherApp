@@ -28,8 +28,8 @@ struct ForecastInfoModel: Decodable {
     let visibility : Int
     let wind: Wind
     let rain: Rain?
-    let snow : Snow?
-    let clouds: Clouds
+//    let snow : Snow?
+//    let clouds: Clouds
     let name : String
 }
 // MARK: - WeeklyForecastModel
@@ -97,6 +97,7 @@ struct Clouds: Decodable {
 struct City: Decodable {
     let id: Int
     let name: String
+    let coord : Coord
 }
 // MARK: - List
 struct List: Decodable {
@@ -107,11 +108,10 @@ struct List: Decodable {
     let snow : Snow?
     let clouds: Clouds
     let dtTxt: String
-
+    let visibility : Int
     enum CodingKeys: String, CodingKey {
-        case weather,main,wind,rain,snow,clouds
+        case weather,main,wind,rain,snow,clouds,visibility
         case dtTxt = "dt_txt"
     }
 }
-
 

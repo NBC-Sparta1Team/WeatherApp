@@ -39,7 +39,6 @@ class DailyWeatherCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     public func setCollectionViewCell(model : OneDay3HourDataModel) {
-        print(model)
         timeLabel.text = model.hour + "시"
         if let url = URL(string: "https://openweathermap.org/img/wn/\(model.icon)@2x.png"){
             weatherImage.load(url: url)
