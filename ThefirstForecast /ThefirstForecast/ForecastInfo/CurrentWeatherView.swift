@@ -111,7 +111,7 @@ class CurrentWeatherView : UIView {
         let temp = TempStateData.shared.state ? "\(Int(model.main.temp))°C" : model.main.temp.setFahrenheit()
         let max = TempStateData.shared.state ? "\(Int(model.main.tempMax))°C" : model.main.tempMax.setFahrenheit()
         let min = TempStateData.shared.state ? "\(Int(model.main.tempMin))°C" : model.main.tempMin.setFahrenheit()
-        dailyTemperatureLabel.text = "\(temp)°C"
+        dailyTemperatureLabel.text = "\(temp)"
         weatherLabel.text = "\(model.weather.first!.description)"
         temperatureMaxMinLabel.text = "최저 : \(min) 최고 \(max)"
     
