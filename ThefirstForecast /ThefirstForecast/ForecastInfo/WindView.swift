@@ -7,7 +7,9 @@
 
 import UIKit
 
-class WindView: UIView {
+class WindView: UICollectionViewCell {
+    static let reuseIdentifier = "windCollectionViewCell"
+    
     private let windIcon : UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFit
@@ -102,7 +104,11 @@ class WindView: UIView {
         return label
     }()
     
-    private let borderLine = UIView()
+    private let borderLine : UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.white.withAlphaComponent(0.5)
+        return view
+    }()
     
     private let compassScale : UIImageView = {
         let image = UIImageView()
@@ -118,46 +124,33 @@ class WindView: UIView {
     
     
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        print(#function)
-        borderLine.backgroundColor = UIColor.white.withAlphaComponent(0.5)
-        setBlurOfWindView(blurEffect: .regular)
-        addSubViewsInWindView()
-        autoLayoutWindView()
-    }
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        print(#function, "UIView")
-//        addSubViewsInWindView()
-//        autoLayoutWindView()
-    }
-    
-    // superview가 없어서 그런지 가장 마지막에 layoutSubviews 이후에 크기가 지정됨
+//    override func layoutSubviews() {
+//        super.layoutSubviews()
+//        print(#function)
+//    }
 
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder: ) has not been implemented")
-    }
+//    required init?(coder: NSCoder) {
+//        fatalError("init(coder: ) has not been implemented")
+//    }
     
-    func setBlurOfWindView(blurEffect: UIBlurEffect.Style) {
-        let blurEffect = UIBlurEffect(style: blurEffect)
-        let effectView = UIVisualEffectView(effect: blurEffect)
-        effectView.frame = self.bounds
-        print("WindView.bounds in", #function, ": \(self.bounds)")
-        effectView.layer.cornerRadius = 15
-        self.layer.cornerRadius = 15
-        
-        // clipsToBounds가 true일 때, EffectView에 cornerRadius 적용됨.
-        effectView.clipsToBounds = true
-        // blur처리된 뷰를 한 겹 올리는 것
-        self.addSubview(effectView)
-    }
+//    func setBlurOfWindView(blurEffect: UIBlurEffect.Style) {
+//        let blurEffect = UIBlurEffect(style: blurEffect)
+//        let effectView = UIVisualEffectView(effect: blurEffect)
+//        effectView.frame = self.bounds
+//        print("WindView.bounds in", #function, ": \(self.bounds)")
+//        effectView.layer.cornerRadius = 15
+//        self.layer.cornerRadius = 15
+//        
+//        // clipsToBounds가 true일 때, EffectView에 cornerRadius 적용됨.
+//        effectView.clipsToBounds = true
+//        // blur처리된 뷰를 한 겹 올리는 것
+//        self.addSubview(effectView)
+//    }
     
         
     func addSubViewsInWindView() {
-        addSubViews([
+        self.contentView.addSubViews([
             windIcon,
             titleLabel,
             windSpeedScale,
@@ -196,23 +189,23 @@ class WindView: UIView {
         south.translatesAutoresizingMaskIntoConstraints = false
         west.translatesAutoresizingMaskIntoConstraints = false
         east.translatesAutoresizingMaskIntoConstraints = false
-        self.translatesAutoresizingMaskIntoConstraints = false
+        
         NSLayoutConstraint.activate([
-            windIcon.topAnchor.constraint(equalTo: topAnchor, constant: 10),
-            windIcon.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            windIcon.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 1 / 10),
+            windIcon.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            windIcon.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            windIcon.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 1 / 10),
             windIcon.widthAnchor.constraint(equalTo: windIcon.heightAnchor),
             
             titleLabel.centerYAnchor.constraint(equalTo: windIcon.centerYAnchor),
             titleLabel.leadingAnchor.constraint(equalTo: windIcon.trailingAnchor, constant: 7),
             
-            borderLine.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 10),
-            borderLine.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 15),
+            borderLine.centerYAnchor.constraint(equalTo: contentView.centerYAnchor, constant: 10),
+            borderLine.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             borderLine.heightAnchor.constraint(equalToConstant: 1),
-            borderLine.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 5 / 9),
+            borderLine.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 5 / 9),
             
             windSpeedLabel.bottomAnchor.constraint(equalTo: borderLine.topAnchor, constant: -10),
-            windSpeedLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 30),
+            windSpeedLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 30),
             
             windLabel.bottomAnchor.constraint(equalTo: windSpeedLabel.bottomAnchor, constant: -5),
             windLabel.leadingAnchor.constraint(equalTo: windSpeedLabel.trailingAnchor, constant: 10),
@@ -245,19 +238,21 @@ class WindView: UIView {
             south.bottomAnchor.constraint(equalTo: compassScale.bottomAnchor, constant: -10),
             
             compassScale.centerYAnchor.constraint(equalTo: borderLine.centerYAnchor),
-            compassScale.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
-            compassScale.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1 / 3),
+            compassScale.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+            compassScale.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 1 / 3),
             compassScale.heightAnchor.constraint(equalTo: compassScale.widthAnchor),
             
             magneticNeedle.centerYAnchor.constraint(equalTo: compassScale.centerYAnchor),
             magneticNeedle.centerXAnchor.constraint(equalTo: compassScale.centerXAnchor),
-            magneticNeedle.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1 / 3),
+            magneticNeedle.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 1 / 3),
             magneticNeedle.heightAnchor.constraint(equalTo: magneticNeedle.widthAnchor),
         ])
-        print(#function)
     }
     
-    func setWindViewLabel(windSpeed: Double, gustSpeed: Double, windDegree: Int) {
+//     func setWindViewLabel(windSpeed: Double, gustSpeed: Double, windDegree: Int) {
+    func setWindViewLabel(windSpeed: String, gustSpeed: String, windDegree: Int) {
+        addSubViewsInWindView()
+        autoLayoutWindView()
         windSpeedScale.text = "m/s"
         windLabel.text = "바람"
         windSpeedLabel.text = String(format: "%.2f", windSpeed)

@@ -11,6 +11,7 @@
 		3F1633932B73C3B400603161 /* CurrentWeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1633922B73C3B400603161 /* CurrentWeatherView.swift */; };
 		3F1633952B73CECD00603161 /* WindView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1633942B73CECD00603161 /* WindView.swift */; };
 		3F1633972B747C2B00603161 /* OtherInfoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1633962B747C2B00603161 /* OtherInfoCollectionViewCell.swift */; };
+		3F1633992B7D003200603161 /* APIKey.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3F1633982B7D003200603161 /* APIKey.xcconfig */; };
 		7F64B0372B73975100309C5E /* SearchControllerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F64B0362B73975100309C5E /* SearchControllerVC.swift */; };
 		F8205F302B7C57CD00BA039D /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8205F2F2B7C57CD00BA039D /* CollectionViewCell.swift */; };
 		F8205F352B7C92D500BA039D /* CollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8205F342B7C92D500BA039D /* CollectionViewHeader.swift */; };
@@ -42,6 +43,7 @@
 		3F1633922B73C3B400603161 /* CurrentWeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentWeatherView.swift; sourceTree = "<group>"; };
 		3F1633942B73CECD00603161 /* WindView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindView.swift; sourceTree = "<group>"; };
 		3F1633962B747C2B00603161 /* OtherInfoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherInfoCollectionViewCell.swift; sourceTree = "<group>"; };
+		3F1633982B7D003200603161 /* APIKey.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = APIKey.xcconfig; sourceTree = "<group>"; };
 		7F64B0362B73975100309C5E /* SearchControllerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchControllerVC.swift; sourceTree = "<group>"; };
 		F8205F2F2B7C57CD00BA039D /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		F8205F342B7C92D500BA039D /* CollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewHeader.swift; sourceTree = "<group>"; };
@@ -113,7 +115,7 @@
 		F88C533B2B70C8B0000624A2 = {
 			isa = PBXGroup;
 			children = (
-				F8205F422B7D03D700BA039D /* APIKey.xcconfig */,
+				3F1633982B7D003200603161 /* APIKey.xcconfig */,
 				F88C53462B70C8B0000624A2 /* ThefirstForecast */,
 				F88C53452B70C8B0000624A2 /* Products */,
 			);
@@ -247,8 +249,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F1633992B7D003200603161 /* APIKey.xcconfig in Resources */,
 				F88C53572B70C8B1000624A2 /* LaunchScreen.storyboard in Resources */,
-				F8205F432B7D03D700BA039D /* APIKey.xcconfig in Resources */,
 				F88C53542B70C8B1000624A2 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -304,7 +306,7 @@
 /* Begin XCBuildConfiguration section */
 		F88C53592B70C8B1000624A2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F8205F422B7D03D700BA039D /* APIKey.xcconfig */;
+			baseConfigurationReference = 3F1633982B7D003200603161 /* APIKey.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -368,7 +370,7 @@
 		};
 		F88C535A2B70C8B1000624A2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F8205F422B7D03D700BA039D /* APIKey.xcconfig */;
+			baseConfigurationReference = 3F1633982B7D003200603161 /* APIKey.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

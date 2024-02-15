@@ -38,9 +38,8 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
+    // MARK: description 추가
     func setOtherInfoCell(model : FourForecastStatusModel) {
-        print(model)
-        
         setBackgroundBlurOfInfoView(blurEffect: .regular)
         addSubViews()
         autoLayout()
@@ -52,6 +51,45 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
 //        weatherDescription.text = description
         weatherIcon.tintColor = UIColor.white.withAlphaComponent(0.5)
     }
+    
+//    func setDescription(model : FourForecastStatusModel) {
+//        switch model.title {
+//        case "체감온도" :
+//            switch Int(model.value) {
+//            case 20... :
+//                weatherDescription.text = feelsLike[0]
+//            case 10...20 :
+//                weatherDescription.text = feelsLike[0]
+//            }
+//        default:
+//            <#code#>
+//        }
+//    }
+    
+    private let feelsLike = [
+        "더위를 느낄 수 있는 날씨입니다.",                   // 20°C초과
+        "적당한 날씨로, 외출하기 좋은 날씨입니다.",             // 10°C초과 20°C미만
+        "쌀쌀한 날씨로, 따뜻하게 옷을 입으세요.",              // 0°C초과 10°C미만
+        "추위가 심한 날씨로, 외출 시 따뜻한 옷을 꼭 입으세요."    // 0°C이하
+    ]
+    
+    private let rain = [
+        "비가 오지 않습니다.",            // == 0mm
+        "비가 옵니다. 우산을 챙기세요."     // 0mm 초과
+    ]
+    
+    private let visibility = [
+        "맑은 날씨로, 먼 경치를 감상할 수 있습니다.",            // 8Km초과
+        "약간의 안개가 있지만, 운전에 지장이 없는 날씨입니다.",     // 5Km초과 8Km미만
+        "안개가 짙어지니 운전 시 주의하세요.",                  // 1Km초과 3Km미만
+        "매우 안개가 짙어서 외출 시 위험할 수 있으니 주의하세요."    // 1Km이하
+    ]
+    
+    private let humidity = [
+        "습하고 더운 날씨로, 불쾌할 수 있으니 시원한 곳을 찾아 쉬세요.",   // 60%초과
+        "적절한 습도로, 편안한 하루를 보낼 수 있습니다.",              // 30%초과 60%미만
+        "건조한 날씨입니다. 피부 관리에 주의하세요."                   // 30%이하
+    ]
     
     private func setBackgroundBlurOfInfoView(blurEffect: UIBlurEffect.Style) {
         let blurEffect = UIBlurEffect(style: blurEffect)
