@@ -121,34 +121,6 @@ class WindView: UICollectionViewCell {
         image.image = UIImage(named: "magneticNeedleBig")
         return image
     }()
-    
-    
-    
-//    override func layoutSubviews() {
-//        super.layoutSubviews()
-//        print(#function)
-//    }
-
-    
-//    required init?(coder: NSCoder) {
-//        fatalError("init(coder: ) has not been implemented")
-//    }
-    
-//    func setBlurOfWindView(blurEffect: UIBlurEffect.Style) {
-//        let blurEffect = UIBlurEffect(style: blurEffect)
-//        let effectView = UIVisualEffectView(effect: blurEffect)
-//        effectView.frame = self.bounds
-//        print("WindView.bounds in", #function, ": \(self.bounds)")
-//        effectView.layer.cornerRadius = 15
-//        self.layer.cornerRadius = 15
-//        
-//        // clipsToBounds가 true일 때, EffectView에 cornerRadius 적용됨.
-//        effectView.clipsToBounds = true
-//        // blur처리된 뷰를 한 겹 올리는 것
-//        self.addSubview(effectView)
-//    }
-    
-        
     func addSubViewsInWindView() {
         self.contentView.addSubViews([
             windIcon,
@@ -248,8 +220,6 @@ class WindView: UICollectionViewCell {
             magneticNeedle.heightAnchor.constraint(equalTo: magneticNeedle.widthAnchor),
         ])
     }
-    
-//     func setWindViewLabel(windSpeed: Double, gustSpeed: Double, windDegree: Int) {
     func setWindViewLabel(windSpeed: Int, gustSpeed: Int, windDegree: Int) {
         addSubViewsInWindView()
         autoLayoutWindView()

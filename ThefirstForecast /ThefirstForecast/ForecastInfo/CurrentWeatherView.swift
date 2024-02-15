@@ -55,26 +55,16 @@ class CurrentWeatherView : UIView {
         label.layer.masksToBounds = false
         return label
     }()
-    
-
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        addSubViewsInCurrentWeatherView()
+        autoLayoutCurrentWeatherView()
     }
-    
-//    // superview가 없어서 그런지 가장 마지막에 layoutSubviews 이후에 크기가 지정됨
-//    override func layoutSubviews() {
-//        super.layoutSubviews()
-//        print(#function)
-//        frame = CGRect(x: 0, y: 0, width: Int(superview?.frame.width ?? 0), height: Int(superview?.frame.height ?? 0)/4)
-//    }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder: ) has not been implemented")
     }
     
-    func addSubViewsInCurrentWeatherView() {
+    private func addSubViewsInCurrentWeatherView() {
         addSubViews([
             locationLabel,
             dailyTemperatureLabel,
@@ -83,7 +73,7 @@ class CurrentWeatherView : UIView {
         ])
     }
     
-    func autoLayoutCurrentWeatherView() {
+    private func autoLayoutCurrentWeatherView() {
         locationLabel.translatesAutoresizingMaskIntoConstraints = false
         dailyTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
         weatherLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -106,7 +96,7 @@ class CurrentWeatherView : UIView {
         ])
     }
     
-    func setCurrentWeatherLabels(model : ForecastInfoModel) {
+    public func setCurrentWeatherLabels(model : ForecastInfoModel) {
         locationLabel.text = model.name
         let temp = TempStateData.shared.state ? "\(Int(model.main.temp))°C" : model.main.temp.setFahrenheit()
         let max = TempStateData.shared.state ? "\(Int(model.main.tempMax))°C" : model.main.tempMax.setFahrenheit()

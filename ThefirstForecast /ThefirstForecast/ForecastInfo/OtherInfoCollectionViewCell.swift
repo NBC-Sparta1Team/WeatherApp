@@ -37,14 +37,20 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
         label.numberOfLines = 0
         return label
     }()
-    
-    
-    func setOtherInfoCell(model : FourForecastStatusModel) {
-        setBackgroundBlurOfInfoView(blurEffect: .regular)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         addSubViews()
         autoLayout()
+        setBackgroundBlurOfInfoView(blurEffect: .regular)
         contentView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.15)
         contentView.layer.cornerRadius = 15
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setOtherInfoCell(model : FourForecastStatusModel) {
         weatherIcon.image = UIImage(systemName: model.icon)
         titleLabel.text = model.title
         switch model.title{
@@ -63,15 +69,6 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
         weatherDescription.text = setDescription(model: model) // description 추가
         weatherIcon.tintColor = UIColor.white.withAlphaComponent(0.5)
     }
-    
-    private func characterDeleteValue(value : String) -> String {
-        let characterDeleteValue = value.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
-        return characterDeleteValue
-    }
-    
-
-    
-    
     private func setDescription(model : FourForecastStatusModel) -> String {
 
         switch model.title {
@@ -163,14 +160,15 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
     private func setBackgroundBlurOfInfoView(blurEffect: UIBlurEffect.Style) {
         let blurEffect = UIBlurEffect(style: blurEffect)
         let effectView = UIVisualEffectView(effect: blurEffect)
-        effectView.frame = self.bounds
         effectView.layer.cornerRadius = 15
+        effectView.frame = self.bounds
+        
         self.layer.cornerRadius = 15
         
         // clipsToBounds가 true일 때, EffectView에 cornerRadius 적용됨.
         effectView.clipsToBounds = true
         // blur처리된 뷰를 한 겹 올리는 것
-        self.addSubview(effectView)
+        self.backgroundView = effectView
     }
     
     private func addSubViews() {

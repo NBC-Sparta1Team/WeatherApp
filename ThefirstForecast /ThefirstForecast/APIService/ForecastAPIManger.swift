@@ -9,7 +9,7 @@ import Foundation
 class ForecastAPIManger{
     static let shared = ForecastAPIManger()
     let APIKey = Bundle.main.infoDictionary?["OpenWeatherMap_KEY"] as? String
-    func convertName(eng : String) -> String{
+    private func convertName(eng : String) -> String{ // 한글 입력 -> 영문 변환
         switch eng{
         case "서울특별시","서울" : return "Seoul"
         case "광주광역시","광주" : return "Gwangju"
@@ -30,9 +30,8 @@ class ForecastAPIManger{
             return eng
         }
     }
-    func getCoordinate(fromCityDoName cityDoName : String, completion : @escaping(ForecastInfoModel?,Bool) -> Void){ // 도시이름 -> 좌표 API
+    func getForecastData(fromCityDoName cityDoName : String, completion : @escaping(ForecastInfoModel?,Bool) -> Void){ // 대표 행정 구역 이름 -> 날씨 정보 데이터 API
         let url = EndPoint.data(APItype: "weather").url
-        
         let cityDoName = self.convertName(eng: cityDoName) // 특별시,광역시, ~도
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
         components?.queryItems = [URLQueryItem(name: "q", value: "\(cityDoName),kr"),URLQueryItem(name: "appid", value: APIKey),URLQueryItem(name: "lang", value: "kr"),URLQueryItem(name: "units", value: "metric")]
@@ -118,15 +117,15 @@ class ForecastAPIManger{
             }
         }.resume()
     }
-    func SynthesizeGetCoodinateData(from input : String, completion : @escaping(ForecastInfoModel?,Bool)->Void){ // 우편번호 or 도시이름 -> 좌표 출력 -> 날씨 정보 데이터
-        if divisionType(Input: input){
+    func SynthesizeGetCoodinateData(from input : String, completion : @escaping(ForecastInfoModel?,Bool)->Void){
+        if divisionType(Input: input){ // 우편번호 -> 좌표 -> 날씨 데이터
             getCoordinate(fromZipcode: input) { getCoordinateData in
                 self.getForecastData(from: getCoordinateData) { getForecastData in
                     completion(getForecastData,true)
                 }
             }
-        }else{
-            getCoordinate(fromCityDoName: input) { getForecastData,status  in
+        }else{ // 도시이름 -> 날씨데이터
+            getForecastData(fromCityDoName: input) { getForecastData,status  in
                 completion(getForecastData,status)
             }
         }

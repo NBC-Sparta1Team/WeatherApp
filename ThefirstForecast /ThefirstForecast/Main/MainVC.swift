@@ -7,14 +7,6 @@
 import Foundation
 import UIKit
 import CoreLocation
-struct MainWeather {
-    var location: String
-    var windSpeed: String
-    var minTemperature: Int
-    var maxTemperature: Int
-    var averageTemperature: Int
-    var backgroundImage: UIImage?
-}
 
 class MainVC: UIViewController {
     
@@ -44,8 +36,8 @@ class MainVC: UIViewController {
         collectionView.backgroundColor = .clear
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.identi)
-        collectionView.register(CollectionViewHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CollectionViewHeader.identi)
+        collectionView.register(MainCollectionViewCell.self, forCellWithReuseIdentifier: MainCollectionViewCell.identi)
+        collectionView.register(MainCollectionViewHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MainCollectionViewHeader.identi)
         return collectionView
     }()
     private lazy var searchCotainerView : UIView = {
@@ -108,7 +100,7 @@ class MainVC: UIViewController {
 }
 //MARK: - SearchController
 extension MainVC : UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate{
-    func updateSearchResults(for searchController: UISearchController) {
+    func updateSearchResults(for searchController: UISearchController) { // searchResultsController 사용 안함으로 인해 공백
         
     }
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -192,14 +184,14 @@ extension MainVC : UICollectionViewDataSource,UICollectionViewDelegate,UICollect
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.section == 0{
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identi, for: indexPath) as? CollectionViewCell else {return UICollectionViewCell()}
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MainCollectionViewCell.identi, for: indexPath) as? MainCollectionViewCell else {return UICollectionViewCell()}
             if let currentForecastData = self.currentForecastInfo{
                 cell.setCell(model: currentForecastData)
             }
             return cell
             
         }else{
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identi, for: indexPath) as? CollectionViewCell else {return UICollectionViewCell()}
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MainCollectionViewCell.identi, for: indexPath) as? MainCollectionViewCell else {return UICollectionViewCell()}
             cell.setCell(model: forecastInfoArr[indexPath.item])
             return cell
         }
@@ -210,7 +202,7 @@ extension MainVC : UICollectionViewDataSource,UICollectionViewDelegate,UICollect
     //MARK: - CollectionView Header
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {
-            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CollectionViewHeader.identi, for: indexPath) as? CollectionViewHeader else { return CollectionViewHeader()}
+            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MainCollectionViewHeader.identi, for: indexPath) as? MainCollectionViewHeader else { return MainCollectionViewHeader()}
             if indexPath.section == 0{
                 header.setLabel(text: "현재 위치")
             }else{
@@ -225,7 +217,7 @@ extension MainVC : UICollectionViewDataSource,UICollectionViewDelegate,UICollect
         return CGSize(width: collectionView.frame.width - 20, height: 20)
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if indexPath.section == 0{
+        if indexPath.section == 0{ // 현재 위치 날씨 정보 데이터
             let vc = ForecastInfoVC()
             vc.forecastInfo = self.currentForecastInfo
             
@@ -236,7 +228,7 @@ extension MainVC : UICollectionViewDataSource,UICollectionViewDelegate,UICollect
             vc.modalPresentationStyle = .fullScreen
             vc.addActionDelegate = self
             self.present(vc, animated: true)
-        }else{
+        }else{ // 검색해서 추가한 날씨 정보 데이터
             let vc = ForecastInfoVC()
             let foreCastInfoData = forecastInfoArr[indexPath.item]
             vc.forecastInfo = foreCastInfoData
@@ -263,7 +255,7 @@ extension MainVC : CLLocationManagerDelegate{
             
         }
     }
-    func getCurrentLoaction(){
+    func getCurrentLoaction(){ // 현재 위치 정보 Get
         locationManager = CLLocationManager()// CLLocationManager클래스의 인스턴스 locationManager를 생성
         locationManager.delegate = self// 포그라운드일 때 위치 추적 권한 요청
         locationManager.desiredAccuracy = kCLLocationAccuracyBest// 배터리에 맞게 권장되는 최적의 정확도

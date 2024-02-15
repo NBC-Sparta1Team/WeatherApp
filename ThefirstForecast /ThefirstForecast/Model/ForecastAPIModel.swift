@@ -11,15 +11,7 @@ struct CoordinateModel : Decodable{
     let name : String
     let lat, lon : Double
 }
-struct Coordinate{
-    let lat : Double?
-    let lon : Double?
-}
-struct FourForecastStatusModel{
-    let title : String
-    let value : Int
-    let icon : String
-}
+
 // MARK: - ForecastInfoModel
 struct ForecastInfoModel: Decodable {
     let coord: Coord
@@ -81,18 +73,18 @@ struct Rain: Decodable {
     }
 }
 //MARK: - Snow
-struct Snow : Decodable {
-    let snow3H: Double?
-    let snow1H: Double?
-    enum CodingKeys: String, CodingKey {
-        case snow1H = "1h"
-        case snow3H = "3h"
-    }
-}
+//struct Snow : Decodable {
+//    let snow3H: Double?
+//    let snow1H: Double?
+//    enum CodingKeys: String, CodingKey {
+//        case snow1H = "1h"
+//        case snow3H = "3h"
+//    }
+//}
 // MARK: - Clouds
-struct Clouds: Decodable {
-    let all: Int // 흐림,%
-}
+//struct Clouds: Decodable {
+//    let all: Int // 흐림,%
+//}
 // MARK: - City
 struct City: Decodable {
     let id: Int
@@ -105,12 +97,12 @@ struct List: Decodable {
     let main: Main
     let wind: Wind
     let rain: Rain?
-    let snow : Snow?
-    let clouds: Clouds
+//    let snow : Snow?
+//    let clouds: Clouds
     let dtTxt: String
     let visibility : Int
     enum CodingKeys: String, CodingKey {
-        case weather,main,wind,rain,snow,clouds,visibility
+        case weather,main,wind,rain,visibility
         case dtTxt = "dt_txt"
     }
 }
