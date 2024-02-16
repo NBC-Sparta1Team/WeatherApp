@@ -80,18 +80,18 @@ class CurrentWeatherView : UIView {
         temperatureMaxMinLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            locationLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            locationLabel.topAnchor.constraint(equalTo: topAnchor, constant: 20),
+            locationLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            locationLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 20),
             
-            dailyTemperatureLabel.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 13),
-            dailyTemperatureLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 5),
+            dailyTemperatureLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: 13),
+            dailyTemperatureLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: -5),
             
             weatherLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            weatherLabel.topAnchor.constraint(equalTo: dailyTemperatureLabel.bottomAnchor, constant: 5),
+            weatherLabel.topAnchor.constraint(equalTo: dailyTemperatureLabel.bottomAnchor, constant: -5),
             
             temperatureMaxMinLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             temperatureMaxMinLabel.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: 5),
-            temperatureMaxMinLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20)
+//            temperatureMaxMinLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20)
 
         ])
     }
@@ -103,7 +103,7 @@ class CurrentWeatherView : UIView {
         let min = TempStateData.shared.state ? "\(Int(model.main.tempMin))°C" : model.main.tempMin.setFahrenheit()
         dailyTemperatureLabel.text = "\(temp)"
         weatherLabel.text = "\(model.weather.first!.description)"
-        temperatureMaxMinLabel.text = "최저 : \(min) 최고 \(max)"
+        temperatureMaxMinLabel.text = "최저:\(min)   최고:\(max)"
     
     }
 }

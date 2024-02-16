@@ -57,9 +57,10 @@ class OtherInfoCollectionViewCell: UICollectionViewCell {
         case "체감온도" :
             weatherValue.text = TempStateData.shared.state ? "\(model.value)°C" : Double(model.value).setFahrenheit()
         case "강수량" :
-            weatherValue.text = "\(model.value)mm/s"
+            weatherValue.text = "\(model.value)mm"
+            // MARK: 소수점 버림이 되고 있음... 수정을 해야되는데..
         case "가시거리" :
-            weatherValue.text = "\(model.value)m"
+            weatherValue.text = "\(model.value / 1000)km"
         case "습도" :
             weatherValue.text = "\(model.value)%"
         default:

@@ -24,6 +24,20 @@ class ForecastInfoVC: UIViewController {
     var fourForecastData : [FourForecastStatusModel] = []
     // 4. WindView에 사용되는 Data
     var windy : Wind?
+    
+    // MARK: type이 9개가 맞는지 확실치 않음. thunderstorm == 번개가 맞는지 확실하지 않음.
+    let descriptionType = ["맑음", "약간의 구름이 낀 하늘", "구름조금", "온흐림", "실 비", "비", "번개", "눈", "안개"]
+
+    let clearSkyImageName = ["clearSky04to10", "clearSky10to16", "clearSky16to22", "clearSky22to04"]
+    let fewCloudsImageName = ["fewClouds04to10", "fewClouds10to16", "fewClouds16to22", "fewClouds22to04"]
+    let scatteredCloudsImageName = ["scatteredClouds04to10", "scatteredClouds10to16", "scatteredClouds16to22", "scatteredClouds22to04"]
+    let brokenCloudsImageName = ["brokenClouds04to10", "brokenClouds10to16", "brokenClouds16to22", "brokenClouds22to04"]
+    let showerRainImageName = ["showerRain04to10", "showerRain10to16", "showerRain16to22", "showerRain22to04"]
+    let rainImageName = ["rain04to10", "rain10to16", "rain16to22", "rain22to04"]
+    let thunderstormImageName = ["thunderstorm04to10", "thunderstorm10to16", "thunderstorm16to22", "thunderstorm22to04"]
+    let snowImageName = ["snow04to10", "snow10to16", "snow16to22", "snow22to04"]
+    let mistImageName = ["mist04to10", "mist10to16", "mist16to22", "mist22to04"]
+    
     private lazy var buttonView : UIView = {
         let stackView = UIView()
         return stackView
@@ -48,13 +62,22 @@ class ForecastInfoVC: UIViewController {
         return button
     }()
     
+    private lazy var backgroundRefreshButton : UIButton = {
+        var config = UIButton.Configuration.plain()
+        config.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 20)
+        config.image = UIImage(systemName: "arrow.circlepath")
+        let button = UIButton(configuration: config)
+        button.addTarget(self, action: #selector(refreshBackgroundFunction), for: .touchUpInside)
+        button.tintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.0)
+        return button
+    }()
+    
     // MARK: ForecastInfoVC에 포함된 Views 선언
     // 배경
     let backgroundImage : UIImageView = {
         let background = UIImageView()
-        background.image = UIImage(named: "backgroundImage")
+        background.image = UIImage(named: "mist22to04")
         background.contentMode = .scaleAspectFill
-        
         return background
     }()
     // 화면을 스크롤하고, Pull to Refresh하는 ScrollView와 모든 요소가 들어간 contentView
@@ -125,6 +148,8 @@ class ForecastInfoVC: UIViewController {
         
         backgroundImage.isUserInteractionEnabled = true
         currentWeatherView.bringSubviewToFront(buttonView)
+        
+        getCurrentWeatherCondition(model: forecastInfo!)
     }
 }
 //MARK: - Pubic & ButtonAciton
@@ -136,6 +161,38 @@ extension ForecastInfoVC {
         CoreDataManager.shared.createMapData(lat: (forecastInfo?.coord.lat)!, lon: (forecastInfo?.coord.lon)!)
         addActionDelegate?.sendForecastInfo(data: forecastInfo!)
         dismiss(animated: true)
+    }
+    @objc func refreshBackgroundFunction() {
+        // 이미지 이름들이 저장된 배열을 imageNames라는 하나의 배열로 저장
+            let imageNames = [
+                clearSkyImageName,
+                fewCloudsImageName,
+                scatteredCloudsImageName,
+                brokenCloudsImageName,
+                rainImageName,
+                thunderstormImageName,
+                mistImageName
+            ].flatMap{ $0 }
+            
+            // 현재 설정된 배경 이미지 이름을 가져옴
+            guard let currentImageName = backgroundImage.image?.accessibilityIdentifier else {
+                return
+            }
+            
+            // 현재 설정된 이미지의 인덱스를 찾음
+            guard let currentIndex = imageNames.firstIndex(where: { $0.contains(currentImageName) }) else {
+                return
+            }
+            
+            // 다음 이미지의 인덱스를 계산
+            let nextIndex = (currentIndex + 1) % imageNames.count
+            
+            // 다음 이미지 이름을 설정
+            let nextImageName = imageNames[nextIndex]
+            
+            // 이미지를 설정
+            backgroundImage.image = UIImage(named: nextImageName)
+            backgroundImage.image?.accessibilityIdentifier = nextImageName // 이미지의 accessibilityIdentifier를 설정하여 이미지 이름을 추적할 수 있도록 함
     }
     @objc func refreshFunction() {
         scrollView.refreshControl?.endRefreshing()
@@ -150,7 +207,6 @@ extension ForecastInfoVC {
 extension ForecastInfoVC {
    
     private func setBlurEffect(){
-        
         setBlurEffectView(blurEffect: .regular, on: dailyWeatherCollectionView)
         setBlurEffectView(blurEffect: .regular, on: windView)
     }
@@ -195,6 +251,7 @@ extension ForecastInfoVC {
         contentView.addSubview(windView)
         buttonView.addSubview(dismissButton)
         buttonView.addSubview(plustButton)
+        buttonView.addSubview(backgroundRefreshButton)
         
         // collectionView delegate, dataSoure 지정, cell 등록
         dailyWeatherCollectionView.delegate = self
@@ -228,6 +285,7 @@ extension ForecastInfoVC {
         buttonView.translatesAutoresizingMaskIntoConstraints = false
         dismissButton.translatesAutoresizingMaskIntoConstraints = false
         plustButton.translatesAutoresizingMaskIntoConstraints = false
+        backgroundRefreshButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             backgroundImage.topAnchor.constraint(equalTo: view.topAnchor),
             backgroundImage.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -257,6 +315,9 @@ extension ForecastInfoVC {
             plustButton.topAnchor.constraint(equalTo: buttonView.topAnchor, constant: 15),
             plustButton.trailingAnchor.constraint(equalTo: buttonView.trailingAnchor, constant: -15),
             plustButton.bottomAnchor.constraint(equalTo: buttonView.bottomAnchor, constant: -5),
+            
+            backgroundRefreshButton.centerXAnchor.constraint(equalTo: buttonView.centerXAnchor),
+            backgroundRefreshButton.centerYAnchor.constraint(equalTo: buttonView.centerYAnchor),
             
             currentWeatherView.topAnchor.constraint(equalTo: buttonView.bottomAnchor),
             currentWeatherView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
@@ -311,9 +372,8 @@ extension ForecastInfoVC : UICollectionViewDataSource {
             return cell ?? UICollectionViewCell()
         }
     }
-    
-    
 }
+
 extension ForecastInfoVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == dailyWeatherCollectionView {
@@ -354,5 +414,179 @@ extension ForecastInfoVC{
         if let weatherViewInfo = self.forecastInfo{
             currentWeatherView.setCurrentWeatherLabels(model: weatherViewInfo )
         }
+    }
+    // MARK: 시간 - 날씨에 따라 backgroundImageView.image 수정
+    public func getCurrentWeatherCondition(model: ForecastInfoModel) {
+        guard let weatherDescription = model.weather.first?.description else {
+            return // 날씨 정보가 없으면 종료
+        }
+        
+        let currentTime = Date() // 현재 날짜, 시간 가져오기
+        let calender = Calendar.current
+        let hour = calender.component(.hour, from: currentTime)
+        print(currentTime)
+        
+        
+        var backgroundImageName: String = ""
+        
+        // 날씨 설명에 따라 이미지를 선택
+        switch weatherDescription {
+        case descriptionType[0]: // clear sky
+            switch hour {
+            case 4..<10:
+                backgroundImageName = clearSkyImageName[0]
+            case 10..<16:
+                backgroundImageName = clearSkyImageName[1]
+            case 16..<22:
+                backgroundImageName = clearSkyImageName[2]
+            case 22..<24:
+                backgroundImageName = clearSkyImageName[3]
+            case 0..<4:
+                backgroundImageName = clearSkyImageName[3]
+            default:
+                backgroundImageName = "backgroundImage" // 기본 이미지
+            }
+        case descriptionType[1]: // few clouds
+            // few clouds에 대한 이미지 선택 코드 추가
+            switch hour {
+            case 4..<10:
+                backgroundImageName = fewCloudsImageName[0]
+            case 10..<16:
+                backgroundImageName = fewCloudsImageName[1]
+            case 16..<22:
+                backgroundImageName = fewCloudsImageName[2]
+            case 22..<24:
+                backgroundImageName = fewCloudsImageName[3]
+            case 0..<4:
+                backgroundImageName = fewCloudsImageName[3]
+            default:
+                backgroundImageName = "backgroundImage" // 기본 이미지
+            }
+        case descriptionType[2]: // scattered clouds
+            // scattered clouds에 대한 이미지 선택 코드 추가
+            switch hour {
+            case 4..<10:
+                backgroundImageName = scatteredCloudsImageName[0]
+            case 10..<16:
+                backgroundImageName = scatteredCloudsImageName[1]
+            case 16..<22:
+                backgroundImageName = scatteredCloudsImageName[2]
+            case 22..<24:
+                backgroundImageName = scatteredCloudsImageName[3]
+            case 0..<4:
+                backgroundImageName = scatteredCloudsImageName[3]
+            default:
+                backgroundImageName = "backgroundImage" // 기본 이미지
+            }
+        case descriptionType[3]: // broken clouds
+            // broken clouds에 대한 이미지 선택 코드 추가
+            switch hour {
+            case 4..<10:
+                backgroundImageName = brokenCloudsImageName[0]
+            case 10..<16:
+                backgroundImageName = brokenCloudsImageName[1]
+            case 16..<22:
+                backgroundImageName = brokenCloudsImageName[2]
+            case 22..<24:
+                backgroundImageName = brokenCloudsImageName[3]
+            case 0..<4:
+                backgroundImageName = brokenCloudsImageName[3]
+            default:
+                backgroundImageName = "backgroundImage" // 기본 이미지
+            }
+        case descriptionType[4]: // shower rain
+            // shower rain에 대한 이미지 선택 코드 추가
+            switch hour {
+            case 4..<10:
+                backgroundImageName = showerRainImageName[0]
+            case 10..<16:
+                backgroundImageName = showerRainImageName[1]
+            case 16..<22:
+                backgroundImageName = showerRainImageName[2]
+            case 22..<24:
+                backgroundImageName = showerRainImageName[3]
+            case 0..<4:
+                backgroundImageName = showerRainImageName[3]
+            default:
+                backgroundImageName = "backgroundImage" // 기본 이미지
+            }
+        case descriptionType[5]: // rain
+            // rain에 대한 이미지 선택 코드 추가
+            switch hour {
+            case 4..<10:
+                backgroundImageName = rainImageName[0]
+            case 10..<16:
+                backgroundImageName = rainImageName[1]
+            case 16..<22:
+                backgroundImageName = rainImageName[2]
+            case 22..<24:
+                backgroundImageName = rainImageName[3]
+            case 0..<4:
+                backgroundImageName = rainImageName[3]
+            default:
+                backgroundImageName = "backgroundImage" // 기본 이미지
+            }
+        case descriptionType[6]: // thunderstorm
+            // thunderstorm에 대한 이미지 선택 코드 추가
+            switch hour {
+            case 4..<10:
+                backgroundImageName = thunderstormImageName[0]
+            case 10..<16:
+                backgroundImageName = thunderstormImageName[1]
+            case 16..<22:
+                backgroundImageName = thunderstormImageName[2]
+            case 22..<24:
+                backgroundImageName = thunderstormImageName[3]
+            case 0..<4:
+                backgroundImageName = thunderstormImageName[3]
+            default:
+                backgroundImageName = "backgroundImage" // 기본 이미지
+            }
+        case descriptionType[7]: // snow
+            // snow에 대한 이미지 선택 코드 추가
+            switch hour {
+            case 4..<10:
+                backgroundImageName = snowImageName[0]
+            case 10..<16:
+                backgroundImageName = snowImageName[1]
+            case 16..<22:
+                backgroundImageName = snowImageName[2]
+            case 22..<24:
+                backgroundImageName = snowImageName[3]
+            case 0..<4:
+                backgroundImageName = snowImageName[3]
+            default:
+                backgroundImageName = "backgroundImage" // 기본 이미지
+            }
+        case descriptionType[8]: // mist
+            // mist에 대한 이미지 선택 코드 추가
+            switch hour {
+            case 4..<10:
+                backgroundImageName = mistImageName[0]
+            case 10..<16:
+                backgroundImageName = mistImageName[1]
+            case 16..<22:
+                backgroundImageName = mistImageName[2]
+            case 22..<24:
+                backgroundImageName = mistImageName[3]
+            case 0..<4:
+                backgroundImageName = mistImageName[3]
+            default:
+                backgroundImageName = "backgroundImage" // 기본 이미지
+            }
+        default:
+            // 날씨 설명이 매칭되지 않는 경우에 대한 처리
+            backgroundImageName = "backgroundImage"
+        }
+        print(backgroundImageName)
+        // 가져온 이미지 이름으로 이미지를 설정
+        backgroundImage.image = UIImage(named: backgroundImageName)
+    }
+
+    // 현재 시간을 문자열로 반환하는 함수
+    private func getCurrentTime() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
+        return dateFormatter.string(from: Date())
     }
 }
